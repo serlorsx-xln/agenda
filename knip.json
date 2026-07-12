@@ -1,0 +1,26 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "workspaces": {
+    "apps/web": {
+      "entry": [
+        "src/app/**/{page,layout,loading,error,not-found,default,route,template,global-error}.{ts,tsx}",
+        "src/i18n/**/*.{ts,tsx}"
+      ],
+      "project": ["src/**/*.{ts,tsx}"]
+    },
+    "services/worker-line": {
+      "entry": ["src/scripts/*.ts"],
+      "project": ["src/**/*.ts"]
+    },
+    "packages/db": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/shared": {
+      "project": ["src/**/*.ts"]
+    }
+  },
+  "ignoreDependencies": [
+    "eslint-config-next"
+  ],
+  "ignoreExportsUsedInFile": true
+}

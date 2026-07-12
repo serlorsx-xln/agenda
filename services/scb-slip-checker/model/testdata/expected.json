@@ -1,0 +1,32 @@
+[
+  {
+    "file": "cap0.png",
+    "answer": "APLNFV",
+    "confidence": 0.999998
+  },
+  {
+    "file": "cap1.png",
+    "answer": "LV6WGQ",
+    "confidence": 1.0
+  },
+  {
+    "file": "cap2.png",
+    "answer": "KK1TSG",
+    "confidence": 0.999791
+  },
+  {
+    "file": "cap3.png",
+    "answer": "DB7P38",
+    "confidence": 0.98836
+  },
+  {
+    "file": "cap4.png",
+    "answer": "VS2V3T",
+    "confidence": 0.942971
+  },
+  {
+    "file": "cap5.png",
+    "answer": "FPGZ2W",
+    "confidence": 0.999084
+  }
+]

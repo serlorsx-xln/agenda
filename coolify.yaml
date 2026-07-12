@@ -1,0 +1,38 @@
+# Coolify project manifest — Docker Compose stack (web + worker + postgres + SCB).
+# Deploy: point Coolify at this repo with Docker Compose build pack,
+# compose file: /docker-compose.yml (repo root).
+#
+# Required env (set in Coolify UI / set_env) — never commit secrets:
+#   POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, DATABASE_URL
+#   BETTER_AUTH_SECRET, BETTER_AUTH_URL, NEXT_PUBLIC_APP_URL
+#   INTERNAL_API_KEY, SESSION_ENCRYPTION_KEY
+#   PROMPTPAY_ID, SCB_API_KEY, BILLING_WEBHOOK_SECRET, BILLING_OPS_TOKEN, CRON_SECRET
+#   WORKER_LINE_URL, SCB_SLIP_URL (compose service URLs)
+
+name: agenda
+runtime: docker
+
+services:
+  - name: web
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    source:
+      type: git
+    ports:
+      - "3000"
+  - name: worker-line
+    build:
+      context: .
+      dockerfile: services/worker-line/Dockerfile
+    source:
+      type: git
+  - name: migrate
+    build:
+      context: .
+      dockerfile: packages/db/Dockerfile.migrate
+    source:
+      type: git
+
+compose:
+  file: docker-compose.yml

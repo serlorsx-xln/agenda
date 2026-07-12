@@ -1,0 +1,163 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # Postgres is internal to the compose network only (no host port).
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  migrate:
+    build:
+      context: .
+      dockerfile: packages/db/Dockerfile.migrate
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+
+  scb-captcha:
+    build:
+      context: ./services/scb-slip-checker
+      dockerfile: Dockerfile.captcha
+    restart: unless-stopped
+    environment:
+      PORT: "8001"
+      API_KEY: ${SCB_API_KEY}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q -O - http://127.0.0.1:8001/health || exit 1",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  scb-slip:
+    build:
+      context: ./services/scb-slip-checker
+      dockerfile: Dockerfile.slip
+    restart: unless-stopped
+    depends_on:
+      scb-captcha:
+        condition: service_started
+    environment:
+      PORT: "8000"
+      API_KEY: ${SCB_API_KEY}
+      CAPTCHA_URL: http://scb-captcha:8001
+      CAPTCHA_API_KEY: ${SCB_API_KEY}
+      PROXY: ${SCB_PROXY:-}
+      PREFETCH: ${SCB_PREFETCH:-1}
+      PREFETCH_SIZE: ${SCB_PREFETCH_SIZE:-3}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q -O - http://127.0.0.1:8000/health || exit 1",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  worker-line:
+    build:
+      context: .
+      dockerfile: services/worker-line/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY}
+      WORKER_PORT: ${WORKER_PORT:-4000}
+      LINE_DEVICE: ${LINE_DEVICE:-ANDROIDSECONDARY}
+      LINE_SESSION_PATH: /data/session/session.json
+      SESSION_ENCRYPTION_KEY: ${SESSION_ENCRYPTION_KEY:-}
+      SCHEDULER_TICK_SECONDS: ${SCHEDULER_TICK_SECONDS:-30}
+      MAX_HOT_SESSIONS: ${MAX_HOT_SESSIONS:-200}
+      MAX_BOOT_RESTORE_SESSIONS: ${MAX_BOOT_RESTORE_SESSIONS:-1}
+      SESSION_IDLE_EVICT_MS: ${SESSION_IDLE_EVICT_MS:-300000}
+      AUTO_REPLY_CYCLE_SEC: ${AUTO_REPLY_CYCLE_SEC:-30}
+      AUTO_REPLY_TICK_MS: ${AUTO_REPLY_TICK_MS:-100}
+      HIBERNATE_AFTER_AUTO_REPLY_POLL: ${HIBERNATE_AFTER_AUTO_REPLY_POLL:-true}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      NODE_ENV: production
+    volumes:
+      - worker_session:/data/session
+    # Dev/small profile — see docs/CAPACITY.md (8g+ worker RAM for large cold pools)
+    mem_limit: 1g
+    cpus: "1.0"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q -O - http://127.0.0.1:${WORKER_PORT:-4000}/health || exit 1",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      worker-line:
+        condition: service_started
+      scb-slip:
+        condition: service_started
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      WORKER_LINE_URL: ${WORKER_LINE_URL:-http://worker-line:4000}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY}
+      PROMPTPAY_ID: ${PROMPTPAY_ID}
+      SLIP_RECEIVER_ACCOUNT: ${SLIP_RECEIVER_ACCOUNT:-}
+      SCB_SLIP_URL: ${SCB_SLIP_URL:-http://scb-slip:8000}
+      SCB_API_KEY: ${SCB_API_KEY}
+      BILLING_WEBHOOK_SECRET: ${BILLING_WEBHOOK_SECRET}
+      BILLING_OPS_TOKEN: ${BILLING_OPS_TOKEN}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-}
+      CRON_SECRET: ${CRON_SECRET}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      PAYMENT_TTL_MINUTES: ${PAYMENT_TTL_MINUTES:-30}
+      PAYMENT_GRACE_MINUTES: ${PAYMENT_GRACE_MINUTES:-15}
+      SUBSCRIPTION_GRACE_DAYS: ${SUBSCRIPTION_GRACE_DAYS:-3}
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    # Next.js standalone — sufficient for typical dashboard traffic
+    mem_limit: 1g
+    cpus: "1.0"
+    healthcheck:
+      test:
+        ["CMD-SHELL", "wget -q -O - http://127.0.0.1:3000/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  worker_session:

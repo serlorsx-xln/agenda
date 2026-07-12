@@ -1,0 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* -------------------------------------------------------------------------- */
+/*  LINE Seed Sans (self-hosted). Place font files in /public/fonts.           */
+/*  See README for download instructions.                                      */
+/* -------------------------------------------------------------------------- */
+@font-face {
+  font-family: "LINE Seed Sans";
+  src: url("/fonts/LINESeedSansTH_W_Rg.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "LINE Seed Sans";
+  src: url("/fonts/LINESeedSansTH_W_Bd.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "LINE Seed Sans";
+  src: url("/fonts/LINESeedSansTH_W_XBd.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  /* ------------------------------------------------------------------ */
+  /*  Neutral base (light)                                               */
+  /* ------------------------------------------------------------------ */
+  :root {
+    --font-line-seed: "LINE Seed Sans";
+
+    --background: 0 0% 100%;
+    --foreground: 240 10% 8%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 8%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 8%;
+
+    --primary: 240 6% 12%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 6% 12%;
+
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 44%;
+
+    --accent: 240 5% 96%;
+    --accent-foreground: 240 6% 12%;
+
+    --destructive: 0 72% 46%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 142 55% 34%;
+    --success-foreground: 0 0% 98%;
+
+    --warning: 35 80% 44%;
+    --warning-foreground: 0 0% 98%;
+
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 240 6% 12%;
+
+    --radius: 0.625rem;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  Neutral base (dark)                                                */
+  /* ------------------------------------------------------------------ */
+  .dark {
+    --background: 240 10% 6%;
+    --foreground: 0 0% 96%;
+
+    --card: 240 8% 9%;
+    --card-foreground: 0 0% 96%;
+
+    --popover: 240 8% 9%;
+    --popover-foreground: 0 0% 96%;
+
+    --primary: 0 0% 96%;
+    --primary-foreground: 240 8% 10%;
+
+    --secondary: 240 5% 15%;
+    --secondary-foreground: 0 0% 96%;
+
+    --muted: 240 5% 15%;
+    --muted-foreground: 240 5% 62%;
+
+    --accent: 240 5% 16%;
+    --accent-foreground: 0 0% 96%;
+
+    --destructive: 0 62% 52%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 142 50% 45%;
+    --success-foreground: 0 0% 8%;
+
+    --warning: 35 80% 55%;
+    --warning-foreground: 0 0% 8%;
+
+    --border: 240 5% 18%;
+    --input: 240 5% 20%;
+    --ring: 0 0% 80%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground text-body antialiased;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
+  }
+  h1 {
+    @apply text-h1 font-bold;
+  }
+  h2 {
+    @apply text-h2 font-bold;
+  }
+  h3 {
+    @apply text-h3 font-bold;
+  }
+}

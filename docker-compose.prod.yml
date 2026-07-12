@@ -1,0 +1,80 @@
+# Production overlay — TLS via Caddy, no public Postgres / scb ports.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+  postgres:
+    ports: []
+
+  web:
+    ports: []
+    environment:
+      # Set BETTER_AUTH_URL / NEXT_PUBLIC_APP_URL in .env to https://$APP_DOMAIN
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      web:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:-localhost}
+      ACME_EMAIL: ${ACME_EMAIL:-}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+  db-backup:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGHOST: postgres
+      PGUSER: ${POSTGRES_USER}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB}
+    volumes:
+      - postgres_backups:/backups
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        set -eu
+        while true; do
+          ts=$$(date -u +%Y%m%dT%H%M%SZ)
+          pg_dump -Fc -f /backups/line-$$ts.dump
+          find /backups -name 'line-*.dump' -mtime +14 -delete
+          sleep 86400
+        done
+
+  billing-cron:
+    image: curlimages/curl:8.12.1
+    restart: unless-stopped
+    depends_on:
+      web:
+        condition: service_healthy
+    environment:
+      CRON_SECRET: ${CRON_SECRET}
+      WEB_URL: http://web:3000
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        set -eu
+        while true; do
+          curl -fsS -X POST -H "x-cron-secret: $$CRON_SECRET" "$$WEB_URL/api/cron/billing" || true
+          curl -fsS -X POST -H "x-cron-secret: $$CRON_SECRET" "$$WEB_URL/api/cron/notifications" || true
+          sleep 3600
+        done
+
+volumes:
+  caddy_data:
+  caddy_config:
+  postgres_backups:

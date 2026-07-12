@@ -1,0 +1,19 @@
+# 10k connection target — hibernation + coordinator tuning for 4c/8GB
+services:
+  worker-line:
+    mem_limit: 4g
+    cpus: "2.0"
+    environment:
+      NODE_ENV: production
+      MAX_HOT_SESSIONS: "200"
+      MAX_BOOT_RESTORE_SESSIONS: "0"
+      SESSION_IDLE_EVICT_MS: "300000"
+      AUTO_REPLY_CYCLE_SEC: "30"
+      AUTO_REPLY_TICK_MS: "100"
+      HIBERNATE_AFTER_AUTO_REPLY_POLL: "true"
+      LOADTEST_TARGET_CONNECTIONS: "10000"
+      LOADTEST_HOT_TARGET: "200"
+      LOADTEST_COORDINATOR_USERS: "3000"
+      LOADTEST_COORDINATOR_SEC: "20"
+      LOADTEST_MACHINE_RAM_GB: "8"
+      LOADTEST_RESERVED_RAM_GB: "2.5"

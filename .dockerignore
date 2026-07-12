@@ -1,0 +1,13 @@
+**/node_modules
+**/.next
+**/dist
+**/build
+**/.turbo
+**/coverage
+.git
+.env
+.env.*
+!.env.example
+**/*.log
+services/worker-line/session
+**/.DS_Store

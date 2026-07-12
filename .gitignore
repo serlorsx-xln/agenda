@@ -1,0 +1,24 @@
+node_modules
+.pnpm-store
+dist
+build
+.next
+out
+coverage
+*.tsbuildinfo
+
+.env
+.env.local
+.env.*.local
+
+# worker-line session data (never commit LINE secrets)
+services/worker-line/session
+*.session.json
+*.storage.json
+*.meta.json
+
+.DS_Store
+*.log
+
+.cursor/
+*.pem

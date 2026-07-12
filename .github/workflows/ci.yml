@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      run_smoke:
+        description: Run live messaging smoke (requires secrets)
+        type: boolean
+        default: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: i18n parity
+        run: pnpm i18n:check
+
+      - name: Knip
+        env:
+          DATABASE_URL: postgres://knip:knip@127.0.0.1:5432/knip
+        run: pnpm knip
+
+      - name: Build web
+        run: pnpm --filter @line/web build
+
+      - name: Build Docker images
+        run: |
+          docker build -f packages/db/Dockerfile.migrate -t line-migrate:test .
+          docker build -f services/worker-line/Dockerfile -t line-worker:test .
+          docker build -f apps/web/Dockerfile -t line-web:test .
+          docker build -f services/scb-slip-checker/Dockerfile.captcha -t line-scb-captcha:test ./services/scb-slip-checker
+          docker build -f services/scb-slip-checker/Dockerfile.slip -t line-scb-slip:test ./services/scb-slip-checker
+
+  smoke:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_smoke }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Live smoke
+        env:
+          INTERNAL_API_KEY: ${{ secrets.INTERNAL_API_KEY }}
+          WORKER_LINE_URL: ${{ secrets.WORKER_LINE_URL }}
+          SMOKE_USER_ID: ${{ secrets.SMOKE_USER_ID }}
+          SMOKE_GROUP_MID: ${{ secrets.SMOKE_GROUP_MID }}
+          SMOKE_OPENCHAT_MID: ${{ secrets.SMOKE_OPENCHAT_MID }}
+        run: |
+          export GROUP_CHAT="${GROUP_CHAT:-$SMOKE_GROUP_MID}"
+          export SQUARE_CHAT="${SQUARE_CHAT:-$SMOKE_OPENCHAT_MID}"
+          sh scripts/integration-smoke-test.sh "$SMOKE_USER_ID"
