@@ -19,6 +19,7 @@ services/worker-line/session
 
 .DS_Store
 *.log
+loadtest-report.json
 
 .cursor/
 *.pem

@@ -1,10 +1,12 @@
 "use client";
 
+import { IconLoader } from "@/lib/icons";
+
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useTranslations } from "next-intl";
@@ -111,7 +113,7 @@ export function LoginForm() {
           )}
 
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+            {isSubmitting && <IconLoader className="h-4 w-4 animate-spin" />}
             {t("login.submit")}
           </Button>
         </form>

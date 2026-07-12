@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Activity, Link2, MessageSquare, MessageSquareReply, Send } from "lucide-react";
+import { Activity, MessageSquare } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { OnboardingChecklist } from "@/components/dashboard/onboarding-checklist";
@@ -21,6 +21,11 @@ import {
 } from "@/components/ui/card";
 import { getOnboardingProgress, getOverviewStats, getRecentRuns } from "@/lib/db-helpers";
 import { getCampaignsWithProgress } from "@/lib/queries";
+import {
+  IconAutoReply,
+  IconConnect,
+  IconSend,
+} from "@/lib/icons";
 import { getPlanUsage } from "@/lib/plan-limits";
 import { requireUser } from "@/lib/session";
 import { formatDate } from "@/lib/utils";
@@ -56,7 +61,7 @@ export default async function OverviewPage() {
         <Card className="border-primary/30 bg-muted/40">
           <CardContent className="flex flex-col items-start justify-between gap-3 p-5 sm:flex-row sm:items-center">
             <div className="flex items-center gap-3">
-              <Link2 className="h-5 w-5 text-muted-foreground" strokeWidth={1.75} />
+              <IconConnect className="h-5 w-5 text-muted-foreground" strokeWidth={1.75} />
               <p className="text-small">{t("connectPrompt")}</p>
             </div>
             <Button asChild size="sm">
@@ -90,7 +95,7 @@ export default async function OverviewPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <MetricCard
           label={t("connection")}
-          icon={Link2}
+          icon={IconConnect}
           value={
             <ConnectionBadge
               status={stats.connectionStatus}
@@ -100,7 +105,7 @@ export default async function OverviewPage() {
         />
         <MetricCard
           label={t("activeCampaigns")}
-          icon={Send}
+          icon={IconSend}
           value={stats.activeCampaigns}
         />
         <MetricCard
@@ -117,7 +122,7 @@ export default async function OverviewPage() {
             />
             <MetricCard
               label={t("autoReplyRules")}
-              icon={MessageSquareReply}
+              icon={IconAutoReply}
               value={stats.autoReplyRuleCount}
             />
           </>

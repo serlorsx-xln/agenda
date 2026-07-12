@@ -1,7 +1,9 @@
 "use client";
 
+import { IconLoader } from "@/lib/icons";
+
 import * as React from "react";
-import { Loader2 } from "lucide-react";
+
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -382,7 +384,7 @@ function AdminUserCard({
               onClick={() => void runAction("unban", () => unbanUser(user.id))}
             >
               {loading === "unban" && (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <IconLoader className="h-4 w-4 animate-spin" />
               )}
               {t("unban")}
             </Button>
@@ -394,7 +396,7 @@ function AdminUserCard({
               onClick={() => void runAction("ban", () => banUser(user.id))}
             >
               {loading === "ban" && (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <IconLoader className="h-4 w-4 animate-spin" />
               )}
               {t("ban")}
             </Button>
@@ -491,7 +493,7 @@ function AdminUserRow({
             onClick={() => void runAction("unban", () => unbanUser(user.id))}
           >
             {loading === "unban" && (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <IconLoader className="h-4 w-4 animate-spin" />
             )}
             {t("unban")}
           </Button>
@@ -502,7 +504,7 @@ function AdminUserRow({
             disabled={!!loading || user.role === "admin"}
             onClick={() => void runAction("ban", () => banUser(user.id))}
           >
-            {loading === "ban" && <Loader2 className="h-4 w-4 animate-spin" />}
+            {loading === "ban" && <IconLoader className="h-4 w-4 animate-spin" />}
             {t("ban")}
           </Button>
         )}
@@ -553,7 +555,7 @@ function AdminPaymentRow({
       <TableCell>
         {payment.status === "pending" ? (
           <Button size="sm" disabled={loading} onClick={() => void confirm()}>
-            {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+            {loading && <IconLoader className="h-4 w-4 animate-spin" />}
             {t("confirm")}
           </Button>
         ) : (

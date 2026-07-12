@@ -9,6 +9,7 @@ import {
   mediaAssets,
   campaignRuns,
   enforceLockedPlanLimits,
+  getEffectivePlanForUser,
   subscriptions,
 } from "@line/db";
 import {
@@ -24,6 +25,10 @@ import { workerFetch } from "@/lib/worker";
 
 const TRIAL_DAYS = 14;
 
+export async function getEffectivePlan(userId: string): Promise<Plan> {
+  return getEffectivePlanForUser(userId);
+}
+
 function resolveEffectivePlan(
   sub: Awaited<ReturnType<typeof getSubscription>>,
 ): Plan {
@@ -33,11 +38,6 @@ function resolveEffectivePlan(
     status: sub.status,
     trialEndsAt: sub.trialEndsAt,
   });
-}
-
-export async function getEffectivePlan(userId: string): Promise<Plan> {
-  const sub = await getSubscription(userId);
-  return resolveEffectivePlan(sub);
 }
 
 type PlanUsage = {

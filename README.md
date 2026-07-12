@@ -88,6 +88,18 @@ docker compose run --rm migrate pnpm seed
 Healthchecks: web `GET /api/health`, worker `GET /health`, postgres
 `pg_isready`. Production TLS: `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`.
 
+## Coolify
+
+`coolify.yaml` documents the Coolify contract. The app on Coolify must use:
+
+- **Build pack:** Docker Compose
+- **Compose file:** `/docker-compose.yml`
+- **Git:** this repo, branch `main`
+
+After pushing to `main`, trigger **Redeploy** in Coolify (or a deploy webhook).
+Do not delete `coolify.yaml` — MCP / re-import uses it together with
+`docker-compose.yml` (source of truth for services).
+
 ## Environment variables
 
 | Variable                 | Used by        | Description                                             |

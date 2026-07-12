@@ -1,7 +1,8 @@
 "use client";
 
+import { IconLoader } from "@/lib/icons";
+
 import * as React from "react";
-import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -74,7 +75,7 @@ export function ConfirmDialog({
             disabled={pending}
             onClick={() => void handleConfirm()}
           >
-            {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            {pending ? <IconLoader className="h-4 w-4 animate-spin" /> : null}
             {confirmLabel}
           </Button>
         </DialogFooter>

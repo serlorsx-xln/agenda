@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { CircleHelp } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Label } from "@/components/ui/label";
@@ -10,6 +9,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { IconHelp } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 export function FieldHint({
@@ -34,7 +34,7 @@ export function FieldHint({
           )}
           aria-label={tc("moreInfo")}
         >
-          <CircleHelp className="h-3.5 w-3.5" />
+          <IconHelp className="h-3.5 w-3.5" />
         </button>
       </TooltipTrigger>
       <TooltipContent>{content}</TooltipContent>

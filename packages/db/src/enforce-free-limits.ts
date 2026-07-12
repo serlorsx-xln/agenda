@@ -21,11 +21,6 @@ export async function enforceLockedPlanLimits(userId: string): Promise<void> {
     .where(eq(autoReplyRules.userId, userId));
 }
 
-/** @deprecated Use enforceLockedPlanLimits — kept for import compatibility during transition. */
-export async function enforceFreePlanLimits(userId: string): Promise<void> {
-  return enforceLockedPlanLimits(userId);
-}
-
 export async function countAutoReplyRules(userId: string): Promise<number> {
   const [row] = await db
     .select({ count: sql<number>`count(*)::int` })

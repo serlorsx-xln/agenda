@@ -1,8 +1,10 @@
 "use client";
 
+import { IconLoader } from "@/lib/icons";
+
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, XCircle } from "lucide-react";
+import { XCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 
@@ -91,7 +93,7 @@ export function RunLive({ runId }: { runId: string }) {
             {run && (
               <div className="flex flex-wrap items-center gap-3">
                 {isActive && (
-                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                  <IconLoader className="h-4 w-4 animate-spin text-muted-foreground" />
                 )}
                 <RunStatusBadge status={run.status} label={ts(run.status)} />
                 {isActive && (

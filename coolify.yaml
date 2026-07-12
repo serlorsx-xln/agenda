@@ -1,0 +1,18 @@
+# Coolify deployment contract for Agenda
+#
+# Coolify application settings (already set on little):
+#   Build pack: Docker Compose
+#   Compose file: /docker-compose.yml
+#   Git: https://github.com/synverge/agenda  branch main
+#
+# After you push to main, trigger Redeploy in Coolify (or webhook).
+# Coolify clones this repo and runs docker compose build/up from docker-compose.yml.
+# This file is the project manifest MCP / import uses; do not delete it.
+
+name: agenda
+runtime: docker
+compose:
+  file: docker-compose.yml
+
+# Services defined in docker-compose.yml (source of truth for build/run):
+#   postgres, migrate, scb-captcha, scb-slip, worker-line, web

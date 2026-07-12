@@ -77,7 +77,7 @@
 
 | # | Issue | Severity | Notes |
 |---|-------|----------|-------|
-| 1 | API key compare not timing-safe | Low (internal network) | Use `crypto.timingSafeEqual` | `server.ts:52` |
+| 1 | API key compare not timing-safe | Low (internal network) | **Fixed:** `crypto.timingSafeEqual` in worker + web | `server.ts`, `crypto-secrets.ts` |
 | 2 | `CRON_SECRET` dev fallback | Medium in dev | Ensure production always sets secret |
 | 3 | `SESSION_ENCRYPTION_KEY` optional in compose default | High if unset | `start.sh` now generates; verify prod |
 | 4 | Media `bytea` not encrypted at rest | Medium | Document; encrypt column or use object storage |

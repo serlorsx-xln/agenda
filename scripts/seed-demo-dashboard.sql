@@ -1,4 +1,5 @@
--- Rich demo data for dashboard / hero screenshots.
+-- Rich demo data for dashboard / hero screenshots (local/dev only).
+-- Chat MIDs below are placeholders for UI screenshots — not production data.
 -- Idempotent-ish: updates existing demo campaigns for the latest user.
 -- Usage:
 --   docker exec -i line-postgres-1 psql -U line -d line_promotion < scripts/seed-demo-dashboard.sql

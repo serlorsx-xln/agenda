@@ -1,9 +1,11 @@
 "use client";
 
+import { IconLoader } from "@/lib/icons";
+
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Unplug } from "lucide-react";
+import { Unplug } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
@@ -217,7 +219,7 @@ export function ConnectPanel({
                       disabled={resetE2ee.isPending || disconnect.isPending}
                     >
                       {resetE2ee.isPending && (
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <IconLoader className="h-4 w-4 animate-spin" />
                       )}
                       {t("actions.resetE2ee")}
                     </Button>
@@ -230,7 +232,7 @@ export function ConnectPanel({
                   disabled={disconnect.isPending || resetE2ee.isPending}
                 >
                   {disconnect.isPending ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <IconLoader className="h-4 w-4 animate-spin" />
                   ) : (
                     <Unplug className="h-4 w-4" />
                   )}
@@ -252,7 +254,7 @@ export function ConnectPanel({
                 </>
               ) : data?.pin ? null : (
                 <div className="flex items-center gap-2 text-small text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <IconLoader className="h-4 w-4 animate-spin" />
                   {t("qr.generating")}
                 </div>
               )}
@@ -301,7 +303,7 @@ export function ConnectPanel({
                     disabled={resetE2ee.isPending || connect.isPending}
                   >
                     {resetE2ee.isPending && (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <IconLoader className="h-4 w-4 animate-spin" />
                     )}
                     {t("actions.resetE2ee")}
                   </Button>
@@ -313,7 +315,7 @@ export function ConnectPanel({
                 disabled={connect.isPending}
               >
                 {connect.isPending && (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <IconLoader className="h-4 w-4 animate-spin" />
                 )}
                 {status === "error"
                   ? t("actions.reconnect")

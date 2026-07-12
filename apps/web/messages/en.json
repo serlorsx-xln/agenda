@@ -41,7 +41,7 @@
     "connect": "Connect LINE",
     "openchats": "Groups & OpenChats",
     "templates": "Message templates",
-    "autoReply": "Keyword replies",
+    "autoReply": "Auto-reply",
     "campaigns": "Send jobs",
     "runs": "Send results",
     "billing": "Billing",
@@ -394,7 +394,7 @@
     }
   },
   "autoReply": {
-    "title": "Reply when this word appears",
+    "title": "Auto-reply",
     "subtitle": "When someone types a keyword in a group or OpenChat, Agenda replies automatically.",
     "mode": {
       "simple": "Easy setup",

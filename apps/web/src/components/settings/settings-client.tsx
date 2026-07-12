@@ -1,8 +1,10 @@
 "use client";
 
+import { IconLoader } from "@/lib/icons";
+
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
@@ -98,7 +100,7 @@ function ProfileTab({
           </p>
         </div>
         <Button onClick={save} disabled={saving}>
-          {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+          {saving && <IconLoader className="h-4 w-4 animate-spin" />}
           {t("save")}
         </Button>
       </CardContent>

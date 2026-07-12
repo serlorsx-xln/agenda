@@ -1,7 +1,9 @@
 "use client";
 
+import { IconLoader } from "@/lib/icons";
+
 import * as React from "react";
-import { ImageIcon, Loader2, X } from "lucide-react";
+import { ImageIcon, X } from "lucide-react";
 
 import { UpgradeDialog } from "@/components/billing/upgrade-dialog";
 import type { UpgradeLimitType } from "@/lib/plan-usage-types";
@@ -157,7 +159,7 @@ export function ImageUploadPreview({
         >
           <label className="cursor-pointer">
             {uploading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <IconLoader className="h-4 w-4 animate-spin" />
             ) : (
               <ImageIcon className="h-4 w-4" />
             )}
@@ -219,7 +221,7 @@ export function ImageUploadPreview({
                 className="h-full w-full object-cover opacity-70"
               />
               <div className="absolute inset-0 flex items-center justify-center bg-background/40">
-                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                <IconLoader className="h-5 w-5 animate-spin text-muted-foreground" />
               </div>
             </div>
           ))}

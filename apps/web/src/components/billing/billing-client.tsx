@@ -1,8 +1,10 @@
 "use client";
 
+import { IconLoader } from "@/lib/icons";
+
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Check, Loader2, Upload } from "lucide-react";
+import { Check, Upload } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 
@@ -171,7 +173,7 @@ export function BillingPlans({
                   }}
                 >
                   {loadingPlan === plan.id && (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <IconLoader className="h-4 w-4 animate-spin" />
                   )}
                   {isTrialPlan
                     ? t("trialActive", { days: trialDaysLeft ?? 0 })
@@ -339,7 +341,7 @@ function PromptPayDialog({
               disabled={cancelling || uploading}
               onClick={() => void onCancel()}
             >
-              {cancelling && <Loader2 className="h-4 w-4 animate-spin" />}
+              {cancelling && <IconLoader className="h-4 w-4 animate-spin" />}
               {t("cancelPayment")}
             </Button>
           </div>
@@ -398,7 +400,7 @@ export function PendingPaymentActions({ paymentId }: { paymentId: string }) {
   return (
     <div className="flex flex-wrap gap-2">
       <label className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-border px-3 py-1.5 text-caption hover:bg-muted/40">
-        {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+        {busy ? <IconLoader className="h-3.5 w-3.5 animate-spin" /> : null}
         {t("uploadSlip")}
         <input
           type="file"
