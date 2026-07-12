@@ -84,7 +84,20 @@ export const auth = betterAuth({
       });
     },
   },
-  trustedOrigins: [getSiteUrl()],
+  // Accept both http + https of the configured site URL (Cloudflare Flexible
+  // serves https to browsers while origin env may still be http, and vice versa).
+  trustedOrigins: (() => {
+    const site = getSiteUrl().replace(/\/$/, "");
+    const origins = new Set<string>([site]);
+    try {
+      const u = new URL(site);
+      u.protocol = u.protocol === "https:" ? "http:" : "https:";
+      origins.add(u.origin);
+    } catch {
+      /* ignore invalid site URL at build time */
+    }
+    return [...origins];
+  })(),
   session: {
     expiresIn: 60 * 60 * 24 * 7,
     updateAge: 60 * 60 * 24,

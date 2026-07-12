@@ -7,9 +7,12 @@ FROM base AS build
 ENV NEXT_TELEMETRY_DISABLED=1
 # Placeholders only for `next build` page-data collection.
 # Real secrets are injected at container runtime by docker-compose.
+# Public URL can be overridden at image build via --build-arg (Coolify/compose).
+ARG BETTER_AUTH_URL=http://localhost:3000
+ARG NEXT_PUBLIC_APP_URL=http://localhost:3000
 ENV BETTER_AUTH_SECRET=build_time_placeholder_secret_min_32_chars_xx
-ENV BETTER_AUTH_URL=http://localhost:3000
-ENV NEXT_PUBLIC_APP_URL=http://localhost:3000
+ENV BETTER_AUTH_URL=$BETTER_AUTH_URL
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
 ENV DATABASE_URL=postgres://placeholder:placeholder@127.0.0.1:5432/placeholder
 ENV INTERNAL_API_KEY=build_time_placeholder_internal_api_key_xx
 ENV PROMPTPAY_ID=0812345678
