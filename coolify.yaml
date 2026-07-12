@@ -1,3 +1,0 @@
-# Coolify: use Docker Compose build pack with /docker-compose.yml
-version: "1"
-compose: docker-compose.yml
