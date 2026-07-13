@@ -69,8 +69,11 @@ export async function PlanUsageCard({
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-h3">{t("title")}</CardTitle>
         <div className="flex items-center gap-2">
-          {usage.isLocked && (
+          {usage.isLocked && usage.trialStarted && (
             <Badge variant="warning">{t("lockedBadge")}</Badge>
+          )}
+          {usage.isLocked && !usage.trialStarted && (
+            <Badge variant="secondary">{t("pendingBadge")}</Badge>
           )}
           {usage.isOnTrial && (
             <Badge variant="secondary">
@@ -82,15 +85,17 @@ export async function PlanUsageCard({
       </CardHeader>
       <CardContent className="space-y-4">
         {usage.isLocked && (
-          <p className="text-small text-muted-foreground">{t("lockedHint")}</p>
+          <p className="text-small text-muted-foreground">
+            {usage.trialStarted ? t("lockedHint") : t("pendingHint")}
+          </p>
         )}
         {!usage.connected && (
           <p className="text-small text-muted-foreground">
             {usage.isOnTrial
               ? t("connectHintTrial")
-              : usage.isLocked
+              : usage.isLocked && usage.trialStarted
                 ? t("connectHintLocked")
-                : t("connectHint")}
+                : t("connectHintTrial")}
           </p>
         )}
 
@@ -152,8 +157,18 @@ export async function PlanUsageCard({
 
         {showUpgrade && (
           <Button asChild size="sm" variant={usage.isLocked ? "default" : "outline"}>
-            <Link href="/dashboard/billing">
-              {usage.isLocked ? t("unlockCta") : t("upgradeCta")}
+            <Link
+              href={
+                usage.isLocked && !usage.trialStarted
+                  ? "/dashboard/connect"
+                  : "/dashboard/billing"
+              }
+            >
+              {usage.isLocked && !usage.trialStarted
+                ? t("startTrialCta")
+                : usage.isLocked
+                  ? t("unlockCta")
+                  : t("upgradeCta")}
             </Link>
           </Button>
         )}

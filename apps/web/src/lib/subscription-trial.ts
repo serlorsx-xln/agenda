@@ -55,6 +55,8 @@ type PlanUsage = {
   sentToday: number;
   isOnTrial: boolean;
   isLocked: boolean;
+  /** True once a Growth trial was started (even if already ended). */
+  trialStarted: boolean;
   trialDaysLeft: number | null;
   trialEndsAt: string | null;
   connected: boolean;
@@ -143,6 +145,7 @@ export async function getPlanUsage(userId: string): Promise<PlanUsage> {
     sentToday: sentRow?.total ?? 0,
     isOnTrial: onTrial,
     isLocked: isPlanLocked(plan),
+    trialStarted: Boolean(sub?.trialStartedAt || sub?.trialEndsAt),
     trialDaysLeft,
     trialEndsAt: sub?.trialEndsAt?.toISOString() ?? null,
     connected: conn?.status === "connected",

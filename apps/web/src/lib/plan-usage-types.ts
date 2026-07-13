@@ -24,6 +24,8 @@ export type PlanUsageSnapshot = {
   sentToday: number;
   isOnTrial: boolean;
   isLocked: boolean;
+  /** True once a Growth trial was started (even if already ended). */
+  trialStarted: boolean;
   trialDaysLeft: number | null;
   connected: boolean;
   features: PlanFeatures;

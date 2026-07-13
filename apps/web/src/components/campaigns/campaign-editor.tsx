@@ -669,6 +669,7 @@ export function CampaignEditor({
         open={upgradeOpen}
         onOpenChange={setUpgradeOpen}
         limitType={upgradeLimit}
+        trialStarted={planUsage.trialStarted}
       />
     </div>
   );

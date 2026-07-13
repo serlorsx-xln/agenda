@@ -201,6 +201,7 @@ export function AutoReplyClient({
   e2eeStatus = "ok",
   planFeatures,
   isLocked = false,
+  trialStarted = true,
 }: {
   rules: Rule[];
   runtime: {
@@ -216,6 +217,7 @@ export function AutoReplyClient({
   e2eeStatus?: "ok" | "degraded" | "invalid";
   planFeatures: PlanFeatures;
   isLocked?: boolean;
+  trialStarted?: boolean;
 }) {
   const t = useTranslations("autoReply");
   const tc = useTranslations("common");
@@ -989,6 +991,7 @@ export function AutoReplyClient({
         open={upgradeOpen}
         onOpenChange={setUpgradeOpen}
         limitType={upgradeLimit}
+        trialStarted={trialStarted}
       />
     </>
   );

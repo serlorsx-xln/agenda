@@ -19,28 +19,38 @@ export function UpgradeDialog({
   open,
   onOpenChange,
   limitType,
+  trialStarted = true,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   limitType: UpgradeLimitType;
+  /** When false and plan_locked, prompt to connect LINE instead of pay. */
+  trialStarted?: boolean;
 }) {
   const t = useTranslations("upgrade");
   const growth = PAID_PLANS.find((p) => p.id === "growth")!;
 
   if (limitType === "plan_locked") {
+    const pending = !trialStarted;
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{t("titleLocked")}</DialogTitle>
-            <DialogDescription>{t("descriptionLocked")}</DialogDescription>
+            <DialogTitle>
+              {pending ? t("titleTrialPending") : t("titleLocked")}
+            </DialogTitle>
+            <DialogDescription>
+              {pending ? t("descriptionTrialPending") : t("descriptionLocked")}
+            </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               {t("dismiss")}
             </Button>
             <Button asChild>
-              <Link href="/dashboard/billing">{t("cta")}</Link>
+              <Link href={pending ? "/dashboard/connect" : "/dashboard/billing"}>
+                {pending ? t("ctaConnect") : t("cta")}
+              </Link>
             </Button>
           </DialogFooter>
         </DialogContent>

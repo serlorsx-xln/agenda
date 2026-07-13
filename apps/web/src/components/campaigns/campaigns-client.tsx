@@ -381,6 +381,7 @@ export function CampaignsClient({
         open={upgradeOpen}
         onOpenChange={setUpgradeOpen}
         limitType={upgradeLimit}
+        trialStarted={planUsage.trialStarted}
       />
     </>
   );

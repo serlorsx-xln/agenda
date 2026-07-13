@@ -93,6 +93,7 @@ export default async function AutoReplyPage() {
         }
         planFeatures={planUsage.features}
         isLocked={planUsage.isLocked}
+        trialStarted={planUsage.trialStarted}
       />
     </div>
   );
