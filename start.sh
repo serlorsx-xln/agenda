@@ -35,6 +35,12 @@ else
   exit 1
 fi
 
+# Traefik/Coolify (and this compose file) expect an external network named coolify.
+if ! docker network inspect coolify >/dev/null 2>&1; then
+  log "Creating docker network 'coolify'..."
+  docker network create coolify >/dev/null
+fi
+
 gen_hex() {
   if command -v openssl >/dev/null 2>&1; then
     openssl rand -hex 32

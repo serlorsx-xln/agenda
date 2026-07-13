@@ -40,6 +40,8 @@ Point `SCB_SLIP_URL` / `SCB_API_KEY` / `SCB_PROJECT` at external slynxslip.
 ```bash
 cp .env.example .env
 # Fill secrets, then:
+# Compose expects an external network named `coolify` (Coolify creates it;
+# locally: `docker network create coolify` or use ./start.sh).
 docker compose up --build -d
 ```
 

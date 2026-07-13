@@ -75,6 +75,11 @@ services:
         BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
         NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
     restart: unless-stopped
+    # Stay on Coolify's proxy network so Traefik can reach web after every
+    # redeploy without manually reconnecting coolify-proxy.
+    networks:
+      - default
+      - coolify
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -119,3 +124,10 @@ services:
 volumes:
   postgres_data:
   worker_session:
+
+# Coolify proxy listens on this external network. Local compose: create once with
+# `docker network create coolify` (start.sh does this automatically).
+networks:
+  coolify:
+    name: coolify
+    external: true
