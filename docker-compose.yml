@@ -80,6 +80,9 @@ services:
     networks:
       - default
       - coolify
+    labels:
+      # Tell Traefik which network to use when the container has multiple nets.
+      - traefik.docker.network=coolify
     depends_on:
       migrate:
         condition: service_completed_successfully

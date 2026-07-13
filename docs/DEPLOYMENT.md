@@ -29,6 +29,12 @@ Deploy Agenda with Docker Compose (VPS + optional Caddy TLS).
 
 Optional: `SENTRY_DSN`.
 
+## Coolify / Traefik note
+
+`web` joins the external Docker network `coolify` so Traefik keeps reachability
+after redeploys. On the little host, `/usr/local/bin/agenda-proxy-heal.sh` also
+runs every minute as a safety net if the proxy drops the app network.
+
 ## Docker Compose only (home network / single VPS)
 
 All runtime services live on the compose network. Use service hostnames in
