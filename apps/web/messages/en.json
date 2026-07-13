@@ -140,7 +140,7 @@
         },
         "account": {
           "q": "How do I get started?",
-          "a": "Sign up with email, then open Connect LINE and scan the QR code (enter a PIN if LINE asks — same idea as LINE on desktop). Your trial starts after LINE is connected."
+          "a": "Sign up with email, open Connect LINE, show the QR on a computer or another screen, and scan it with the LINE camera (not a saved image). Enter a PIN if LINE asks. Your trial starts after LINE is connected."
         },
         "trial": {
           "q": "Is there a free trial?",
@@ -158,9 +158,9 @@
           "q": "Why so slow? Can I change the delays?",
           "a": "Agenda sends one group at a time — never a blast to every group at once. Minimum wait is 5 minutes before the next group and 30 minutes before the same group again. You can set longer waits, but not shorter. Each send schedule has its own daily send quota."
         },
-        "risk": {
-          "q": "Is there risk to my LINE account?",
-          "a": "Any automated sending carries some risk. Agenda reduces it with send windows, daily quotas, two-tier delays, and auto-stop on repeated failures — but it cannot guarantee your account will never be limited. You remain responsible for how you use your LINE account."
+        "scan": {
+          "q": "Gallery QR scan failed — what if I only have one phone?",
+          "a": "LINE requires a live camera scan, not a saved QR image. Open the connect page on a computer, tablet, or another phone so the QR stays on screen, then scan it with the LINE camera on your main phone (borrowing a screen briefly is fine). Screenshots from the gallery will not work."
         },
         "payment": {
           "q": "How do I pay?",
@@ -284,7 +284,7 @@
   },
   "connect": {
     "title": "Connect LINE",
-    "subtitle": "Link your personal LINE account with a QR code. Automation may violate LINE policies and risk account restriction.",
+    "subtitle": "Link your personal LINE account with a QR code — scan with the LINE camera only",
     "status": {
       "disconnected": "Not connected",
       "connecting": "Connecting",
@@ -300,7 +300,8 @@
     },
     "qr": {
       "title": "Scan to log in",
-      "instruction": "Open LINE on your phone, then scan this QR code to authorize.",
+      "instruction": "Open LINE on your phone → QR code → point the camera at this QR on a computer or another screen. Do not pick a saved QR image from your gallery (LINE will block it).",
+      "oneDevice": "Only one phone? Open this page on a computer, tablet, or another phone so the QR stays on screen, then scan it with the LINE camera on your main phone. Screenshots scanned from the gallery will not work.",
       "generating": "Generating QR code..."
     },
     "pin": {
@@ -332,7 +333,7 @@
       "qr": "Scan QR",
       "pin": "Enter PIN",
       "done": "Done",
-      "intro": "Tap the button below and follow the 3 steps on screen - takes about 1-2 minutes."
+      "intro": "Tap below and follow the on-screen steps — you need a screen showing the QR and a phone scanning with the camera (about 1-2 minutes)."
     }
   },
   "openchats": {
@@ -1033,7 +1034,7 @@
       "body": [
         "LINE Official Accounts are a separate product for brands that publish to followers through OA tools.",
         "Agenda connects the personal LINE account you already use to participate in OpenChats and groups, then sends messages on the schedule you set.",
-        "Agenda is not affiliated with LINE Corporation. Automated sending always carries some account risk; use daily limits and pauses responsibly."
+        "Agenda is not affiliated with LINE Corporation."
       ]
     },
     "payment": {

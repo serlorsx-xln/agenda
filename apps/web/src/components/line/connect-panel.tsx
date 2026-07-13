@@ -249,6 +249,9 @@ export function ConnectPanel({
                     <p className="mt-1 text-small text-muted-foreground">
                       {t("qr.instruction")}
                     </p>
+                    <p className="mt-2 rounded-md border border-border bg-muted/30 p-3 text-left text-caption text-muted-foreground">
+                      {t("qr.oneDevice")}
+                    </p>
                   </div>
                   <QrImage value={data.qrUrl} />
                 </>

@@ -40,7 +40,7 @@ const FAQ_KEYS = [
   "join",
   "autoReply",
   "pacing",
-  "risk",
+  "scan",
   "payment",
   "plans",
   "disconnect",
