@@ -338,9 +338,9 @@ export const campaigns = pgTable(
     maxSends: integer("max_sends").default(50).notNull(),
     // Human-like sending controls
     delayBetweenTargetsSec: integer("delay_between_targets_sec")
-      .default(45)
+      .default(300)
       .notNull(),
-    randomJitterSec: integer("random_jitter_sec").default(30).notNull(),
+    randomJitterSec: integer("random_jitter_sec").default(60).notNull(),
     autoStopOnErrors: integer("auto_stop_on_errors").default(3).notNull(),
     lastRunAt: timestamp("last_run_at", { withTimezone: true }),
     sendRotationIndex: integer("send_rotation_index").default(0).notNull(),

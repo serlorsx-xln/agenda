@@ -43,8 +43,8 @@ async function main() {
       {
         id: "safety.defaults",
         value: {
-          delayBetweenTargetsSec: 45,
-          randomJitterSec: 30,
+          delayBetweenTargetsSec: 300,
+          randomJitterSec: 60,
           autoStopOnErrors: 3,
           maxSendsPerDay: 50,
         },

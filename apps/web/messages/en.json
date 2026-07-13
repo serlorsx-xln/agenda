@@ -546,7 +546,7 @@
       },
       "window": "Messages are only sent between these hours (24h).",
       "pacing": "Sending pace",
-      "delayMin": "Minimum 45 seconds to reduce LINE throttling risk",
+      "delayMin": "Minimum 5 minutes (300 seconds) to reduce LINE throttling risk",
       "maxSendsCap": "Your plan allows up to {max} groups/day in this send schedule",
       "roundRobin": "Sends one group at a time in rotation",
       "autoSpread": "Sends are spread automatically across the window (no fixed start time needed).",

@@ -11,19 +11,20 @@ import {
 } from "./send-queue-utils.js";
 
 describe("computeDelaySec", () => {
-  it("respects minimum 45s floor", () => {
-    expect(computeDelaySec(10, 0, 10, 3600)).toBeGreaterThanOrEqual(45);
+  it("respects minimum 300s floor", () => {
+    expect(computeDelaySec(10, 0, 10, 3600)).toBeGreaterThanOrEqual(300);
   });
 
   it("uses even spread when window is tight", () => {
-    const delay = computeDelaySec(45, 0, 10, 900);
-    expect(delay).toBeGreaterThanOrEqual(90);
+    // 2 remaining sends in 15 min → 450s > 300s floor
+    const delay = computeDelaySec(300, 0, 2, 900);
+    expect(delay).toBeGreaterThanOrEqual(450);
   });
 
   it("adds jitter to user delay", () => {
-    const base = computeDelaySec(45, 0, 100, 3600);
+    const base = computeDelaySec(300, 0, 100, 3600);
     vi.spyOn(Math, "random").mockReturnValue(1);
-    expect(computeDelaySec(45, 30, 100, 3600)).toBeGreaterThan(base);
+    expect(computeDelaySec(300, 60, 100, 3600)).toBeGreaterThan(base);
     vi.restoreAllMocks();
   });
 });

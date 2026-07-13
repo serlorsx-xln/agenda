@@ -10,7 +10,8 @@
     "./sentry": "./src/sentry.ts",
     "./image-assets": "./src/image-assets.ts",
     "./auto-reply-match": "./src/auto-reply-match.ts",
-    "./worker-token": "./src/worker-token.ts"
+    "./worker-token": "./src/worker-token.ts",
+    "./pacing": "./src/pacing.ts"
   },
   "main": "./src/index.ts",
   "types": "./src/index.ts",

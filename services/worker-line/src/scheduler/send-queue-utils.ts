@@ -1,6 +1,7 @@
 import type { Campaign } from "@line/db";
+import { MIN_SEND_DELAY_SEC } from "@line/shared";
 
-export const MIN_SEND_DELAY_SEC = 45;
+export { MIN_SEND_DELAY_SEC };
 export const BACKOFF_LADDER_SEC = [120, 300, 900] as const;
 
 export function currentHourInTz(timezone: string): number {

@@ -65,7 +65,7 @@ const baseCampaign = {
   windowEndHour: 24,
   cronExpr: null,
   maxSends: 10,
-  delayBetweenTargetsSec: 45,
+  delayBetweenTargetsSec: 300,
   randomJitterSec: 0,
   autoStopOnErrors: 3,
   lastRunAt: null,

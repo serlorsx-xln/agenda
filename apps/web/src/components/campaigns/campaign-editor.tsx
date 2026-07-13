@@ -29,6 +29,11 @@ import { Select } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { resolveActionError } from "@/lib/action-errors";
 import {
+  DEFAULT_SEND_DELAY_SEC,
+  DEFAULT_SEND_JITTER_SEC,
+  MIN_SEND_DELAY_SEC,
+} from "@line/shared/pacing";
+import {
   campaignRunDisabledReason,
   canRunNextCampaign,
 } from "@/lib/campaign-run-ui";
@@ -135,9 +140,11 @@ export function CampaignEditor({
 
   const [maxSends, setMaxSends] = React.useState(initial?.maxSends ?? 50);
   const [delay, setDelay] = React.useState(
-    initial?.delayBetweenTargetsSec ?? 45,
+    Math.max(MIN_SEND_DELAY_SEC, initial?.delayBetweenTargetsSec ?? DEFAULT_SEND_DELAY_SEC),
   );
-  const [jitter, setJitter] = React.useState(initial?.randomJitterSec ?? 30);
+  const [jitter, setJitter] = React.useState(
+    initial?.randomJitterSec ?? DEFAULT_SEND_JITTER_SEC,
+  );
   const [autoStop, setAutoStop] = React.useState(
     initial?.autoStopOnErrors ?? 3,
   );
@@ -511,7 +518,8 @@ export function CampaignEditor({
                   <Input
                     id="c-delay"
                     type="number"
-                    min={45}
+                    min={MIN_SEND_DELAY_SEC}
+                    step={60}
                     value={delay}
                     onChange={(e) => setDelay(Number(e.target.value))}
                   />

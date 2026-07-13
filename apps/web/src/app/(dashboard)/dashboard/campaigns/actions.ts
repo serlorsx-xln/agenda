@@ -5,6 +5,7 @@ import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { db, campaignTargets, campaigns } from "@line/db";
+import { MIN_SEND_DELAY_SEC } from "@line/shared";
 
 import { recordAudit } from "@/lib/audit";
 import {
@@ -42,7 +43,11 @@ const campaignSchema = z.object({
     .optional()
     .refine((v) => isAllowedCronExpr(v), { message: "invalid_schedule" }),
   maxSends: z.number().int().min(1).max(1000),
-  delayBetweenTargetsSec: z.number().int().min(45).max(3600),
+  delayBetweenTargetsSec: z
+    .number()
+    .int()
+    .min(MIN_SEND_DELAY_SEC)
+    .max(3600),
   randomJitterSec: z.number().int().min(0).max(3600),
   autoStopOnErrors: z.number().int().min(1).max(50),
   enabled: z.boolean(),
