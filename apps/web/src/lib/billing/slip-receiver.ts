@@ -1,9 +1,9 @@
-/** PromptPay phone digits used for slip QR + receiver verification. */
-function promptPayPhoneDigits(): string {
+/** PromptPay id used for slip QR + receiver verification (digits only). */
+function promptPayIdDigits(): string {
   return (process.env.PROMPTPAY_ID ?? "").replace(/\D/g, "");
 }
 
-/** Optional override when receiver differs from PromptPay display id. */
+/** Optional override when slip receiver differs from PromptPay display id. */
 function slipReceiverOverrideDigits(): string {
   return (process.env.SLIP_RECEIVER_ACCOUNT ?? "").replace(/\D/g, "");
 }
@@ -16,14 +16,37 @@ function phoneIdentifierVariants(digits: string): string[] {
   return [...ids];
 }
 
+/** Biller `01` + tax id → also match bare 13-digit tax id on slips. */
+function billerIdentifierVariants(digits: string): string[] {
+  if (!digits) return [];
+  const ids = new Set<string>([digits]);
+  if (digits.length === 15 && digits.startsWith("01")) {
+    ids.add(digits.slice(2));
+  }
+  if (digits.length === 13) {
+    ids.add(`01${digits}`);
+  }
+  return [...ids];
+}
+
+function expandReceiverDigits(raw: string): string[] {
+  const digits = raw.replace(/\D/g, "");
+  if (!digits) return [];
+  if (digits.length >= 13) return billerIdentifierVariants(digits);
+  return phoneIdentifierVariants(digits);
+}
+
 /** Identifiers to match on slip receiver. */
 export function shopReceiverIdentifiers(): string[] {
   const ids = new Set<string>();
-  for (const d of phoneIdentifierVariants(promptPayPhoneDigits())) ids.add(d);
-  const override = slipReceiverOverrideDigits();
-  if (override) {
-    for (const d of phoneIdentifierVariants(override)) ids.add(d);
+  for (const d of expandReceiverDigits(promptPayIdDigits())) ids.add(d);
+
+  // Comma / space separated overrides (biller, tax id, account tails, etc.)
+  const overrideRaw = process.env.SLIP_RECEIVER_ACCOUNT ?? "";
+  for (const part of overrideRaw.split(/[,;\s]+/)) {
+    for (const d of expandReceiverDigits(part)) ids.add(d);
   }
+
   return [...ids];
 }
 
@@ -96,12 +119,18 @@ export function receiverMatchesShop(acctRaw: string): boolean {
   return false;
 }
 
-/** PromptPay number shown on slip checkout panel. */
+/** PromptPay / shop label shown on slip checkout panel. */
 export function slipReceiverDisplayLabel(): string {
-  const d = promptPayPhoneDigits();
+  const merchant = process.env.PROMPTPAY_MERCHANT_NAME?.trim();
+  if (merchant) return merchant;
+
+  const d = promptPayIdDigits();
   if (!d) return "";
   if (d.length === 10 && d.startsWith("0")) {
     return `${d.slice(0, 3)}-${d.slice(3, 6)}-${d.slice(6)}`;
+  }
+  if (d.length === 15 && d.startsWith("01")) {
+    return `Biller ${d}`;
   }
   return process.env.PROMPTPAY_ID?.trim() ?? d;
 }

@@ -10,6 +10,11 @@ import {
   paymentAmountBaht,
   tryClaimSlipTran,
 } from "@/lib/billing/slip-match";
+import {
+  buildBillPaymentPayload,
+  isBillPaymentPromptPayId,
+  toBillerId,
+} from "@/lib/billing/thai-qr";
 import type { Payment } from "@line/db";
 
 const PLACEHOLDER_PROMPTPAY_ID = process.env.PROMPTPAY_ID ?? "0000000000";
@@ -24,11 +29,32 @@ export type ProviderVerification = {
   params?: Record<string, string | number>;
 };
 
-export function buildPromptPayPayload(amountBaht: number): string {
+/**
+ * Build checkout QR for the configured PromptPay target.
+ * Phone / e-wallet → credit-transfer; 13–15 digit biller or PROMPTPAY_TYPE=bill
+ * → Mae Manee bill payment QR with locked amount.
+ */
+export function buildPromptPayPayload(
+  amountBaht: number,
+  paymentRef?: string,
+): string {
+  const id = PLACEHOLDER_PROMPTPAY_ID.trim();
   try {
-    return generatePayload(PLACEHOLDER_PROMPTPAY_ID, { amount: amountBaht });
+    if (isBillPaymentPromptPayId(id)) {
+      const merchant =
+        process.env.PROMPTPAY_MERCHANT_NAME?.trim() ||
+        process.env.PROMPTPAY_REF2?.trim() ||
+        "SLYNX";
+      return buildBillPaymentPayload({
+        billerId: toBillerId(id),
+        amountBaht,
+        ref1: paymentRef,
+        ref2: merchant,
+      });
+    }
+    return generatePayload(id, { amount: amountBaht });
   } catch {
-    return `PLACEHOLDER|${PLACEHOLDER_PROMPTPAY_ID}|${amountBaht}`;
+    return `PLACEHOLDER|${id}|${amountBaht}`;
   }
 }
 

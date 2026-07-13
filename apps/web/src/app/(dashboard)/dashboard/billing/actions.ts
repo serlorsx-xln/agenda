@@ -59,7 +59,7 @@ export async function createPromptPayIntent(
   const reference = newPaymentReference();
   const amountBaht = plan.monthlyAmount;
   const amountSatang = thbToSatang(amountBaht);
-  const qrPayload = buildPromptPayPayload(amountBaht);
+  const qrPayload = buildPromptPayPayload(amountBaht, reference);
   const expiresAt = new Date(Date.now() + paymentTtlMinutes() * 60_000);
 
   const [row] = await db
