@@ -2,7 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 
 import { loginWithAuthToken } from "@evex/linejs";
-import { and, eq, ne, sql } from "drizzle-orm";
+import { and, eq, ne, notInArray, sql } from "drizzle-orm";
 
 import { db, lineChats, lineConnection } from "@line/db";
 
@@ -108,6 +108,27 @@ type LineClient = {
           };
         }>;
         syncToken?: string;
+      }>;
+      /** Official paginated OpenChat room list (prefer over fetchMyEvents). */
+      getJoinedSquareChats?: (input: {
+        request: { limit?: number; continuationToken?: string };
+      }) => Promise<{
+        squareChats?: Array<{
+          squareChatMid?: string;
+          name?: string;
+        }>;
+        continuationToken?: string;
+      }>;
+      getSquareChatStatus?: (input: {
+        request: { squareChatMid: string };
+      }) => Promise<{
+        chatStatus?: {
+          otherStatus?: { memberCount?: number };
+        };
+        /** Some linejs builds nest status under squareChatStatus. */
+        squareChatStatus?: {
+          otherStatus?: { memberCount?: number };
+        };
       }>;
     };
     talk?: {
@@ -402,17 +423,125 @@ function parseChat(
   const anyC = c as {
     mid?: string | (() => string);
     name?: string | (() => string);
+    squareChatMid?: string;
+    chatMid?: string;
     raw?: { squareChatMid?: string; chatMid?: string; name?: string };
   };
   const mid =
     typeof anyC.mid === "function"
       ? anyC.mid()
-      : (anyC.mid ?? anyC.raw?.squareChatMid ?? anyC.raw?.chatMid);
+      : (anyC.mid ??
+        anyC.squareChatMid ??
+        anyC.chatMid ??
+        anyC.raw?.squareChatMid ??
+        anyC.raw?.chatMid);
   const name =
     typeof anyC.name === "function"
       ? anyC.name()
       : (anyC.name ?? anyC.raw?.name ?? fallbackName);
   return mid ? { chatMid: mid, name: name ?? fallbackName } : null;
+}
+
+const SYNC_LINE_TIMEOUT_MS = 25_000;
+const SYNC_STATUS_CONCURRENCY = 6;
+const SYNC_GROUP_CHUNK = 50;
+const SYNC_DB_CHUNK = 40;
+
+function withTimeout<T>(
+  promise: Promise<T>,
+  ms: number,
+  label: string,
+): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(
+      () => reject(new Error(`${label} timed out after ${ms}ms`)),
+      ms,
+    );
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (err) => {
+        clearTimeout(timer);
+        reject(err);
+      },
+    );
+  });
+}
+
+async function mapPool<T, R>(
+  items: T[],
+  concurrency: number,
+  fn: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  if (items.length === 0) return [];
+  const results = new Array<R>(items.length);
+  let next = 0;
+  const workers = Array.from(
+    { length: Math.min(concurrency, items.length) },
+    async () => {
+      while (true) {
+        const i = next++;
+        if (i >= items.length) return;
+        results[i] = await fn(items[i]!, i);
+      }
+    },
+  );
+  await Promise.all(workers);
+  return results;
+}
+
+/**
+ * Prefer the real Square API (`getJoinedSquareChats`) over linejs's
+ * `fetchJoinedSquareChats`, which only scrapes recent `fetchMyEvents` payloads
+ * and routinely misses older OpenChats.
+ */
+async function discoverJoinedSquareChats(
+  client: LineClient,
+): Promise<unknown[]> {
+  const square = client.base?.square;
+  if (typeof square?.getJoinedSquareChats === "function") {
+    const chats: unknown[] = [];
+    let continuationToken: string | undefined;
+    let pages = 0;
+    do {
+      const res = await withTimeout(
+        square.getJoinedSquareChats({
+          request: { limit: 100, continuationToken },
+        }),
+        SYNC_LINE_TIMEOUT_MS,
+        "getJoinedSquareChats",
+      );
+      for (const chat of res.squareChats ?? []) {
+        if (chat) chats.push(chat);
+      }
+      continuationToken = res.continuationToken || undefined;
+      pages += 1;
+      if (pages > 50) break;
+    } while (continuationToken);
+    return chats;
+  }
+
+  return (
+    (await withTimeout(
+      Promise.resolve(client.fetchJoinedSquareChats?.() ?? []),
+      SYNC_LINE_TIMEOUT_MS,
+      "fetchJoinedSquareChats",
+    )) ?? []
+  );
+}
+
+async function discoverJoinedGroupChats(
+  client: LineClient,
+): Promise<unknown[]> {
+  return (
+    (await withTimeout(
+      Promise.resolve(client.fetchJoinedChats?.() ?? []),
+      SYNC_LINE_TIMEOUT_MS,
+      "fetchJoinedChats",
+    )) ?? []
+  );
 }
 
 /** LINE mids: OpenChat rooms start with "m", talk groups with "c". */
@@ -489,16 +618,44 @@ async function persistProfile(
   return { mid: nextMeta.mid, name: nextMeta.displayName };
 }
 
-async function resolveSquareMemberCount(raw: unknown): Promise<number | null> {
+/**
+ * Lightweight OpenChat member count via getSquareChatStatus (one RPC).
+ * Avoid getMembers() during sync — it pages the entire roster and rate-limits.
+ */
+async function resolveSquareMemberCount(
+  client: LineClient,
+  chatMid: string,
+): Promise<number | null> {
   try {
-    const sq = raw as { getMembers?: () => Promise<unknown[]> };
-    if (typeof sq.getMembers === "function") {
-      return (await sq.getMembers()).length;
-    }
+    const getStatus = client.base?.square?.getSquareChatStatus;
+    if (typeof getStatus !== "function") return null;
+    const res = await withTimeout(
+      getStatus({ request: { squareChatMid: chatMid } }),
+      8_000,
+      `getSquareChatStatus:${chatMid}`,
+    );
+    const count =
+      res.chatStatus?.otherStatus?.memberCount ??
+      res.squareChatStatus?.otherStatus?.memberCount;
+    return typeof count === "number" && count >= 0 ? count : null;
   } catch (err) {
-    console.warn("[line] square member count failed:", err);
+    console.warn(`[line] square member count failed for ${chatMid}:`, err);
   }
   return null;
+}
+
+async function resolveSquareMemberCounts(
+  client: LineClient,
+  chatMids: string[],
+): Promise<Map<string, number>> {
+  const counts = new Map<string, number>();
+  if (chatMids.length === 0) return counts;
+  await mapPool(chatMids, SYNC_STATUS_CONCURRENCY, async (chatMid) => {
+    const count = await resolveSquareMemberCount(client, chatMid);
+    if (count != null) counts.set(chatMid, count);
+    return count;
+  });
+  return counts;
 }
 
 async function resolveGroupMemberCounts(
@@ -507,24 +664,31 @@ async function resolveGroupMemberCounts(
 ): Promise<Map<string, number>> {
   const counts = new Map<string, number>();
   if (chatMids.length === 0) return counts;
-  try {
-    const res = await client.base?.talk?.getChats?.({
-      chatMids,
-      withMembers: true,
-    });
-    for (const chat of res?.chats ?? []) {
-      if (!chat.chatMid) continue;
-      const fromExtra = chat.extra?.groupExtra?.memberMids;
-      const fromTop = chat.memberMids;
-      const memberMids = fromExtra ?? fromTop;
-      if (memberMids == null) continue;
-      const count = Array.isArray(memberMids)
-        ? memberMids.length
-        : Object.keys(memberMids).length;
-      if (count > 0) counts.set(chat.chatMid, count);
+  const getChats = client.base?.talk?.getChats;
+  if (typeof getChats !== "function") return counts;
+
+  for (let i = 0; i < chatMids.length; i += SYNC_GROUP_CHUNK) {
+    const chunk = chatMids.slice(i, i + SYNC_GROUP_CHUNK);
+    try {
+      const res = await withTimeout(
+        getChats({ chatMids: chunk, withMembers: true }),
+        SYNC_LINE_TIMEOUT_MS,
+        "getChats:members",
+      );
+      for (const chat of res?.chats ?? []) {
+        if (!chat.chatMid) continue;
+        const fromExtra = chat.extra?.groupExtra?.memberMids;
+        const fromTop = chat.memberMids;
+        const memberMids = fromExtra ?? fromTop;
+        if (memberMids == null) continue;
+        const count = Array.isArray(memberMids)
+          ? memberMids.length
+          : Object.keys(memberMids).length;
+        if (count > 0) counts.set(chat.chatMid, count);
+      }
+    } catch (err) {
+      console.warn("[line] group member count batch failed:", err);
     }
-  } catch (err) {
-    console.warn("[line] group member count batch failed:", err);
   }
   return counts;
 }
@@ -1277,95 +1441,131 @@ export const lineManager = {
       chatMid: string;
       name: string;
       kind: ChatKind;
-      raw: unknown;
     }[] = [];
 
-    // OpenChats (Square).
-    try {
-      const squares = (await client.fetchJoinedSquareChats?.()) ?? [];
-      for (const c of squares) {
+    // Discover OpenChats + groups in parallel (independent LINE APIs).
+    const [squaresSettled, groupsSettled] = await Promise.allSettled([
+      discoverJoinedSquareChats(client),
+      discoverJoinedGroupChats(client),
+    ]);
+
+    if (squaresSettled.status === "fulfilled") {
+      for (const c of squaresSettled.value) {
         const parsed = parseChat(c, "OpenChat");
-        if (parsed) discovered.push({ ...parsed, kind: "square", raw: c });
+        if (parsed) discovered.push({ ...parsed, kind: "square" });
       }
-    } catch (err) {
-      console.warn(`[line] square discovery failed for ${userId}:`, err);
+    } else {
+      console.warn(
+        `[line] square discovery failed for ${userId}:`,
+        squaresSettled.reason,
+      );
     }
 
-    // Groups (Talk chats).
-    try {
-      const groups = (await client.fetchJoinedChats?.()) ?? [];
-      for (const c of groups) {
+    if (groupsSettled.status === "fulfilled") {
+      for (const c of groupsSettled.value) {
         const parsed = parseChat(c, "Group");
-        if (parsed) discovered.push({ ...parsed, kind: "group", raw: c });
+        if (parsed) discovered.push({ ...parsed, kind: "group" });
       }
-    } catch (err) {
-      console.warn(`[line] group discovery failed for ${userId}:`, err);
+    } else {
+      console.warn(
+        `[line] group discovery failed for ${userId}:`,
+        groupsSettled.reason,
+      );
     }
 
-    const groupMids = discovered
+    // De-dupe by mid (keep first — square vs group mid prefixes don't collide).
+    const byMid = new Map<string, (typeof discovered)[number]>();
+    for (const chat of discovered) {
+      if (!byMid.has(chat.chatMid)) byMid.set(chat.chatMid, chat);
+    }
+    const unique = [...byMid.values()];
+
+    const squareMids = unique
+      .filter((d) => d.kind === "square")
+      .map((d) => d.chatMid);
+    const groupMids = unique
       .filter((d) => d.kind === "group")
       .map((d) => d.chatMid);
-    const groupMemberCounts = await resolveGroupMemberCounts(
-      client,
-      groupMids,
-    );
+
+    const [squareMemberCounts, groupMemberCounts] = await Promise.all([
+      resolveSquareMemberCounts(client, squareMids),
+      resolveGroupMemberCounts(client, groupMids),
+    ]);
 
     const now = new Date();
-    const seen = new Set(discovered.map((d) => d.chatMid));
+    const seen = new Set(unique.map((d) => d.chatMid));
 
-    for (const chat of discovered) {
-      const memberCount =
-        chat.kind === "square"
-          ? await resolveSquareMemberCount(chat.raw)
-          : (groupMemberCounts.get(chat.chatMid) ?? null);
+    for (let i = 0; i < unique.length; i += SYNC_DB_CHUNK) {
+      const chunk = unique.slice(i, i + SYNC_DB_CHUNK);
+      await Promise.all(
+        chunk.map(async (chat) => {
+          const memberCount =
+            chat.kind === "square"
+              ? (squareMemberCounts.get(chat.chatMid) ?? null)
+              : (groupMemberCounts.get(chat.chatMid) ?? null);
 
-      await db
-        .insert(lineChats)
-        .values({
-          userId,
-          chatMid: chat.chatMid,
-          name: chat.name,
-          kind: chat.kind,
-          memberCount,
-          present: true,
-          firstSeenAt: now,
-          lastSeenAt: now,
-          missingSince: null,
-        })
-        .onConflictDoUpdate({
-          target: [lineChats.userId, lineChats.chatMid],
-          set: {
+          const setFields: {
+            name: string;
+            kind: ChatKind;
+            present: boolean;
+            lastSeenAt: Date;
+            missingSince: null;
+            memberCount?: number;
+          } = {
             name: chat.name,
             kind: chat.kind,
-            memberCount,
             present: true,
             lastSeenAt: now,
             missingSince: null,
-          },
-        });
+          };
+          if (memberCount != null) setFields.memberCount = memberCount;
+
+          await db
+            .insert(lineChats)
+            .values({
+              userId,
+              chatMid: chat.chatMid,
+              name: chat.name,
+              kind: chat.kind,
+              memberCount,
+              present: true,
+              firstSeenAt: now,
+              lastSeenAt: now,
+              missingSince: null,
+            })
+            .onConflictDoUpdate({
+              target: [lineChats.userId, lineChats.chatMid],
+              set: setFields,
+            });
+        }),
+      );
     }
 
-    // Mark chats no longer present as missing.
-    const existing = await db
-      .select({ chatMid: lineChats.chatMid, present: lineChats.present })
-      .from(lineChats)
-      .where(eq(lineChats.userId, userId));
-
-    for (const row of existing) {
-      if (!seen.has(row.chatMid) && row.present) {
-        await db
-          .update(lineChats)
-          .set({ present: false, missingSince: now })
-          .where(
-            and(
-              eq(lineChats.userId, userId),
-              eq(lineChats.chatMid, row.chatMid),
-            ),
-          );
+    // Mark chats no longer present as missing — only for kinds we successfully
+    // discovered, so a transient group/square failure never wipes the other side.
+    const squareOk = squaresSettled.status === "fulfilled";
+    const groupOk = groupsSettled.status === "fulfilled";
+    if (squareOk || groupOk) {
+      const markWhere = [
+        eq(lineChats.userId, userId),
+        eq(lineChats.present, true),
+      ];
+      if (!(squareOk && groupOk)) {
+        markWhere.push(eq(lineChats.kind, squareOk ? "square" : "group"));
       }
+      if (seen.size > 0) {
+        markWhere.push(notInArray(lineChats.chatMid, [...seen]));
+      }
+      await db
+        .update(lineChats)
+        .set({ present: false, missingSince: now })
+        .where(and(...markWhere));
     }
 
-    await updateConnectionRow(userId, { lastSyncedAt: now, status: "connected" });
+    await updateConnectionRow(userId, {
+      lastSyncedAt: now,
+      status: "connected",
+    });
 
     const { pruneAutoReplyRulesForAbsentChats, syncAutoReplyListener } =
       await import("./auto-reply.js");
@@ -1374,7 +1574,14 @@ export const lineManager = {
       await syncAutoReplyListener(userId);
     }
 
-    return { count: discovered.length };
+    log("info", "line.sync.done", {
+      userId,
+      count: unique.length,
+      squares: squareMids.length,
+      groups: groupMids.length,
+    });
+
+    return { count: unique.length };
   },
 
   async sendToChat(

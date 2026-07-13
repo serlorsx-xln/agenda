@@ -22,6 +22,8 @@ export class WorkerError extends Error {
  * Server-only client for the worker-line internal API. Authenticated with the
  * shared INTERNAL_API_KEY plus a short-lived user-scoped token.
  */
+const DEFAULT_WORKER_TIMEOUT_MS = 90_000;
+
 export async function workerFetch<T = unknown>(
   path: string,
   init?: RequestInit,
@@ -43,11 +45,31 @@ export async function workerFetch<T = unknown>(
     );
   }
 
-  const res = await fetch(`${WORKER_URL}${path}`, {
-    ...init,
-    headers,
-    cache: "no-store",
-  });
+  const timeoutMs =
+    Number(process.env.WORKER_FETCH_TIMEOUT_MS) || DEFAULT_WORKER_TIMEOUT_MS;
+  const externalSignal = init?.signal;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const onExternalAbort = () => controller.abort();
+  externalSignal?.addEventListener("abort", onExternalAbort, { once: true });
+
+  let res: Response;
+  try {
+    res = await fetch(`${WORKER_URL}${path}`, {
+      ...init,
+      headers,
+      cache: "no-store",
+      signal: controller.signal,
+    });
+  } catch (err) {
+    if (controller.signal.aborted && !externalSignal?.aborted) {
+      throw new WorkerError(`Worker request timed out after ${timeoutMs}ms`, 504);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+    externalSignal?.removeEventListener("abort", onExternalAbort);
+  }
 
   if (!res.ok) {
     let message = `Worker request failed (${res.status})`;

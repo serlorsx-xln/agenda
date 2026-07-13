@@ -70,14 +70,20 @@ export function OpenChatsClient({
 
   async function handleSync() {
     setSyncing(true);
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), 90_000);
     try {
-      const res = await fetch("/api/line/sync", { method: "POST" });
+      const res = await fetch("/api/line/sync", {
+        method: "POST",
+        signal: controller.signal,
+      });
       if (!res.ok) throw new Error("sync_failed");
       toast.success(tt("synced"));
       router.refresh();
     } catch {
       toast.error(tt("error"));
     } finally {
+      window.clearTimeout(timer);
       setSyncing(false);
     }
   }
