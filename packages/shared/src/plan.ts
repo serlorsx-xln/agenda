@@ -36,7 +36,7 @@ const STARTER_FEATURES: PlanFeatures = {
   autoReplyPriority: false,
   autoReplyCooldownMaxSec: 60,
   schedulingCron: false,
-  maxSendsPerDayCap: 50,
+  maxSendsPerDayCap: 100,
   maxTemplates: 5,
   runHistoryDays: 14,
 };
@@ -62,7 +62,7 @@ const PRO_FEATURES: PlanFeatures = {
   autoReplyPriority: true,
   autoReplyCooldownMaxSec: 3600,
   schedulingCron: true,
-  maxSendsPerDayCap: 500,
+  maxSendsPerDayCap: 250,
   maxTemplates: null,
   runHistoryDays: null,
 };

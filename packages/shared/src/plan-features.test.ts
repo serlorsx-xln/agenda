@@ -23,8 +23,8 @@ describe("hasPlanFeature", () => {
 describe("capMaxSends", () => {
   it("caps sends to plan daily limit", () => {
     const basic = getPlan("starter")!;
-    expect(capMaxSends(basic, 100)).toBe(50);
-    expect(capMaxSends(getPlan("pro")!, 1000)).toBe(500);
+    expect(capMaxSends(basic, 200)).toBe(100);
+    expect(capMaxSends(getPlan("pro")!, 1000)).toBe(250);
     expect(capMaxSends(LOCKED_PLAN, 10)).toBe(0);
   });
 });

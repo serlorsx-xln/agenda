@@ -106,7 +106,7 @@
     },
     "pricing": {
       "title": "Straightforward pricing",
-      "subtitle": "Limits cover send schedules, groups, and daily send count — inter-group delay is the same on every plan",
+      "subtitle": "Limits cover send schedules, groups, and daily send count — pacing floors are the same on every plan",
       "perMonth": "/ month",
       "cta": "Choose a plan",
       "showAllFeatures": "See all features",
@@ -116,7 +116,7 @@
         "targets": "{count} groups per send schedule",
         "autoReplyRules": "{count} auto-replies",
         "mediaAssets": "{count} stored images",
-        "pacing": "Inter-group delay on every plan",
+        "pacing": "5 min between groups · 30 min before same group again",
         "templates": "{count} saved promo message sets (reuse anytime)",
         "templatesUnlimited": "Unlimited saved promo message sets",
         "schedulingCron": "Scheduled sends (daily / weekdays)",
@@ -124,7 +124,7 @@
         "autoReplyFilters": "Exclude keywords + emoji filter",
         "autoReplyExactMatch": "Exact phrase matching",
         "autoReplyPriority": "Reply order when multiple match + advanced cooldown",
-        "maxSendsPerDay": "Up to {count} sends/day per schedule (across all groups in it)",
+        "maxSendsPerDay": "{count} sends/day · about {monthly} sends/month per schedule",
         "runHistory": "{days}-day send history",
         "runHistoryUnlimited": "Unlimited send history",
         "unavailable": "-"
@@ -528,7 +528,8 @@
       "scheduleHour": "Send at (hour)",
       "scheduleMinute": "Send at (minute)",
       "maxSends": "Max sends per day (total across groups)",
-      "delay": "Delay between targets (sec)",
+      "delay": "Wait before next group (minutes)",
+      "perChatCooldown": "Wait before same group again (minutes)",
       "jitter": "Random extra delay (sec)",
       "autoStop": "Stop after consecutive failures",
       "enabled": "Auto-send"
@@ -546,7 +547,9 @@
       },
       "window": "Messages are only sent between these hours (24h).",
       "pacing": "Sending pace",
-      "delayMin": "Minimum 5 minutes (300 seconds) to reduce LINE throttling risk",
+      "delayMin": "Minimum 5 minutes between any campaign sends",
+      "perChatMin": "Minimum 30 minutes before the same group gets another send",
+      "roundEstimate": "About {minutes} minutes for one full round (each group once)",
       "maxSendsCap": "Your plan allows up to {max} sends/day in this schedule (across all groups)",
       "roundRobin": "Sends one group at a time in rotation",
       "autoSpread": "Sends are spread automatically across the window (no fixed start time needed).",
@@ -606,6 +609,8 @@
       "schedule": "Continuous = queue in send window · Daily/Mon-Fri = start queue at set time",
       "window": "Sends only during these hours",
       "maxSends": "Max sends per day in this send schedule",
+      "delay": "Rest before sending the next group",
+      "perChatCooldown": "Rest before the same group gets another send",
       "targets": "Groups rotated one at a time",
       "enabled": "On = automatic sends on schedule · Off = no automatic sends, but Send next group still works for testing",
       "runNext": "Sends only the next group, not all at once - use to test or send sooner"
@@ -678,12 +683,12 @@
       "targets": "{count} groups per send schedule",
       "autoReplyRules": "{count} auto-replies",
       "mediaAssets": "{count} stored images",
-      "pacing": "Delay between groups on every plan",
+      "pacing": "5 min between groups · 30 min before same group again",
       "templates": "{count} saved promo message sets (reuse anytime)",
       "templatesUnlimited": "Unlimited saved promo message sets",
       "schedulingCron": "Scheduled sends (daily / weekdays)",
       "autoReplyImages": "Auto-reply with images",
-      "maxSendsPerDay": "Up to {count} sends/day per schedule (across all groups in it)"
+      "maxSendsPerDay": "{count} sends/day · about {monthly} sends/month per schedule"
     },
     "promptpay": {
       "title": "PromptPay payment",
@@ -844,7 +849,7 @@
     "statsSection": "Stats",
     "perJobSection": "Per send schedule",
     "sentToday": "Sent today: {count} groups",
-    "maxSendsPerJob": "Up to {count} sends/day per schedule (across all groups)",
+    "maxSendsPerJob": "Up to {count} sends/day · about {monthly}/month per schedule",
     "maxSendsPerJobHint": "Each send schedule has its own quota — not one account-wide daily cap"
   },
   "paywall": {

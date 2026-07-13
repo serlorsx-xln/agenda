@@ -30,6 +30,7 @@ export async function PricingPlanCard({ plan }: { plan: PaidPlan }) {
     t("features.autoReplyRules", { count: plan.maxAutoReplyRules }),
     t("features.maxSendsPerDay", {
       count: plan.features.maxSendsPerDayCap,
+      monthly: plan.features.maxSendsPerDayCap * 30,
     }),
     plan.features.maxTemplates !== null
       ? t("features.templates", { count: plan.features.maxTemplates })

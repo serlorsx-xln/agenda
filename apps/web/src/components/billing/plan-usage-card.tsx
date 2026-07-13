@@ -151,6 +151,7 @@ export async function PlanUsageCard({
           <p className="text-caption text-muted-foreground">
             {t("maxSendsPerJob", {
               count: usage.features.maxSendsPerDayCap,
+              monthly: usage.features.maxSendsPerDayCap * 30,
             })}
           </p>
         </div>

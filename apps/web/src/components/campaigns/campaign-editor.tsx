@@ -29,9 +29,11 @@ import { Select } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { resolveActionError } from "@/lib/action-errors";
 import {
+  DEFAULT_PER_CHAT_COOLDOWN_SEC,
   DEFAULT_SEND_DELAY_SEC,
   DEFAULT_SEND_JITTER_SEC,
-  MIN_SEND_DELAY_SEC,
+  MIN_ACCOUNT_SEND_DELAY_SEC,
+  MIN_PER_CHAT_COOLDOWN_SEC,
 } from "@line/shared/pacing";
 import {
   campaignRunDisabledReason,
@@ -73,6 +75,7 @@ export type CampaignInitial = {
   cronExpr: string | null;
   maxSends: number;
   delayBetweenTargetsSec: number;
+  perChatCooldownSec: number;
   randomJitterSec: number;
   autoStopOnErrors: number;
   enabled: boolean;
@@ -138,9 +141,24 @@ export function CampaignEditor({
     return [...opts].sort((a, b) => a - b);
   }, [scheduleMinute]);
 
-  const [maxSends, setMaxSends] = React.useState(initial?.maxSends ?? 50);
-  const [delay, setDelay] = React.useState(
-    Math.max(MIN_SEND_DELAY_SEC, initial?.delayBetweenTargetsSec ?? DEFAULT_SEND_DELAY_SEC),
+  const [maxSends, setMaxSends] = React.useState(
+    initial?.maxSends ?? Math.min(100, maxSendsCap || 100),
+  );
+  const [delayMinutes, setDelayMinutes] = React.useState(
+    Math.max(
+      MIN_ACCOUNT_SEND_DELAY_SEC / 60,
+      Math.round(
+        (initial?.delayBetweenTargetsSec ?? DEFAULT_SEND_DELAY_SEC) / 60,
+      ),
+    ),
+  );
+  const [perChatMinutes, setPerChatMinutes] = React.useState(
+    Math.max(
+      MIN_PER_CHAT_COOLDOWN_SEC / 60,
+      Math.round(
+        (initial?.perChatCooldownSec ?? DEFAULT_PER_CHAT_COOLDOWN_SEC) / 60,
+      ),
+    ),
   );
   const [jitter, setJitter] = React.useState(
     initial?.randomJitterSec ?? DEFAULT_SEND_JITTER_SEC,
@@ -164,6 +182,8 @@ export function CampaignEditor({
   const sendsPerGroupEstimate =
     targetCount > 0 ? Math.floor(maxSends / targetCount) : 0;
   const showUnequalWarning = targetCount > 0 && maxSends < targetCount;
+  const roundEstimateMinutes =
+    targetCount > 0 ? targetCount * delayMinutes : 0;
 
   function toggleTarget(mid: string) {
     setTargets((prev) => {
@@ -266,7 +286,14 @@ export function CampaignEditor({
           minute: scheduleMinute,
         }),
         maxSends,
-        delayBetweenTargetsSec: delay,
+        delayBetweenTargetsSec: Math.max(
+          MIN_ACCOUNT_SEND_DELAY_SEC,
+          delayMinutes * 60,
+        ),
+        perChatCooldownSec: Math.max(
+          MIN_PER_CHAT_COOLDOWN_SEC,
+          perChatMinutes * 60,
+        ),
         randomJitterSec: jitter,
         autoStopOnErrors: autoStop,
         enabled,
@@ -498,6 +525,51 @@ export function CampaignEditor({
                 {t("help.maxSendsCap", { max: maxSendsCap })}
               </p>
             </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <FieldLabel
+                  htmlFor="c-delay"
+                  label={t("fields.delay")}
+                  hint={t("hints.delay")}
+                />
+                <Input
+                  id="c-delay"
+                  type="number"
+                  min={MIN_ACCOUNT_SEND_DELAY_SEC / 60}
+                  step={1}
+                  value={delayMinutes}
+                  onChange={(e) => setDelayMinutes(Number(e.target.value))}
+                  disabled={locked}
+                />
+                <p className="text-caption text-muted-foreground">
+                  {t("help.delayMin")}
+                </p>
+              </div>
+              <div className="space-y-1.5">
+                <FieldLabel
+                  htmlFor="c-perchat"
+                  label={t("fields.perChatCooldown")}
+                  hint={t("hints.perChatCooldown")}
+                />
+                <Input
+                  id="c-perchat"
+                  type="number"
+                  min={MIN_PER_CHAT_COOLDOWN_SEC / 60}
+                  step={1}
+                  value={perChatMinutes}
+                  onChange={(e) => setPerChatMinutes(Number(e.target.value))}
+                  disabled={locked}
+                />
+                <p className="text-caption text-muted-foreground">
+                  {t("help.perChatMin")}
+                </p>
+              </div>
+            </div>
+            {targetCount > 0 ? (
+              <p className="text-caption text-muted-foreground">
+                {t("help.roundEstimate", { minutes: roundEstimateMinutes })}
+              </p>
+            ) : null}
             <details className="group rounded-md border border-border">
               <summary className="cursor-pointer list-none px-3 py-3 text-small font-medium marker:content-none [&::-webkit-details-marker]:hidden">
                 {t("help.advancedPacing")}
@@ -512,20 +584,6 @@ export function CampaignEditor({
                     value={autoStop}
                     onChange={(e) => setAutoStop(Number(e.target.value))}
                   />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="c-delay">{t("fields.delay")}</Label>
-                  <Input
-                    id="c-delay"
-                    type="number"
-                    min={MIN_SEND_DELAY_SEC}
-                    step={60}
-                    value={delay}
-                    onChange={(e) => setDelay(Number(e.target.value))}
-                  />
-                  <p className="text-caption text-muted-foreground">
-                    {t("help.delayMin")}
-                  </p>
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="c-jitter">{t("fields.jitter")}</Label>

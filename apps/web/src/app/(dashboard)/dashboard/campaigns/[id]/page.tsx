@@ -48,6 +48,7 @@ export default async function EditCampaignPage({
           cronExpr: campaign.cronExpr,
           maxSends: campaign.maxSends,
           delayBetweenTargetsSec: campaign.delayBetweenTargetsSec,
+          perChatCooldownSec: campaign.perChatCooldownSec,
           randomJitterSec: campaign.randomJitterSec,
           autoStopOnErrors: campaign.autoStopOnErrors,
           enabled: campaign.enabled,

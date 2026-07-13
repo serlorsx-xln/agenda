@@ -1,7 +1,15 @@
 import type { Campaign } from "@line/db";
-import { MIN_SEND_DELAY_SEC } from "@line/shared";
+import {
+  MIN_ACCOUNT_SEND_DELAY_SEC,
+  MIN_PER_CHAT_COOLDOWN_SEC,
+  MIN_SEND_DELAY_SEC,
+} from "@line/shared";
 
-export { MIN_SEND_DELAY_SEC };
+export {
+  MIN_ACCOUNT_SEND_DELAY_SEC,
+  MIN_PER_CHAT_COOLDOWN_SEC,
+  MIN_SEND_DELAY_SEC,
+};
 export const BACKOFF_LADDER_SEC = [120, 300, 900] as const;
 
 export function currentHourInTz(timezone: string): number {
@@ -108,6 +116,7 @@ function secondsUntilMidnightInTz(timezone: string, now: Date): number {
   }
 }
 
+/** Account-level delay until the next group send (floor 5 min). */
 export function computeDelaySec(
   delayBetweenTargetsSec: number,
   randomJitterSec: number,
@@ -115,12 +124,91 @@ export function computeDelaySec(
   windowRemainingSec: number,
 ): number {
   const jitter = Math.floor(Math.random() * (randomJitterSec + 1));
-  const userMin = Math.max(MIN_SEND_DELAY_SEC, delayBetweenTargetsSec + jitter);
+  const userMin = Math.max(
+    MIN_ACCOUNT_SEND_DELAY_SEC,
+    delayBetweenTargetsSec + jitter,
+  );
   const evenSpread =
     remainingSends > 0 && windowRemainingSec > 0
       ? windowRemainingSec / remainingSends
       : userMin;
-  return Math.max(MIN_SEND_DELAY_SEC, userMin, evenSpread);
+  return Math.max(MIN_ACCOUNT_SEND_DELAY_SEC, userMin, evenSpread);
+}
+
+export function effectivePerChatCooldownSec(perChatCooldownSec: number): number {
+  return Math.max(MIN_PER_CHAT_COOLDOWN_SEC, perChatCooldownSec);
+}
+
+export function chatCooldownRemainingSec(
+  lastSentAt: Date | null | undefined,
+  perChatCooldownSec: number,
+  now: Date,
+): number {
+  if (!lastSentAt) return 0;
+  const cooldown = effectivePerChatCooldownSec(perChatCooldownSec);
+  const elapsed = (now.getTime() - lastSentAt.getTime()) / 1000;
+  return Math.max(0, Math.ceil(cooldown - elapsed));
+}
+
+export function accountCooldownRemainingSec(
+  lastCampaignSendAt: Date | null | undefined,
+  now: Date,
+): number {
+  if (!lastCampaignSendAt) return 0;
+  const elapsed = (now.getTime() - lastCampaignSendAt.getTime()) / 1000;
+  return Math.max(0, Math.ceil(MIN_ACCOUNT_SEND_DELAY_SEC - elapsed));
+}
+
+export type ChatCooldownTarget = {
+  lastSentAt: Date | null;
+};
+
+export type EligiblePick =
+  | { ok: true; index: number }
+  | { ok: false; earliestReadyAt: Date };
+
+/** Walk rotation and pick the first chat past its per-chat cooldown. */
+export function pickEligibleTargetIndex(
+  targets: ChatCooldownTarget[],
+  startIndex: number,
+  perChatCooldownSec: number,
+  now: Date,
+): EligiblePick {
+  if (targets.length === 0) {
+    return { ok: false, earliestReadyAt: now };
+  }
+
+  let earliestReadyAt: Date | null = null;
+  for (let offset = 0; offset < targets.length; offset++) {
+    const index = (startIndex + offset) % targets.length;
+    const remaining = chatCooldownRemainingSec(
+      targets[index]!.lastSentAt,
+      perChatCooldownSec,
+      now,
+    );
+    if (remaining <= 0) {
+      return { ok: true, index };
+    }
+    const readyAt = new Date(now.getTime() + remaining * 1000);
+    if (!earliestReadyAt || readyAt.getTime() < earliestReadyAt.getTime()) {
+      earliestReadyAt = readyAt;
+    }
+  }
+
+  return { ok: false, earliestReadyAt: earliestReadyAt ?? now };
+}
+
+/** nextSendAt = max(account delay from now, earliest eligible chat). */
+export function computeNextSendAt(
+  now: Date,
+  accountDelaySec: number,
+  earliestChatReadyAt: Date | null,
+): Date {
+  const accountAt = new Date(now.getTime() + accountDelaySec * 1000);
+  if (!earliestChatReadyAt) return accountAt;
+  return accountAt.getTime() >= earliestChatReadyAt.getTime()
+    ? accountAt
+    : earliestChatReadyAt;
 }
 
 export function isRateLimitError(err: unknown): boolean {

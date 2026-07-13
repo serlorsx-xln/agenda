@@ -89,6 +89,9 @@ describe("resolveEffectivePlan", () => {
     expect(PLANS).toHaveLength(3);
     expect(PAID_PLANS).toHaveLength(3);
     expect(PAID_PLANS.map((p) => p.monthlyAmount)).toEqual([79, 149, 249]);
+    expect(PAID_PLANS.map((p) => p.features.maxSendsPerDayCap)).toEqual([
+      100, 150, 250,
+    ]);
   });
 
   it("locked plan blocks all quotas", () => {

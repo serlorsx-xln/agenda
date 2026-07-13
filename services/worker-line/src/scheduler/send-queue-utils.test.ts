@@ -1,10 +1,14 @@
 import { describe, expect, it, vi } from "vitest";
 
 import {
+  accountCooldownRemainingSec,
   backoffSecondsForStreak,
+  chatCooldownRemainingSec,
   computeDelaySec,
+  computeNextSendAt,
   isRateLimitError,
   nextRotationIndex,
+  pickEligibleTargetIndex,
   pickNextCampaign,
   rotationIndexAt,
   shouldReuseDailyRun,
@@ -26,6 +30,70 @@ describe("computeDelaySec", () => {
     vi.spyOn(Math, "random").mockReturnValue(1);
     expect(computeDelaySec(300, 60, 100, 3600)).toBeGreaterThan(base);
     vi.restoreAllMocks();
+  });
+});
+
+describe("pickEligibleTargetIndex", () => {
+  it("picks the first chat past per-chat cooldown", () => {
+    const now = new Date("2026-07-13T12:00:00Z");
+    const targets = [
+      { lastSentAt: new Date("2026-07-13T11:45:00Z") }, // 15 min ago — cooling
+      { lastSentAt: new Date("2026-07-13T11:00:00Z") }, // 60 min ago — ready
+      { lastSentAt: null },
+    ];
+    const pick = pickEligibleTargetIndex(targets, 0, 1800, now);
+    expect(pick).toEqual({ ok: true, index: 1 });
+  });
+
+  it("returns earliestReadyAt when all chats are cooling", () => {
+    const now = new Date("2026-07-13T12:00:00Z");
+    const targets = [
+      { lastSentAt: new Date("2026-07-13T11:50:00Z") }, // ready in 20 min
+      { lastSentAt: new Date("2026-07-13T11:40:00Z") }, // ready in 10 min
+    ];
+    const pick = pickEligibleTargetIndex(targets, 0, 1800, now);
+    expect(pick.ok).toBe(false);
+    if (!pick.ok) {
+      expect(pick.earliestReadyAt.toISOString()).toBe(
+        "2026-07-13T12:10:00.000Z",
+      );
+    }
+  });
+});
+
+describe("account and chat cooldown helpers", () => {
+  it("enforces 5 min account floor", () => {
+    const now = new Date("2026-07-13T12:05:00Z");
+    expect(
+      accountCooldownRemainingSec(new Date("2026-07-13T12:00:00Z"), now),
+    ).toBe(0);
+    expect(
+      accountCooldownRemainingSec(new Date("2026-07-13T12:03:00Z"), now),
+    ).toBe(180);
+  });
+
+  it("enforces 30 min per-chat floor even if configured lower", () => {
+    const now = new Date("2026-07-13T12:20:00Z");
+    expect(
+      chatCooldownRemainingSec(new Date("2026-07-13T12:00:00Z"), 1800, now),
+    ).toBe(600);
+    // Configured 10 min still floors at 30 min → ready exactly at 12:20
+    expect(
+      chatCooldownRemainingSec(new Date("2026-07-13T11:50:00Z"), 600, now),
+    ).toBe(0);
+  });
+});
+
+describe("computeNextSendAt", () => {
+  it("takes the later of account delay and chat ready", () => {
+    const now = new Date("2026-07-13T12:00:00Z");
+    const chatReady = new Date("2026-07-13T12:20:00Z");
+    expect(computeNextSendAt(now, 300, chatReady).toISOString()).toBe(
+      "2026-07-13T12:20:00.000Z",
+    );
+    expect(computeNextSendAt(now, 300, null).toISOString()).toBe(
+      "2026-07-13T12:05:00.000Z",
+    );
   });
 });
 

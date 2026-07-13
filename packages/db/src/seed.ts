@@ -44,9 +44,10 @@ async function main() {
         id: "safety.defaults",
         value: {
           delayBetweenTargetsSec: 300,
+          perChatCooldownSec: 1800,
           randomJitterSec: 60,
           autoStopOnErrors: 3,
-          maxSendsPerDay: 50,
+          maxSendsPerDay: 100,
         },
       },
       {

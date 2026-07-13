@@ -8,6 +8,7 @@ import {
   campaignTargets,
   campaigns,
   lineChats,
+  lineConnection,
   subscriptions,
   templates,
   user as userTable,
@@ -24,11 +25,14 @@ import {
 import { lineManager } from "../line/manager.js";
 import { log } from "../logger.js";
 import {
+  accountCooldownRemainingSec,
   backoffSecondsForStreak,
   computeDelaySec,
+  computeNextSendAt,
   isRateLimitError,
   isWithinWindow,
   nextRotationIndex,
+  pickEligibleTargetIndex,
   pickNextCampaign,
   remainingWindowSec,
   rotationIndexAt,
@@ -49,7 +53,11 @@ export type SendResult = {
   sent?: boolean;
 };
 
-type TargetRow = { chatMid: string; name: string | null };
+type TargetRow = {
+  chatMid: string;
+  name: string | null;
+  lastSentAt: Date | null;
+};
 
 async function getDailySendTotal(
   campaignId: string,
@@ -121,6 +129,7 @@ async function loadTargets(campaign: Campaign): Promise<TargetRow[]> {
     .select({
       chatMid: campaignTargets.chatMid,
       name: lineChats.name,
+      lastSentAt: campaignTargets.lastSentAt,
     })
     .from(campaignTargets)
     .innerJoin(
@@ -138,6 +147,38 @@ async function loadTargets(campaign: Campaign): Promise<TargetRow[]> {
       ),
     )
     .orderBy(campaignTargets.chatMid);
+}
+
+async function getLastCampaignSendAt(userId: string): Promise<Date | null> {
+  const [row] = await db
+    .select({ lastCampaignSendAt: lineConnection.lastCampaignSendAt })
+    .from(lineConnection)
+    .where(eq(lineConnection.userId, userId))
+    .limit(1);
+  return row?.lastCampaignSendAt ?? null;
+}
+
+async function markCampaignSendTimestamps(
+  userId: string,
+  campaignId: string,
+  chatMid: string,
+  at: Date,
+): Promise<void> {
+  await Promise.all([
+    db
+      .update(campaignTargets)
+      .set({ lastSentAt: at })
+      .where(
+        and(
+          eq(campaignTargets.campaignId, campaignId),
+          eq(campaignTargets.chatMid, chatMid),
+        ),
+      ),
+    db
+      .update(lineConnection)
+      .set({ lastCampaignSendAt: at, updatedAt: at })
+      .where(eq(lineConnection.userId, userId)),
+  ]);
 }
 
 async function resolveTemplate(campaign: Campaign): Promise<{
@@ -335,11 +376,42 @@ export async function sendNextInRotation(
     return { ok: false, reason: "Daily send limit reached", sent: false };
   }
 
+  const now = new Date();
+  const accountRemaining = accountCooldownRemainingSec(
+    await getLastCampaignSendAt(campaign.userId),
+    now,
+  );
+  if (accountRemaining > 0) {
+    const nextAt = new Date(now.getTime() + accountRemaining * 1000);
+    await db
+      .update(campaigns)
+      .set({ nextSendAt: nextAt, updatedAt: now })
+      .where(eq(campaigns.id, campaign.id));
+    return { ok: false, reason: "Account send cooldown", sent: false };
+  }
+
   const rotationIndex = rotationIndexAt(
     campaign.sendRotationIndex ?? 0,
     targets.length,
   );
-  const target = targets[rotationIndex]!;
+  const perChatCooldown =
+    campaign.perChatCooldownSec ?? 1800;
+  const pick = pickEligibleTargetIndex(
+    targets,
+    rotationIndex,
+    perChatCooldown,
+    now,
+  );
+  if (!pick.ok) {
+    await db
+      .update(campaigns)
+      .set({ nextSendAt: pick.earliestReadyAt, updatedAt: now })
+      .where(eq(campaigns.id, campaign.id));
+    return { ok: false, reason: "All chats in cooldown", sent: false };
+  }
+
+  const target = targets[pick.index]!;
+  const sendIndex = pick.index;
 
   const client = await lineManager.getReadyClient(campaign.userId);
   if (!client) {
@@ -358,7 +430,6 @@ export async function sendNextInRotation(
   }
 
   const runId = await getOrCreateDailyRun(campaign, trigger);
-  const now = new Date();
 
   if (isRunCancelled(runId)) {
     await clearNextSend(campaign.id);
@@ -372,6 +443,12 @@ export async function sendNextInRotation(
     });
 
     await incrementDailySend(campaign.id, statDate, target.chatMid);
+    await markCampaignSendTimestamps(
+      campaign.userId,
+      campaign.id,
+      target.chatMid,
+      now,
+    );
 
     const [run] = await db
       .select({ sentCount: campaignRuns.sentCount })
@@ -410,7 +487,7 @@ export async function sendNextInRotation(
       chatName: target.name ?? "Chat",
     });
 
-    const nextRotation = nextRotationIndex(rotationIndex, targets.length);
+    const nextRotation = nextRotationIndex(sendIndex, targets.length);
     const remainingSends = dailyCap - sentToday - 1;
     const windowSec = remainingWindowSec(campaign, now);
     const delaySec = computeDelaySec(
@@ -437,9 +514,19 @@ export async function sendNextInRotation(
         .where(eq(campaignRuns.id, runId));
       clearRunCancellation(runId);
     } else {
-      const nextAt = options?.immediate
-        ? new Date(now.getTime() + delaySec * 1000)
-        : new Date(now.getTime() + delaySec * 1000);
+      const updatedTargets = targets.map((t, i) =>
+        i === sendIndex ? { ...t, lastSentAt: now } : t,
+      );
+      const nextPickFromNow = pickEligibleTargetIndex(
+        updatedTargets,
+        nextRotation,
+        perChatCooldown,
+        now,
+      );
+      const earliestChatReady = nextPickFromNow.ok
+        ? null
+        : nextPickFromNow.earliestReadyAt;
+      const nextAt = computeNextSendAt(now, delaySec, earliestChatReady);
       await db
         .update(campaigns)
         .set({
@@ -494,7 +581,7 @@ export async function sendNextInRotation(
       return { ok: false, reason: "rate_limited", sent: false };
     }
 
-    const nextRotation = nextRotationIndex(rotationIndex, targets.length);
+    const nextRotation = nextRotationIndex(sendIndex, targets.length);
     if (newFailed >= campaign.autoStopOnErrors) {
       await db
         .update(campaigns)

@@ -5,7 +5,10 @@ import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { db, campaignTargets, campaigns } from "@line/db";
-import { MIN_SEND_DELAY_SEC } from "@line/shared";
+import {
+  MIN_ACCOUNT_SEND_DELAY_SEC,
+  MIN_PER_CHAT_COOLDOWN_SEC,
+} from "@line/shared";
 
 import { recordAudit } from "@/lib/audit";
 import {
@@ -46,8 +49,13 @@ const campaignSchema = z.object({
   delayBetweenTargetsSec: z
     .number()
     .int()
-    .min(MIN_SEND_DELAY_SEC)
-    .max(3600),
+    .min(MIN_ACCOUNT_SEND_DELAY_SEC)
+    .max(7200),
+  perChatCooldownSec: z
+    .number()
+    .int()
+    .min(MIN_PER_CHAT_COOLDOWN_SEC)
+    .max(86400),
   randomJitterSec: z.number().int().min(0).max(3600),
   autoStopOnErrors: z.number().int().min(1).max(50),
   enabled: z.boolean(),
@@ -93,6 +101,7 @@ export async function createCampaign(
       cronExpr,
       maxSends: planCheck.maxSends,
       delayBetweenTargetsSec: d.delayBetweenTargetsSec,
+      perChatCooldownSec: d.perChatCooldownSec,
       randomJitterSec: d.randomJitterSec,
       autoStopOnErrors: d.autoStopOnErrors,
       enabled: d.enabled,
@@ -137,6 +146,7 @@ export async function updateCampaign(
       cronExpr,
       maxSends: planCheck.maxSends,
       delayBetweenTargetsSec: d.delayBetweenTargetsSec,
+      perChatCooldownSec: d.perChatCooldownSec,
       randomJitterSec: d.randomJitterSec,
       autoStopOnErrors: d.autoStopOnErrors,
       enabled: d.enabled,

@@ -234,6 +234,9 @@ export const lineConnection = pgTable(
     lastError: text("last_error"),
     lastSyncedAt: timestamp("last_synced_at", { withTimezone: true }),
     connectedAt: timestamp("connected_at", { withTimezone: true }),
+    lastCampaignSendAt: timestamp("last_campaign_send_at", {
+      withTimezone: true,
+    }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -335,10 +338,13 @@ export const campaigns = pgTable(
     windowStartHour: integer("window_start_hour").default(9).notNull(),
     windowEndHour: integer("window_end_hour").default(21).notNull(),
     cronExpr: text("cron_expr"),
-    maxSends: integer("max_sends").default(50).notNull(),
+    maxSends: integer("max_sends").default(100).notNull(),
     // Human-like sending controls
     delayBetweenTargetsSec: integer("delay_between_targets_sec")
       .default(300)
+      .notNull(),
+    perChatCooldownSec: integer("per_chat_cooldown_sec")
+      .default(1800)
       .notNull(),
     randomJitterSec: integer("random_jitter_sec").default(60).notNull(),
     autoStopOnErrors: integer("auto_stop_on_errors").default(3).notNull(),
@@ -371,6 +377,7 @@ export const campaignTargets = pgTable(
       .references(() => campaigns.id, { onDelete: "cascade" }),
     chatMid: text("chat_mid").notNull(),
     enabled: boolean("enabled").default(true).notNull(),
+    lastSentAt: timestamp("last_sent_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),

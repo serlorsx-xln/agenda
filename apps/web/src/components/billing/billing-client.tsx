@@ -156,6 +156,7 @@ export function BillingPlans({
                     <span className="flex-1">
                       {t("features.maxSendsPerDay", {
                         count: plan.features.maxSendsPerDayCap,
+                        monthly: plan.features.maxSendsPerDayCap * 30,
                       })}
                     </span>
                     <FieldHint content={t("hints.maxSendsPerDay")} />

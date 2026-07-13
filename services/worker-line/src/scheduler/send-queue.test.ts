@@ -66,6 +66,7 @@ const baseCampaign = {
   cronExpr: null,
   maxSends: 10,
   delayBetweenTargetsSec: 300,
+  perChatCooldownSec: 1800,
   randomJitterSec: 0,
   autoStopOnErrors: 3,
   lastRunAt: null,
