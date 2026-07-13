@@ -130,6 +130,8 @@ export const LOCKED_PLAN: Plan = {
 /** Plans shown on billing / marketing (paid only). */
 export type PaidPlan = Plan & { id: PaidPlanId };
 export const PAID_PLANS: PaidPlan[] = PLANS as PaidPlan[];
+/** Plan ids that renew / expire via billing cron (Basic/Growth/Pro). */
+export const PAID_PLAN_IDS: PaidPlanId[] = PAID_PLANS.map((p) => p.id);
 
 export function getPlan(id: string): Plan | undefined {
   if (id === "locked") return LOCKED_PLAN;

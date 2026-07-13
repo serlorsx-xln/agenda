@@ -3,6 +3,7 @@ import "server-only";
 import { and, eq, inArray, isNotNull, lt, sql } from "drizzle-orm";
 
 import { auditLog, db, payments, subscriptions, user } from "@line/db";
+import { PAID_PLAN_IDS } from "@line/shared";
 
 import { sendSubscriptionReminderEmail } from "@/lib/notifications";
 import { paymentGraceMinutes } from "@/lib/promptpay";
@@ -82,7 +83,7 @@ async function expireDueSubscriptions(): Promise<{
     .where(
       and(
         eq(subscriptions.status, "active"),
-        inArray(subscriptions.plan, ["starter", "pro"]),
+        inArray(subscriptions.plan, [...PAID_PLAN_IDS]),
         isNotNull(subscriptions.currentPeriodEnd),
         lt(subscriptions.currentPeriodEnd, now),
         sql`${subscriptions.currentPeriodEnd} >= ${graceCutoff}`,
@@ -100,7 +101,7 @@ async function expireDueSubscriptions(): Promise<{
     .where(
       and(
         inArray(subscriptions.status, ["active", "past_due"]),
-        inArray(subscriptions.plan, ["starter", "pro"]),
+        inArray(subscriptions.plan, [...PAID_PLAN_IDS]),
         isNotNull(subscriptions.currentPeriodEnd),
         lt(subscriptions.currentPeriodEnd, graceCutoff),
       ),
@@ -129,7 +130,7 @@ async function processSubscriptionReminders(): Promise<number> {
     .innerJoin(user, eq(subscriptions.userId, user.id))
     .where(
       and(
-        inArray(subscriptions.plan, ["starter", "pro"]),
+        inArray(subscriptions.plan, [...PAID_PLAN_IDS]),
         inArray(subscriptions.status, ["active", "past_due"]),
         isNotNull(subscriptions.currentPeriodEnd),
       ),

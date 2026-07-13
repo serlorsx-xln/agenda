@@ -1,5 +1,7 @@
-# Production overlay — TLS via Caddy, no public Postgres ports.
+# Production overlay — TLS via Caddy, no public web/Postgres ports.
 # Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# billing-cron + db-backup live in docker-compose.yml (Coolify uses the base file).
 
 services:
   postgres:
@@ -29,52 +31,6 @@ services:
       - caddy_data:/data
       - caddy_config:/config
 
-  db-backup:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      PGHOST: postgres
-      PGUSER: ${POSTGRES_USER}
-      PGPASSWORD: ${POSTGRES_PASSWORD}
-      PGDATABASE: ${POSTGRES_DB}
-    volumes:
-      - postgres_backups:/backups
-    entrypoint: /bin/sh
-    command:
-      - -c
-      - |
-        set -eu
-        while true; do
-          ts=$$(date -u +%Y%m%dT%H%M%SZ)
-          pg_dump -Fc -f /backups/line-$$ts.dump
-          find /backups -name 'line-*.dump' -mtime +14 -delete
-          sleep 86400
-        done
-
-  billing-cron:
-    image: curlimages/curl:8.12.1
-    restart: unless-stopped
-    depends_on:
-      web:
-        condition: service_healthy
-    environment:
-      CRON_SECRET: ${CRON_SECRET}
-      WEB_URL: http://web:3000
-    entrypoint: /bin/sh
-    command:
-      - -c
-      - |
-        set -eu
-        while true; do
-          curl -fsS -X POST -H "x-cron-secret: $$CRON_SECRET" "$$WEB_URL/api/cron/billing" || true
-          curl -fsS -X POST -H "x-cron-secret: $$CRON_SECRET" "$$WEB_URL/api/cron/notifications" || true
-          sleep 3600
-        done
-
 volumes:
   caddy_data:
   caddy_config:
-  postgres_backups:

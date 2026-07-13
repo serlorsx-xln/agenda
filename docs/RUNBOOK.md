@@ -42,10 +42,10 @@ Admin manual confirm remains available when slip verification is unavailable.
 
 ## Subscription lifecycle
 
-Hourly (prod overlay `billing-cron`):
+Hourly (`billing-cron` in `docker-compose.yml`):
 
 - Expire pending payments past TTL+grace
-- Active paid plans past `currentPeriodEnd` → `past_due` (grace 3 days)
+- Active paid plans (Basic / Growth / Pro) past `currentPeriodEnd` → `past_due` (grace 3 days)
 - After grace → `free` / `inactive`
 - Reminder emails: 7d, 1d, past_due day 1
 
@@ -58,5 +58,5 @@ curl -X POST -H "x-cron-secret: $CRON_SECRET" https://your.domain/api/cron/notif
 
 ## Backups
 
-`db-backup` writes `/backups/line-*.dump` daily and deletes older than 14 days.
+`db-backup` (in `docker-compose.yml`) writes `/backups/line-*.dump` daily and deletes older than 14 days.
 Restore with `pg_restore`.

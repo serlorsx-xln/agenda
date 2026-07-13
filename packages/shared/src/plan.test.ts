@@ -5,6 +5,7 @@ import {
   isPlanLocked,
   isTrialActive,
   LOCKED_PLAN,
+  PAID_PLAN_IDS,
   PAID_PLANS,
   PLANS,
   resolveEffectivePlan,
@@ -88,6 +89,8 @@ describe("resolveEffectivePlan", () => {
   it("exports three paid plans with new pricing", () => {
     expect(PLANS).toHaveLength(3);
     expect(PAID_PLANS).toHaveLength(3);
+    expect(PAID_PLAN_IDS).toEqual(["starter", "growth", "pro"]);
+    expect(PAID_PLANS.map((p) => p.id)).toEqual(["starter", "growth", "pro"]);
     expect(PAID_PLANS.map((p) => p.monthlyAmount)).toEqual([79, 149, 249]);
     expect(PAID_PLANS.map((p) => p.features.maxSendsPerDayCap)).toEqual([
       100, 150, 250,

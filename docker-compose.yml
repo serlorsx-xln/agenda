@@ -124,9 +124,57 @@ services:
       timeout: 5s
       retries: 5
 
+  # Daily Postgres dump (Coolify uses this base compose — keep here, not only prod overlay).
+  db-backup:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGHOST: postgres
+      PGUSER: ${POSTGRES_USER}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB}
+    volumes:
+      - postgres_backups:/backups
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        set -eu
+        while true; do
+          ts=$$(date -u +%Y%m%dT%H%M%SZ)
+          pg_dump -Fc -f /backups/line-$$ts.dump
+          find /backups -name 'line-*.dump' -mtime +14 -delete
+          sleep 86400
+        done
+
+  # Hourly billing + notification maintenance against the web service.
+  billing-cron:
+    image: curlimages/curl:8.12.1
+    restart: unless-stopped
+    depends_on:
+      web:
+        condition: service_healthy
+    environment:
+      CRON_SECRET: ${CRON_SECRET}
+      WEB_URL: http://web:3000
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        set -eu
+        while true; do
+          curl -fsS -X POST -H "x-cron-secret: $$CRON_SECRET" "$$WEB_URL/api/cron/billing" || true
+          curl -fsS -X POST -H "x-cron-secret: $$CRON_SECRET" "$$WEB_URL/api/cron/notifications" || true
+          sleep 3600
+        done
+
 volumes:
   postgres_data:
   worker_session:
+  postgres_backups:
 
 # Coolify proxy listens on this external network. Local compose: create once with
 # `docker network create coolify` (start.sh does this automatically).
