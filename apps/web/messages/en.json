@@ -66,7 +66,7 @@
       "steps": {
         "connect": {
           "title": "Connect LINE",
-          "desc": "Scan a QR code from the dashboard - your personal account"
+          "desc": "Scan the dashboard QR with the LINE camera (not a gallery image)"
         },
         "template": {
           "title": "Message template + groups",
@@ -386,6 +386,7 @@
     "contentRequired": "Add text or an image",
     "empty": "No message templates yet. Create your first message template.",
     "emptyCta": "Create message template",
+    "needForCampaign": "Create a message template first, then you can make a send schedule.",
     "deleteConfirm": "Delete this message template? Send schedules using it will keep their copy.",
     "namePlaceholder": "e.g. Weekend sale",
     "bodyPlaceholder": "Write your promotional message here.",
@@ -530,11 +531,14 @@
     },
     "empty": "No send schedules yet. Create your first send schedule.",
     "emptyCta": "Create first send schedule",
+    "templateRequired": "Create a message template first before making a send schedule.",
+    "createTemplateFirst": "Create message template first",
     "fields": {
       "name": "Schedule name",
       "template": "Message template",
       "targets": "Groups to send to",
       "window": "Send window",
+      "allDay": "Send all day (24 hours)",
       "windowStart": "Start hour",
       "windowEnd": "End hour",
       "schedule": "Start time",
@@ -558,7 +562,8 @@
         "daily": "The system starts sending at the chosen time (one group at a time, not all at once).",
         "weekdays": "The system starts sending Mon-Fri at the chosen time (one group at a time, not all at once)."
       },
-      "window": "Messages are only sent between these hours (24h).",
+      "window": "Messages are only sent between these hours.",
+      "allDay": "When on, sends any hour — no start/end hours needed.",
       "pacing": "Sending pace",
       "delayMin": "Minimum 5 minutes — you can set a longer wait if you want",
       "perChatMin": "Minimum 30 minutes — you can set a longer wait for the same group",
@@ -613,6 +618,8 @@
       "plan_locked": "Pay to continue using Agenda",
       "plan_limit_campaigns": "Send schedule limit reached for your plan",
       "plan_limit_targets": "Groups-per-schedule limit reached for your plan",
+      "template_required": "A message template is required",
+      "window_equal_hours": "Start and end hours match — turn on all-day, or pick different hours",
       "rate_limited": "Too many attempts. Please wait a moment.",
       "worker_unavailable": "Sending system unavailable. Please try again.",
       "error": "Something went wrong"
@@ -621,6 +628,7 @@
       "template": "Message sent to every group in this send schedule",
       "schedule": "Continuous = queue in send window · Daily/Mon-Fri = start queue at set time",
       "window": "Sends only during these hours",
+      "allDay": "On = any hour · Off = choose a send window",
       "maxSends": "Max sends per day in this send schedule",
       "delay": "Wait before next group (min 5 minutes — longer OK)",
       "perChatCooldown": "Wait before same group again (min 30 minutes — longer OK)",

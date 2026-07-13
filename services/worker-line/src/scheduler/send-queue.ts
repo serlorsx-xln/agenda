@@ -321,7 +321,6 @@ async function pauseCampaignForRateLimit(campaignId: string): Promise<void> {
 export async function sendNextInRotation(
   campaign: Campaign,
   trigger: "scheduled" | "manual",
-  options?: { immediate?: boolean },
 ): Promise<SendResult> {
   if (!campaign.enabled && trigger === "scheduled") {
     return { ok: false, reason: "Campaign disabled", sent: false };
@@ -346,6 +345,10 @@ export async function sendNextInRotation(
   const planCheck = await assertCanSend(campaign, targets.length);
   if (!planCheck.ok) {
     return { ok: false, reason: planCheck.reason, sent: false };
+  }
+
+  if (!campaign.templateId) {
+    return { ok: false, reason: "No template", sent: false };
   }
 
   const { body, imageAssetIds } = await resolveTemplate(campaign);
@@ -717,7 +720,7 @@ export async function runCampaignManual(
   }
   usersInFlight.add(campaign.userId);
   try {
-    return await sendNextInRotation(campaign, "manual", { immediate: true });
+    return await sendNextInRotation(campaign, "manual");
   } finally {
     usersInFlight.delete(campaign.userId);
   }

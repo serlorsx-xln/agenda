@@ -62,7 +62,7 @@ const baseCampaign = {
   enabled: true,
   timezone: "UTC",
   windowStartHour: 0,
-  windowEndHour: 24,
+  windowEndHour: 0,
   cronExpr: null,
   maxSends: 10,
   delayBetweenTargetsSec: 300,

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
-import { db, campaignTargets, campaigns } from "@line/db";
+import { db, campaignTargets, campaigns, templates } from "@line/db";
 import {
   MIN_ACCOUNT_SEND_DELAY_SEC,
   MIN_PER_CHAT_COOLDOWN_SEC,
@@ -35,7 +35,7 @@ export type ActionResult = {
 
 const campaignSchema = z.object({
   name: z.string().min(1).max(120),
-  templateId: z.string().uuid().nullable().optional(),
+  templateId: z.string().uuid(),
   timezone: z.string().min(1).default("Asia/Bangkok"),
   windowStartHour: z.number().int().min(0).max(23),
   windowEndHour: z.number().int().min(0).max(23),
@@ -70,6 +70,18 @@ async function assertOwnership(userId: string, campaignId: string) {
   return !!row;
 }
 
+async function assertOwnsTemplate(
+  userId: string,
+  templateId: string,
+): Promise<boolean> {
+  const [row] = await db
+    .select({ id: templates.id })
+    .from(templates)
+    .where(and(eq(templates.id, templateId), eq(templates.userId, userId)))
+    .limit(1);
+  return Boolean(row);
+}
+
 export async function createCampaign(
   input: z.input<typeof campaignSchema>,
 ): Promise<ActionResult> {
@@ -81,6 +93,9 @@ export async function createCampaign(
   if (!limit.ok) return limit;
 
   const d = parsed.data;
+  if (!(await assertOwnsTemplate(user.id, d.templateId))) {
+    return { ok: false, error: "template_required" };
+  }
   const cronExpr = normalizeCronExpr(d.cronExpr);
   const plan = await getEffectivePlan(user.id);
   const planCheck = validateCampaignPlanInput(plan, {
@@ -94,7 +109,7 @@ export async function createCampaign(
     .values({
       userId: user.id,
       name: d.name,
-      templateId: d.templateId ?? null,
+      templateId: d.templateId,
       timezone: d.timezone,
       windowStartHour: d.windowStartHour,
       windowEndHour: d.windowEndHour,
@@ -127,6 +142,9 @@ export async function updateCampaign(
   const parsed = campaignSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "invalid" };
   const d = parsed.data;
+  if (!(await assertOwnsTemplate(user.id, d.templateId))) {
+    return { ok: false, error: "template_required" };
+  }
   const cronExpr = normalizeCronExpr(d.cronExpr);
   const plan = await getEffectivePlan(user.id);
   const planCheck = validateCampaignPlanInput(plan, {
@@ -139,7 +157,7 @@ export async function updateCampaign(
     .update(campaigns)
     .set({
       name: d.name,
-      templateId: d.templateId ?? null,
+      templateId: d.templateId,
       timezone: d.timezone,
       windowStartHour: d.windowStartHour,
       windowEndHour: d.windowEndHour,

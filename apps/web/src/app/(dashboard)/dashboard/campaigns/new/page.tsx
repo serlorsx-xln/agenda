@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 import { CampaignEditor } from "@/components/campaigns/campaign-editor";
@@ -14,6 +15,10 @@ export default async function NewCampaignPage() {
     getChats(user.id),
     getPlanUsage(user.id),
   ]);
+
+  if (templates.length === 0) {
+    redirect("/dashboard/templates?need=campaign");
+  }
 
   return (
     <div className="space-y-6">

@@ -60,9 +60,11 @@ function progressPercent(sent: number, max: number): number {
 export function CampaignsClient({
   campaigns,
   planUsage,
+  hasTemplates,
 }: {
   campaigns: CampaignRow[];
   planUsage: PlanUsageSnapshot;
+  hasTemplates: boolean;
 }) {
   const t = useTranslations("campaigns");
   const te = useTranslations("campaigns.errors");
@@ -78,6 +80,11 @@ export function CampaignsClient({
 
   const locked = planUsage.isLocked;
   const atCampaignLimit = planUsage.campaignsUsed >= planUsage.campaignsMax;
+  const newHref = hasTemplates
+    ? "/dashboard/campaigns/new"
+    : "/dashboard/templates?need=campaign";
+  const newLabel = hasTemplates ? t("new") : t("createTemplateFirst");
+  const emptyCtaLabel = hasTemplates ? t("emptyCta") : t("createTemplateFirst");
 
   function handlePlanLimit(code: string) {
     if (code === "plan_locked") {
@@ -189,9 +196,9 @@ export function CampaignsClient({
           </Button>
         ) : (
           <Button asChild>
-            <Link href="/dashboard/campaigns/new">
+            <Link href={newHref}>
               <IconPlus className="h-4 w-4" />
-              {t("new")}
+              {newLabel}
             </Link>
           </Button>
         )}
@@ -200,7 +207,9 @@ export function CampaignsClient({
       {campaigns.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
-            <p className="text-small text-muted-foreground">{t("empty")}</p>
+            <p className="text-small text-muted-foreground">
+              {hasTemplates ? t("empty") : t("templateRequired")}
+            </p>
             {locked || atCampaignLimit ? (
               <Button
                 size="touch"
@@ -213,7 +222,7 @@ export function CampaignsClient({
               </Button>
             ) : (
               <Button asChild size="touch">
-                <Link href="/dashboard/campaigns/new">{t("emptyCta")}</Link>
+                <Link href={newHref}>{emptyCtaLabel}</Link>
               </Button>
             )}
           </CardContent>

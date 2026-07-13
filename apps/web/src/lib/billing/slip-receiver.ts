@@ -3,11 +3,6 @@ function promptPayIdDigits(): string {
   return (process.env.PROMPTPAY_ID ?? "").replace(/\D/g, "");
 }
 
-/** Optional override when slip receiver differs from PromptPay display id. */
-function slipReceiverOverrideDigits(): string {
-  return (process.env.SLIP_RECEIVER_ACCOUNT ?? "").replace(/\D/g, "");
-}
-
 function phoneIdentifierVariants(digits: string): string[] {
   if (!digits) return [];
   const ids = new Set<string>([digits]);

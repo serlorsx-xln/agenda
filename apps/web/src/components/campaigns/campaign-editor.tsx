@@ -117,15 +117,22 @@ export function CampaignEditor({
   const locked = planUsage.isLocked;
 
   const [name, setName] = React.useState(initial?.name ?? "");
-  const [templateId, setTemplateId] = React.useState(
-    initial?.templateId ?? templates[0]?.id ?? "",
-  );
+  const [templateId, setTemplateId] = React.useState(() => {
+    const initialId = initial?.templateId;
+    if (initialId && templates.some((tpl) => tpl.id === initialId)) {
+      return initialId;
+    }
+    return templates[0]?.id ?? "";
+  });
   const [timezone] = React.useState(initial?.timezone ?? "Asia/Bangkok");
+  const initialAllDay =
+    initial != null && initial.windowStartHour === initial.windowEndHour;
+  const [allDay, setAllDay] = React.useState(initialAllDay);
   const [windowStartHour, setWindowStart] = React.useState(
-    initial?.windowStartHour ?? 9,
+    initialAllDay ? 9 : (initial?.windowStartHour ?? 9),
   );
   const [windowEndHour, setWindowEnd] = React.useState(
-    initial?.windowEndHour ?? 21,
+    initialAllDay ? 21 : (initial?.windowEndHour ?? 21),
   );
   const initialSchedule = scheduleFromCron(initial?.cronExpr);
   const [schedulePreset, setSchedulePreset] = React.useState<SchedulePreset>(
@@ -272,14 +279,22 @@ export function CampaignEditor({
       toast.error(tt("error"));
       return;
     }
+    if (!templateId) {
+      toast.error(te("template_required"));
+      return;
+    }
+    if (!allDay && windowStartHour === windowEndHour) {
+      toast.error(te("window_equal_hours"));
+      return;
+    }
     setSaving(true);
     try {
       const payload = {
         name,
-        templateId: templateId || null,
+        templateId,
         timezone,
-        windowStartHour,
-        windowEndHour,
+        windowStartHour: allDay ? 0 : windowStartHour,
+        windowEndHour: allDay ? 0 : windowEndHour,
         cronExpr: cronFromSchedule({
           preset: schedulePreset,
           hour: scheduleHour,
@@ -314,10 +329,14 @@ export function CampaignEditor({
       router.refresh();
     } catch (err) {
       const code = err instanceof Error ? err.message : "";
-      if (code === "plan_limit_campaigns" || code === "plan_limit_targets") {
+      if (
+        code === "plan_limit_campaigns" ||
+        code === "plan_limit_targets" ||
+        code === "plan_locked"
+      ) {
         handlePlanLimit(code);
       } else {
-        toast.error(tt("error"));
+        toast.error(resolveActionError(te, code, tt("error")));
       }
     } finally {
       setSaving(false);
@@ -346,18 +365,29 @@ export function CampaignEditor({
               label={t("fields.template")}
               hint={t("hints.template")}
             />
-            <Select
-              id="c-template"
-              value={templateId}
-              onChange={(e) => setTemplateId(e.target.value)}
-            >
-              <option value="">{tc("none")}</option>
-              {templates.map((tpl) => (
-                <option key={tpl.id} value={tpl.id}>
-                  {tpl.name}
-                </option>
-              ))}
-            </Select>
+            {templates.length === 0 ? (
+              <div className="space-y-2 rounded-md border border-amber-500/30 bg-amber-500/5 p-3">
+                <p className="text-small text-muted-foreground">
+                  {t("templateRequired")}
+                </p>
+                <Button asChild variant="outline" size="sm">
+                  <Link href="/dashboard/templates">{t("createTemplateFirst")}</Link>
+                </Button>
+              </div>
+            ) : (
+              <Select
+                id="c-template"
+                value={templateId}
+                onChange={(e) => setTemplateId(e.target.value)}
+                required
+              >
+                {templates.map((tpl) => (
+                  <option key={tpl.id} value={tpl.id}>
+                    {tpl.name}
+                  </option>
+                ))}
+              </Select>
+            )}
           </div>
           </CardContent>
         </Card>
@@ -367,41 +397,64 @@ export function CampaignEditor({
             <CardTitle className="text-h3">{t("sections.schedule")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <FieldLabel
-                htmlFor="c-start"
-                label={t("fields.windowStart")}
-                hint={t("hints.window")}
+            <div className="flex min-h-11 items-center justify-between rounded-md border border-border p-3">
+              <div className="space-y-0.5 pr-3">
+                <FieldLabel
+                  htmlFor="c-allday"
+                  label={t("fields.allDay")}
+                  hint={t("hints.allDay")}
+                />
+                <p className="text-caption text-muted-foreground">
+                  {t("help.allDay")}
+                </p>
+              </div>
+              <Switch
+                id="c-allday"
+                checked={allDay}
+                onCheckedChange={setAllDay}
               />
-              <Select
-                id="c-start"
-                value={String(windowStartHour)}
-                onChange={(e) => setWindowStart(Number(e.target.value))}
-              >
-                {HOURS.map((h) => (
-                  <option key={h} value={h}>
-                    {String(h).padStart(2, "0")}:00
-                  </option>
-                ))}
-              </Select>
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="c-end">{t("fields.windowEnd")}</Label>
-              <Select
-                id="c-end"
-                value={String(windowEndHour)}
-                onChange={(e) => setWindowEnd(Number(e.target.value))}
-              >
-                {HOURS.map((h) => (
-                  <option key={h} value={h}>
-                    {String(h).padStart(2, "0")}:00
-                  </option>
-                ))}
-              </Select>
-            </div>
-            </div>
-          <p className="text-caption text-muted-foreground">{t("help.window")}</p>
+            {!allDay ? (
+              <>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <FieldLabel
+                      htmlFor="c-start"
+                      label={t("fields.windowStart")}
+                      hint={t("hints.window")}
+                    />
+                    <Select
+                      id="c-start"
+                      value={String(windowStartHour)}
+                      onChange={(e) => setWindowStart(Number(e.target.value))}
+                    >
+                      {HOURS.map((h) => (
+                        <option key={h} value={h}>
+                          {String(h).padStart(2, "0")}:00
+                        </option>
+                      ))}
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="c-end">{t("fields.windowEnd")}</Label>
+                    <Select
+                      id="c-end"
+                      value={String(windowEndHour)}
+                      onChange={(e) => setWindowEnd(Number(e.target.value))}
+                    >
+                      {HOURS.map((h) => (
+                        <option key={h} value={h}>
+                          {String(h).padStart(2, "0")}:00
+                        </option>
+                      ))}
+                    </Select>
+                  </div>
+                </div>
+                <p className="text-caption text-muted-foreground">
+                  {t("help.window")}
+                </p>
+              </>
+            ) : null}
 
           <div className="space-y-1.5">
             <FieldLabel
@@ -709,7 +762,7 @@ export function CampaignEditor({
               {t("runNext")}
             </Button>
           ) : null}
-          <Button onClick={save} disabled={saving || locked || running}>
+          <Button onClick={save} disabled={saving || locked || running || !templateId}>
             {saving && <IconLoader className="h-4 w-4 animate-spin" />}
             {tc("save")}
           </Button>

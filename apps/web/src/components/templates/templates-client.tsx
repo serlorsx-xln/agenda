@@ -36,14 +36,20 @@ type Template = {
   imageAssetIds?: string[];
 };
 
-export function TemplatesClient({ templates }: { templates: Template[] }) {
+export function TemplatesClient({
+  templates,
+  promptForCampaign = false,
+}: {
+  templates: Template[];
+  promptForCampaign?: boolean;
+}) {
   const t = useTranslations("templates");
   const te = useTranslations("templates.errors");
   const tc = useTranslations("common");
   const tt = useTranslations("toast");
   const router = useRouter();
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(promptForCampaign);
   const [editing, setEditing] = React.useState<Template | null>(null);
   const [name, setName] = React.useState("");
   const [body, setBody] = React.useState("");
@@ -89,6 +95,11 @@ export function TemplatesClient({ templates }: { templates: Template[] }) {
       if (!res.ok) throw new Error(res.error);
       toast.success(editing ? tt("saved") : tt("created"));
       setOpen(false);
+      if (!editing && promptForCampaign) {
+        router.push("/dashboard/campaigns/new");
+        router.refresh();
+        return;
+      }
       router.refresh();
     } catch (err) {
       const msg = err instanceof Error ? err.message : "";
@@ -117,6 +128,11 @@ export function TemplatesClient({ templates }: { templates: Template[] }) {
 
   return (
     <>
+      {promptForCampaign ? (
+        <p className="rounded-md border border-primary/20 bg-primary/5 p-3 text-small text-muted-foreground">
+          {t("needForCampaign")}
+        </p>
+      ) : null}
       <div className="flex justify-end">
         <Button onClick={openNew}>
           <IconPlus className="h-4 w-4" />
