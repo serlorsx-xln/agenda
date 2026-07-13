@@ -31,9 +31,12 @@ Optional: `SENTRY_DSN`.
 
 ## Coolify / Traefik note
 
-`web` joins the external Docker network `coolify` so Traefik keeps reachability
-after redeploys. On the little host, `/usr/local/bin/agenda-proxy-heal.sh` also
-runs every minute as a safety net if the proxy drops the app network.
+`web` joins the external Docker network `coolify` so Traefik can reach it after
+redeploys. On the little host, these keep the domain from staying on 404:
+
+- `/usr/local/bin/agenda-proxy-heal.sh` — reconnects proxy/app networks
+- `agenda-proxy-watch.service` — runs heal immediately when web/proxy containers start
+- cron every minute as a backup
 
 ## Docker Compose only (home network / single VPS)
 
