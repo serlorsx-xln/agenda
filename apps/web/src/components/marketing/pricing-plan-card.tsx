@@ -15,7 +15,7 @@ import { formatTHB } from "@/lib/utils";
 function FeatureRow({ children }: { children: React.ReactNode }) {
   return (
     <li className="flex items-center gap-2">
-      <Check className="h-4 w-4 shrink-0 text-muted-foreground" />
+      <Check className="h-4 w-4 shrink-0 text-success" />
       {children}
     </li>
   );

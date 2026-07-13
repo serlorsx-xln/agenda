@@ -49,6 +49,12 @@ export async function SiteHeader() {
             >
               {t("guides")}
             </Link>
+            <Link
+              href="/#contact"
+              className="text-small text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {t("contact")}
+            </Link>
           </nav>
         </div>
         <div className="flex items-center gap-1">

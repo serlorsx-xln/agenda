@@ -5,7 +5,7 @@ import { autoReplyRules, campaigns } from "./schema";
 
 /**
  * When trial expires without payment, pause all campaigns and disable auto-reply.
- * Idempotent — safe to run on every dashboard load or daily cron.
+ * Idempotent - safe to run on every dashboard load or daily cron.
  */
 export async function enforceLockedPlanLimits(userId: string): Promise<void> {
   const now = new Date();

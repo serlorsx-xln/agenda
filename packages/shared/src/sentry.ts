@@ -36,6 +36,6 @@ export async function captureException(
       Sentry.captureException(err);
     });
   } catch {
-    // Sentry optional — never block request paths.
+    // Sentry optional - never block request paths.
   }
 }

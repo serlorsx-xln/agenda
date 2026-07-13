@@ -7,9 +7,9 @@ export type SchedulePreset = "window" | "daily" | "weekdays";
 
 export type CampaignSchedule = {
   preset: SchedulePreset;
-  /** 0–23 when preset is daily/weekdays */
+  /** 0-23 when preset is daily/weekdays */
   hour: number;
-  /** 0–59 when preset is daily/weekdays */
+  /** 0-59 when preset is daily/weekdays */
   minute: number;
 };
 

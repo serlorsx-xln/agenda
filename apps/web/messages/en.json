@@ -13,17 +13,17 @@
     "hint": "Help",
     "moreInfo": "More information",
     "glossary": {
-      "sendJob": "Send job",
+      "sendJob": "Send schedule",
       "targetGroups": "Groups to send to",
       "messageTemplate": "Message template",
       "autoReply": "Auto-reply",
-      "sendResults": "Send results",
-      "allowedHours": "Allowed send hours",
-      "autoStartTime": "Auto-start time",
+      "sendResults": "Send history",
+      "allowedHours": "Send window",
+      "autoStartTime": "Start time",
       "waitBeforeReply": "Wait before replying again",
-      "replyPriority": "Order when multiple match",
+      "replyPriority": "If several replies match at once",
       "listening": "Listening for keywords",
-      "perJobLimit": "Per send job limit",
+      "perJobLimit": "Per send schedule limit",
       "stats": "Stats",
       "planLimits": "Plan limits"
     }
@@ -34,6 +34,7 @@
     "pricing": "Pricing",
     "faq": "FAQ",
     "guides": "Guides",
+    "contact": "Contact",
     "login": "Log in",
     "signup": "Sign up",
     "dashboard": "Dashboard",
@@ -42,8 +43,8 @@
     "openchats": "Groups & OpenChats",
     "templates": "Message templates",
     "autoReply": "Auto-reply",
-    "campaigns": "Send jobs",
-    "runs": "Send results",
+    "campaigns": "Send schedules",
+    "runs": "Send history",
     "billing": "Billing",
     "settings": "Settings",
     "admin": "Admin",
@@ -52,27 +53,27 @@
   },
   "landing": {
     "hero": {
-      "eyebrow": "For LINE sellers and community managers",
-      "title": "Auto-send messages + auto-reply in LINE OpenChats and groups",
-      "subtitle": "Send one group at a time on schedule, see today's progress on each card, and test with Send next group — using your personal LINE account.",
+      "title": "Still sending messages one group at a time?",
+      "subtitle": "Agenda auto-sends and auto-replies in LINE OpenChats and groups - on your personal account.",
       "ctaPrimary": "Start free 14-day trial",
-      "ctaSecondary": "See how it works"
+      "ctaSecondary": "See how it works",
+      "proof": "Full Growth trial for 14 days when you connect LINE · Cancel anytime"
     },
     "howItWorks": {
       "title": "Get started in 4 steps",
-      "subtitle": "From connecting LINE to your first send — no Official Account required",
+      "subtitle": "From connecting LINE to your first send - no Official Account required",
       "cta": "Start free trial",
       "steps": {
         "connect": {
           "title": "Connect LINE",
-          "desc": "Scan a QR code from the dashboard — your personal account"
+          "desc": "Scan a QR code from the dashboard - your personal account"
         },
         "template": {
           "title": "Message template + groups",
           "desc": "Write your message once, then pick groups to send to"
         },
         "campaign": {
-          "title": "Create a send job",
+          "title": "Create a send schedule",
           "desc": "Set send hours and your daily group limit"
         },
         "send": {
@@ -82,32 +83,20 @@
       }
     },
     "features": {
-      "title": "Auto-send and auto-reply in one dashboard",
-      "subtitle": "Schedule promotions, auto-reply to keywords instantly, and track everything from a single dashboard.",
+      "title": "Built for the problems you hit every day",
+      "subtitle": "Four capabilities sales teams actually use on LINE - without feature clutter.",
       "items": {
         "schedule": {
           "title": "Scheduled auto-sending",
-          "desc": "Pick days, times, and groups — Agenda sends one group at a time on schedule."
+          "desc": "Pick days, times, and groups - Agenda sends one group at a time on schedule."
         },
         "autoReply": {
           "title": "24/7 keyword auto-reply",
-          "desc": "Set keywords and replies — when someone asks in your group, the system responds instantly with text, images, and quote replies."
+          "desc": "Set keywords and replies - when someone asks in your group, the system responds instantly with text, images, and quote replies."
         },
         "templates": {
           "title": "Message templates + images",
           "desc": "Write once, attach multiple images, and reuse across both auto-sends and auto-replies."
-        },
-        "humanPace": {
-          "title": "Human-like sending pace",
-          "desc": "Randomized delays between groups make delivery look natural and avoid being flagged as spam."
-        },
-        "monitoring": {
-          "title": "Progress on every card",
-          "desc": "See how many groups sent today, which group is next, and jump to today's results instantly."
-        },
-        "pacing": {
-          "title": "Auto-stop on errors",
-          "desc": "Configure delays and error thresholds — sending pauses automatically to protect your account."
         },
         "control": {
           "title": "Full control",
@@ -117,14 +106,14 @@
     },
     "pricing": {
       "title": "Straightforward pricing",
-      "subtitle": "Limits apply to send jobs and groups per job — not message volume.",
+      "subtitle": "Limits apply to send schedules and groups per schedule - not message volume.",
       "perMonth": "/ month",
       "cta": "Choose a plan",
       "showAllFeatures": "See all features",
-      "trialNote": "Full Growth trial for 14 days when you connect LINE — after that, payment is required to keep sending and auto-reply running.",
+      "trialNote": "Full Growth trial for 14 days when you connect LINE - after that, payment is required to keep sending and auto-reply running.",
       "features": {
-        "campaigns": "{count} send jobs",
-        "targets": "{count} groups per send job",
+        "campaigns": "{count} send schedules",
+        "targets": "{count} groups per send schedule",
         "autoReplyRules": "{count} auto-replies",
         "mediaAssets": "{count} stored images",
         "pacing": "Inter-group delay on every plan",
@@ -135,10 +124,10 @@
         "autoReplyFilters": "Exclude keywords + emoji filter",
         "autoReplyExactMatch": "Exact phrase matching",
         "autoReplyPriority": "Reply order when multiple match + advanced cooldown",
-        "maxSendsPerDay": "Up to {count} groups/day per send job",
-        "runHistory": "{days}-day run history",
-        "runHistoryUnlimited": "Unlimited run history",
-        "unavailable": "—"
+        "maxSendsPerDay": "Up to {count} groups/day per send schedule",
+        "runHistory": "{days}-day send history",
+        "runHistoryUnlimited": "Unlimited send history",
+        "unavailable": "-"
       }
     },
     "faq": {
@@ -151,11 +140,11 @@
         },
         "autoReply": {
           "q": "How does auto-reply work?",
-          "a": "Set keywords and reply messages — when someone types a matching word in your group, the system replies instantly 24/7. Supports images and quote replies."
+          "a": "Set keywords and reply messages - when someone types a matching word in your group, the system replies instantly 24/7. Supports images and quote replies."
         },
         "risk": {
           "q": "Is there account risk?",
-          "a": "Any automated sending carries some risk. Agenda uses allowed send hours, per-job daily caps, delays between groups, and auto-stop on repeated failures. You remain responsible for your LINE account."
+          "a": "Any automated sending carries some risk. Agenda uses send window, per-schedule daily caps, delays between groups, and auto-stop on repeated failures. You remain responsible for your LINE account."
         },
         "payment": {
           "q": "How do I pay?",
@@ -167,7 +156,7 @@
         },
         "trial": {
           "q": "Is there a free trial?",
-          "a": "Connecting LINE unlocks a full 14-day Growth trial. After it ends, you must pay to keep sending and auto-reply — there is no usable free tier."
+          "a": "Connecting LINE unlocks a full 14-day Growth trial. After it ends, you must pay to keep sending and auto-reply - there is no usable free tier."
         },
         "plans": {
           "q": "What do paid plans add?",
@@ -185,16 +174,22 @@
       "subtitle": "Guides on scheduling, account types, and using Agenda",
       "cta": "Browse guides"
     },
+    "contact": {
+      "title": "Contact us",
+      "subtitle": "Questions or need help - chat with us on LINE anytime.",
+      "cta": "Chat on LINE"
+    },
     "footer": {
       "rights": "All rights reserved",
       "disclaimer": "Agenda is not affiliated with, endorsed by, or a product of LINE Corporation.",
       "terms": "Terms of service",
       "privacy": "Privacy policy",
-      "guides": "Guides"
+      "guides": "Guides",
+      "contact": "Contact us"
     },
     "meta": {
-      "title": "Agenda · Auto-send + auto-reply for LINE OpenChat",
-      "description": "Agenda auto-sends scheduled messages and auto-replies to keywords in LINE OpenChats and groups. 14-day Growth trial."
+      "title": "Agenda · Auto-send + auto-reply in LINE OpenChats and groups",
+      "description": "Still sending one group at a time? Schedule sends and keyword replies on your personal LINE account - 14-day Growth trial."
     }
   },
   "auth": {
@@ -232,9 +227,9 @@
       "tagline": "Auto-send to LINE OpenChats and groups, one group at a time",
       "trialNote": "Full Growth trial for 14 days when you connect LINE",
       "bullets": {
-        "schedule": "Create send jobs — pick groups, hours, and daily limits",
+        "schedule": "Create send schedules - pick groups, hours, and daily limits",
         "progress": "See progress on each card and test with Send next group",
-        "trial": "Uses your personal LINE account — no Official Account needed"
+        "trial": "Uses your personal LINE account - no Official Account needed"
       }
     },
     "fields": {
@@ -245,7 +240,6 @@
     },
     "errors": {
       "invalidCredentials": "Invalid email or password",
-      "emailNotVerified": "Please verify your email before signing in. Check your inbox for the link.",
       "emailTaken": "This email is already registered",
       "generic": "Something went wrong. Please try again.",
       "nameRequired": "Please enter your name",
@@ -256,19 +250,19 @@
   },
   "dashboard": {
     "workerStatus": {
-      "degraded": "Background system unavailable. Scheduled sends may be delayed until it recovers."
+      "degraded": "Sending system unavailable. Scheduled sends may be delayed until it recovers."
     },
     "overview": {
       "title": "Overview",
-      "subtitle": "Connection, send jobs, and recent activity",
+      "subtitle": "Connection, send schedules, and recent activity",
       "connection": "LINE connection",
-      "activeCampaigns": "Active send jobs",
-      "recentRuns": "Send results (7 days)",
+      "activeCampaigns": "Active send schedules",
+      "recentRuns": "Send history (7 days)",
       "quota": "Sent today",
       "autoReplyRules": "Auto-replies",
       "autoReplyMatches": "Auto-reply matches (total)",
-      "recentActivity": "Recent runs",
-      "noActivity": "No sends yet. Create a send job to get started.",
+      "recentActivity": "Recent sends",
+      "noActivity": "No sends yet. Create a send schedule to get started.",
       "connectPrompt": "Connect your LINE account to start.",
       "connectCta": "Connect LINE",
       "campaignProgressTitle": "Today's send progress",
@@ -314,7 +308,7 @@
       "loginFailed": "Could not connect to LINE. Please try again.",
       "sessionPermission": "Could not read the saved LINE session. Click reconnect to start a new login.",
       "loginCancelled": "Connection was cancelled.",
-      "e2eeInvalid": "Logged in but cannot send to groups yet — tap Fix group message reading, scan QR again, and enter the 6-digit PIN shown on this page in LINE on your phone."
+      "e2eeInvalid": "Logged in but cannot send to groups yet - tap Fix group message reading, scan QR again, and enter the 6-digit PIN shown on this page in LINE on your phone."
     },
     "hints": {
       "pin": "Enter the 6-digit PIN shown on this page in LINE on your phone",
@@ -325,16 +319,16 @@
       "qr": "Scan QR",
       "pin": "Enter PIN",
       "done": "Done",
-      "intro": "Tap the button below and follow the 3 steps on screen — takes about 1–2 minutes."
+      "intro": "Tap the button below and follow the 3 steps on screen - takes about 1-2 minutes."
     }
   },
   "openchats": {
-    "title": "Chats",
+    "title": "Groups & OpenChats",
     "subtitle": "OpenChats and groups discovered from your connected account.",
     "sync": "Sync now",
     "syncing": "Syncing...",
     "columns": {
-      "name": "Chat",
+      "name": "Name",
       "type": "Type",
       "mid": "Chat ID",
       "members": "Members",
@@ -346,19 +340,19 @@
     },
     "present": "Present",
     "missing": "Missing",
-    "addTarget": "Add to send job",
+    "addTarget": "Add to send schedule",
     "empty": "No chats found. Connect LINE and sync to discover OpenChats and groups.",
     "emptyCta": "Connect LINE",
     "notConnected": "Connect your LINE account first to sync your chats.",
     "addTargetDialog": {
-      "title": "Add to send job",
-      "description": "Choose a send job to add this chat as a group to send to.",
-      "noCampaigns": "No send jobs yet. Create one first.",
+      "title": "Add to send schedule",
+      "description": "Choose a send schedule to add this chat as a group to send to.",
+      "noCampaigns": "No send schedules yet. Create one first.",
       "add": "Add group to send to"
     },
     "hints": {
-      "mid": "Internal ID — for support only",
-      "addTarget": "Add this chat to the selected send job"
+      "mid": "Internal ID - for support only",
+      "addTarget": "Add this chat to the selected send schedule"
     }
   },
   "templates": {
@@ -378,7 +372,7 @@
     "contentRequired": "Add text or an image",
     "empty": "No message templates yet. Create your first message template.",
     "emptyCta": "Create message template",
-    "deleteConfirm": "Delete this message template? Send jobs using it will keep their copy.",
+    "deleteConfirm": "Delete this message template? Send schedules using it will keep their copy.",
     "namePlaceholder": "e.g. Weekend sale",
     "bodyPlaceholder": "Write your promotional message here.",
     "errors": {
@@ -410,9 +404,9 @@
     "deleted": "Reply deleted",
     "notConnected": "Connect LINE before enabling auto-reply.",
     "connectLink": "Go to Connect",
-    "workerUnavailable": "Background worker is unavailable. Auto-replies may not load or run until it is back online.",
-    "e2eeDegraded": "Some encrypted group messages could not be decrypted. Auto-reply may miss matches until E2EE keys are reset.",
-    "e2eeResetLink": "Reset E2EE keys",
+    "workerUnavailable": "Sending system unavailable. Auto-replies may not load or run until it is back online.",
+    "e2eeDegraded": "Some group messages cannot be read. Auto-reply may miss matches until group message reading is fixed.",
+    "e2eeResetLink": "Fix group message reading",
     "usesTemplate": "Uses message template",
     "imageOnly": "Image only",
     "matched": "Matched {count} times",
@@ -455,7 +449,7 @@
       "matchMode": "Match style",
       "template": "Message template",
       "templatePlaceholder": "Select template",
-      "noTemplate": "No template — type your own",
+      "noTemplate": "No template - type your own",
       "replyText": "Reply text",
       "replyTextHint": "Use when no template is selected",
       "replyImage": "Reply image",
@@ -464,9 +458,9 @@
       "enabled": "Enabled"
     },
     "priorityTier": {
-      "normal": "Normal — default (pick this if unsure)",
-      "important": "Important — use this instead of normal replies",
-      "veryImportant": "Highest — use this before almost all other replies"
+      "normal": "Normal - default (pick this if unsure)",
+      "important": "Important - use this instead of normal replies",
+      "veryImportant": "Highest - use this before almost all other replies"
     },
     "runtime": {
       "title": "Listening for keywords?",
@@ -487,7 +481,7 @@
       "plan_feature_autoReplyExactMatch": "Your plan does not include exact phrase matching",
       "plan_feature_autoReplyPriority": "Your plan does not include priority controls",
       "plan_feature_autoReplyCooldownMaxSec": "Wait-before-reply exceeds your plan limit",
-      "worker_unavailable": "Background system unavailable. Please try again.",
+      "worker_unavailable": "Sending system unavailable. Please try again.",
       "include_required": "At least one include keyword is required",
       "exact_single_keyword": "Exact match requires exactly one include keyword",
       "chat_mids_required": "Select at least one chat",
@@ -498,38 +492,38 @@
       "mode": "Easy: chat + keyword + template or text · Advanced: extra conditions",
       "chats": "Only listen in selected groups/OpenChats",
       "keyword": "Reply when the message contains this word",
-      "template": "Uses template text and images — no need to type again",
+      "template": "Uses template text and images - no need to type again",
       "replyText": "Use when no template is selected",
       "replyImage": "Use when no template is selected (advanced mode)",
       "cooldown": "Delay before replying to the same person again",
       "enabled": "Must be on to listen and reply",
-      "priority": "One customer message can match several replies — we send only one reply, not one per match."
+      "priority": "One customer message can match several replies - we send only one reply, not one per match."
     },
     "help": {
-      "priority": "Usually \"Normal\" is enough — choose \"Important\" when another reply uses similar words and you want this one sent instead."
+      "priority": "Usually \"Normal\" is enough - choose \"Important\" when another reply uses similar words and you want this one sent instead."
     }
   },
   "campaigns": {
-    "title": "Send jobs",
+    "title": "Send schedules",
     "subtitle": "Choose what to send, which groups, and when",
-    "new": "New send job",
-    "newHint": "1) Pick message + groups 2) Set time and daily limit 3) Enable — or tap Send next group to test first",
-    "edit": "Edit send job",
+    "new": "New send schedule",
+    "newHint": "1) Pick message + groups 2) Set time and daily limit 3) Enable - or tap Send next group to test first",
+    "edit": "Edit send schedule",
     "sections": {
-      "basics": "Message and job name",
+      "basics": "Message and schedule name",
       "schedule": "When to send",
       "pacing": "How many and enable"
     },
-    "empty": "No send jobs yet. Create your first send job.",
-    "emptyCta": "Create first send job",
+    "empty": "No send schedules yet. Create your first send schedule.",
+    "emptyCta": "Create first send schedule",
     "fields": {
-      "name": "Send job name",
+      "name": "Schedule name",
       "template": "Message template",
       "targets": "Groups to send to",
-      "window": "Allowed send hours",
+      "window": "Send window",
       "windowStart": "Start hour",
       "windowEnd": "End hour",
-      "schedule": "Auto-start time",
+      "schedule": "Start time",
       "scheduleHour": "Send at (hour)",
       "scheduleMinute": "Send at (minute)",
       "maxSends": "Max groups per day",
@@ -539,27 +533,27 @@
       "enabled": "Auto-send"
     },
     "schedule": {
-      "window": "Continuous queue during allowed hours",
+      "window": "Continuous queue during send window",
       "daily": "Every day at set time (one group at a time)",
-      "weekdays": "Mon–Fri at set time (one group at a time)"
+      "weekdays": "Mon-Fri at set time (one group at a time)"
     },
     "help": {
       "schedule": {
         "window": "Sends one group at a time in rotation within your window until quota is met or the window closes.",
-        "daily": "Cron starts the send queue at the chosen time (one group at a time, not all at once).",
-        "weekdays": "Cron starts the send queue Mon–Fri at the chosen time (one group at a time, not all at once)."
+        "daily": "The system starts sending at the chosen time (one group at a time, not all at once).",
+        "weekdays": "The system starts sending Mon-Fri at the chosen time (one group at a time, not all at once)."
       },
       "window": "Messages are only sent between these hours (24h).",
       "pacing": "Sending pace",
       "delayMin": "Minimum 45 seconds to reduce LINE throttling risk",
-      "maxSendsCap": "Your plan allows up to {max} groups/day in this send job",
+      "maxSendsCap": "Your plan allows up to {max} groups/day in this send schedule",
       "roundRobin": "Sends one group at a time in rotation",
-      "autoSpread": "Sends are spread automatically across the window (no cron needed).",
-      "targetsUnequalWarning": "Daily send limit is lower than the number of groups — some groups may not receive a send today.",
+      "autoSpread": "Sends are spread automatically across the window (no fixed start time needed).",
+      "targetsUnequalWarning": "Daily send limit is lower than the number of groups - some groups may not receive a send today.",
       "sendsPerGroupEstimate": "≈ {count} sends per group per day (estimate)",
       "summaryLine": "Up to {maxSends} sends/day · {groups} groups · ≈ {perGroup} sends/group",
       "advancedPacing": "Advanced pacing",
-      "cronQueueHint": "Set time starts the queue — does not send to every group at once",
+      "cronQueueHint": "Set time starts sending - does not send to every group at once",
       "enabledExplain": "On = automatic sends on schedule · Off = no automatic sends, but you can still tap Send next group to test"
     },
     "status": {
@@ -570,8 +564,8 @@
     },
     "targetsSelected": "{count} selected",
     "targetLimit": "max {max}",
-    "usageSummary": "{used} / {max} send jobs",
-    "limitReached": "Send job limit reached",
+    "usageSummary": "{used} / {max} send schedules",
+    "limitReached": "Send schedule limit reached",
     "selectTargets": "Select groups to send to",
     "noTargets": "No groups selected",
     "noTemplateBody": "No message text in this template",
@@ -579,50 +573,50 @@
     "runNextConfirm": "Send to the next group in rotation (one group at a time, not all at once)?",
     "runNextConfirmNamed": "Send to \"{name}\" now (one group, not all)?",
     "runNextConfirmTitle": "Send next group?",
-    "runNextSuccess": "Send started — see results under Send results",
+    "runNextSuccess": "Send started - see results under Send history",
     "card": {
       "summary": "{groups} groups · up to {max}/day",
       "autoSend": "Auto-send",
       "sentTodayShort": "Today {sent}/{max}",
       "viewToday": "View today's results →"
     },
-    "deleteConfirm": "Delete this send job and its run history?",
-    "deleteConfirmTitle": "Delete this send job?",
+    "deleteConfirm": "Delete this send schedule and its send history?",
+    "deleteConfirmTitle": "Delete this send schedule?",
     "progress": {
       "sentToday": "Sent today {sent} / {max} groups",
       "nextGroup": "Next: {name}",
-      "noTargets": "No groups selected — pick groups before sending",
+      "noTargets": "No groups selected - pick groups before sending",
       "dailyLimitReached": "Daily send limit reached for today",
-      "outsideWindow": "Outside allowed send hours"
+      "outsideWindow": "Outside send window"
     },
     "errors": {
       "generic": "Something went wrong",
       "invalid": "Invalid input",
       "forbidden": "You do not have permission for this action",
       "plan_locked": "Pay to continue using Agenda",
-      "plan_limit_campaigns": "Send job limit reached for your plan",
-      "plan_limit_targets": "Groups-per-job limit reached for your plan",
+      "plan_limit_campaigns": "Send schedule limit reached for your plan",
+      "plan_limit_targets": "Groups-per-schedule limit reached for your plan",
       "rate_limited": "Too many attempts. Please wait a moment.",
-      "worker_unavailable": "Background system unavailable. Please try again.",
+      "worker_unavailable": "Sending system unavailable. Please try again.",
       "error": "Something went wrong"
     },
     "hints": {
-      "template": "Message sent to every group in this job",
-      "schedule": "Continuous = queue in allowed hours · Daily/Mon–Fri = start queue at set time",
+      "template": "Message sent to every group in this send schedule",
+      "schedule": "Continuous = queue in send window · Daily/Mon-Fri = start queue at set time",
       "window": "Sends only during these hours",
-      "maxSends": "Max sends per day in this job",
+      "maxSends": "Max sends per day in this send schedule",
       "targets": "Groups rotated one at a time",
       "enabled": "On = automatic sends on schedule · Off = no automatic sends, but Send next group still works for testing",
-      "runNext": "Sends only the next group, not all at once — use to test or send sooner"
+      "runNext": "Sends only the next group, not all at once - use to test or send sooner"
     }
   },
   "runs": {
-    "title": "Send results",
+    "title": "Send history",
     "subtitle": "See how many groups were reached each day",
-    "empty": "No runs yet.",
-    "emptyCta": "Go to send jobs",
+    "empty": "No sends yet.",
+    "emptyCta": "Go to send schedules",
     "columns": {
-      "campaign": "Send job",
+      "campaign": "Send schedule",
       "status": "Status",
       "trigger": "Started by",
       "sent": "Sent",
@@ -643,10 +637,10 @@
       "manual": "Manual"
     },
     "cancel": "Cancel send",
-    "cancelConfirmTitle": "Cancel this run?",
-    "cancelConfirmDescription": "Cancellation stops the remaining queue for today — groups already sent will not be reversed.",
+    "cancelConfirmTitle": "Cancel this send?",
+    "cancelConfirmDescription": "Cancellation stops the remaining queue for today - groups already sent will not be reversed.",
     "cancelConfirmAction": "Cancel send",
-    "dailyAggregateHint": "One row = one day per send job (includes every send that day)",
+    "dailyAggregateHint": "One row = one day per send schedule (includes every send that day)",
     "sentToday": "Sent to {count} groups today",
     "liveTitle": "Today's send details",
     "eventStatus": {
@@ -656,7 +650,7 @@
       "info": "Info"
     },
     "hints": {
-      "dailyRow": "One row = one day per send job",
+      "dailyRow": "One row = one day per send schedule",
       "cancel": "Stop unsent queue for today"
     }
   },
@@ -667,8 +661,7 @@
     "integrationNote": "Set PROMPTPAY_ID in the server environment to accept PromptPay payments.",
     "currentPlan": "Current plan",
     "freePlan": "Unpaid",
-    "lockedBanner": "Account locked — pay to resume sending and auto-reply. You can still view existing data but cannot run actions.",
-    "trialActive": "Trial — {days} days left",
+    "trialActive": "Trial - {days} days left",
     "trialBanner": "You are on a Growth trial with {days} days remaining. Payment is required after the trial to keep using Agenda.",
     "choosePlan": "Choose plan",
     "errors": {
@@ -680,8 +673,8 @@
     "perMonth": "/ month",
     "payWithPromptPay": "Pay with PromptPay",
     "features": {
-      "campaigns": "{count} send jobs",
-      "targets": "{count} groups per send job",
+      "campaigns": "{count} send schedules",
+      "targets": "{count} groups per send schedule",
       "autoReplyRules": "{count} auto-replies",
       "mediaAssets": "{count} stored images",
       "pacing": "Delay between groups on every plan",
@@ -689,7 +682,7 @@
       "templatesUnlimited": "Unlimited message templates",
       "schedulingCron": "Scheduled sends (daily / weekdays)",
       "autoReplyImages": "Auto-reply with images",
-      "maxSendsPerDay": "Up to {count} groups/day per send job"
+      "maxSendsPerDay": "Up to {count} groups/day per send schedule"
     },
     "promptpay": {
       "title": "PromptPay payment",
@@ -738,7 +731,7 @@
       "expired": "Expired"
     },
     "hints": {
-      "maxSendsPerDay": "Multiple send jobs can exceed this total — not an account-wide daily cap"
+      "maxSendsPerDay": "Multiple send schedules can exceed this total - not an account-wide daily cap"
     }
   },
   "settings": {
@@ -807,7 +800,7 @@
         "time": "Time",
         "user": "User",
         "action": "Action",
-        "target": "Target"
+        "target": "Group"
       },
       "empty": "No audit entries."
     }
@@ -819,40 +812,40 @@
     "error": "Something went wrong",
     "connectionStarted": "Connection started",
     "disconnected": "Disconnected",
-    "e2eeResetStarted": "Encryption reset started — scan the new QR code",
-    "paymentConfirmed": "Payment confirmed — plan upgraded",
+    "e2eeResetStarted": "Fix started - scan the new QR code",
+    "paymentConfirmed": "Payment confirmed - plan upgraded",
     "paymentCancelled": "Payment cancelled",
     "synced": "Sync complete",
-    "runStarted": "Run started",
+    "runStarted": "Send started",
     "runCancelled": "Run cancelled",
-    "targetAdded": "Target added",
+    "targetAdded": "Group added",
     "localeChanged": "Language updated"
   },
   "planUsage": {
     "title": "Your plan",
-    "campaigns": "Send jobs",
+    "campaigns": "Send schedules",
     "autoReplyRules": "Auto-replies",
     "mediaAssets": "Stored images",
     "autoReplyMatches": "Replied {count} times (lifetime)",
-    "targetsPerCampaign": "Up to {count} groups per job",
+    "targetsPerCampaign": "Up to {count} groups per schedule",
     "trialBadge": "Growth trial · {days} days left",
-    "lockedBadge": "Locked",
-    "lockedHint": "Pay to resume sending and auto-reply",
+    "lockedBadge": "Trial ended",
+    "lockedHint": "Choose a plan to keep sending and auto-reply",
     "connectHint": "Connect your LINE account to start scheduling.",
     "connectHintTrial": "Connect LINE to start your 14-day Growth trial.",
     "connectHintLocked": "You can connect LINE, but payment is required before sending or auto-reply.",
     "upgradeCta": "View plans",
-    "unlockCta": "Unlock account",
+    "unlockCta": "Choose a plan and pay",
     "limitsSection": "Plan limits",
     "statsSection": "Stats",
-    "perJobSection": "Per send job",
+    "perJobSection": "Per send schedule",
     "sentToday": "Sent today: {count} groups",
-    "maxSendsPerJob": "Up to {count} groups/day per job",
-    "maxSendsPerJobHint": "Multiple jobs can send more in total — not an account-wide daily cap"
+    "maxSendsPerJob": "Up to {count} groups/day per schedule",
+    "maxSendsPerJobHint": "Multiple jobs can send more in total - not an account-wide daily cap"
   },
   "paywall": {
-    "title": "Account locked",
-    "description": "Your trial has ended — pay to resume sending and auto-reply. You can still view existing data but cannot run actions.",
+    "title": "Your Growth trial has ended",
+    "description": "Choose a plan to keep sending and auto-reply - you can still view your existing data.",
     "cta": "Choose a plan and pay"
   },
   "onboarding": {
@@ -864,7 +857,7 @@
       "sync": "Sync OpenChats and groups",
       "template": "Create a message template",
       "autoReply": "Set up auto-reply",
-      "campaign": "Create your first send job",
+      "campaign": "Create your first send schedule",
       "run": "Send your first group (Send next group)"
     },
     "cta": {
@@ -872,27 +865,27 @@
       "sync": "Sync chats",
       "template": "Create template",
       "autoReply": "Set up auto-reply",
-      "campaign": "Create send job",
-      "run": "Go to send jobs"
+      "campaign": "Create send schedule",
+      "run": "Go to send schedules"
     }
   },
   "upgrade": {
-    "titleCampaigns": "Need more send jobs?",
-    "titleTargets": "Need more groups per job?",
+    "titleCampaigns": "Need more send schedules?",
+    "titleTargets": "Need more groups per schedule?",
     "titleAutoReplyRules": "Need more auto-replies?",
     "titleMediaAssets": "Need more image storage?",
     "titleTemplates": "Need more templates?",
     "titleLocked": "Payment required to continue",
-    "descriptionCampaigns": "Your current plan limit is reached. Growth includes up to {count} send jobs.",
-    "descriptionTargets": "Your current plan limit is reached. Growth includes up to {count} groups per send job.",
+    "descriptionCampaigns": "Your current plan limit is reached. Growth includes up to {count} send schedules.",
+    "descriptionTargets": "Your current plan limit is reached. Growth includes up to {count} groups per send schedule.",
     "descriptionAutoReplyRules": "Your current plan limit is reached. Growth includes up to {count} auto-replies.",
-    "descriptionMediaAssets": "Your current plan limit is reached. Growth includes up to {count} uploaded media assets.",
-    "descriptionTemplates": "Basic is limited to {count} templates — upgrade to Growth for unlimited.",
+    "descriptionMediaAssets": "Your current plan limit is reached. Growth includes up to {count} stored images.",
+    "descriptionTemplates": "Basic is limited to {count} templates - upgrade to Growth for unlimited.",
     "descriptionLocked": "Your trial has ended. Pay to resume sending and auto-reply.",
-    "featureCampaigns": "{count} send jobs",
-    "featureTargets": "{count} groups per send job",
+    "featureCampaigns": "{count} send schedules",
+    "featureTargets": "{count} groups per send schedule",
     "featureAutoReplyRules": "{count} auto-replies",
-    "featureMediaAssets": "{count} media assets",
+    "featureMediaAssets": "{count} stored images",
     "featurePacing": "Delay between groups on every plan",
     "featureScheduling": "Scheduled sends (daily / weekdays)",
     "featureAutoReplyImages": "Auto-reply with images",
@@ -900,8 +893,8 @@
     "dismiss": "Not now",
     "banner": {
       "trialEnding": "Your Growth trial ends in {days} days. Pay to keep using Agenda.",
-      "nearLimit": "You are using {used} of {max} send jobs. Upgrade for more scale.",
-      "atLimit": "Send job limit reached. Upgrade to add more send jobs.",
+      "nearLimit": "You are using {used} of {max} send schedules. Upgrade for more scale.",
+      "atLimit": "Send schedule limit reached. Upgrade to add more send schedules.",
       "cta": "View plans",
       "dismiss": "Dismiss"
     }
@@ -941,7 +934,7 @@
       "sections": {
         "collect": {
           "title": "Information we collect",
-          "body": "We collect account details (name, email), LINE connection metadata, send job content, and usage logs needed to operate the service."
+          "body": "We collect account details (name, email), LINE connection metadata, send schedule content, and usage logs needed to operate the service."
         },
         "use": {
           "title": "How we use it",
@@ -949,7 +942,7 @@
         },
         "storage": {
           "title": "Storage and security",
-          "body": "Data is stored in PostgreSQL. LINE session secrets stay on the worker volume and are not stored in the database."
+          "body": "Account and schedule data are stored securely. LINE login details stay on our sending servers and are not mixed into the main account database."
         },
         "sharing": {
           "title": "Sharing",
@@ -984,11 +977,11 @@
     "cards": {
       "schedule": {
         "title": "Schedule messages to OpenChats and groups",
-        "desc": "How send jobs, groups to send to, and allowed send hours work in Agenda."
+        "desc": "How send schedules, groups to send to, and send window work in Agenda."
       },
       "account": {
         "title": "Personal LINE account vs Official Account",
-        "desc": "Why Agenda uses the account you already belong to — not OA."
+        "desc": "Why Agenda uses the account you already belong to - not OA."
       },
       "payment": {
         "title": "Pay with PromptPay and a payment slip",
@@ -998,10 +991,10 @@
     "schedule": {
       "title": "Schedule promotional messages to LINE OpenChats and groups",
       "metaTitle": "Schedule LINE OpenChat messages · Agenda",
-      "metaDescription": "Step-by-step: connect LINE, create a message template, pick groups to send to, and create a send job in Agenda.",
+      "metaDescription": "Step-by-step: connect LINE, create a message template, pick groups to send to, and create a send schedule in Agenda.",
       "body": [
-        "Agenda helps you schedule promotional messages to LINE OpenChats and groups you already belong to — from one dashboard.",
-        "Create a message template, choose groups to send to, set allowed send hours, and enable a send job. Agenda sends one group at a time with delays and daily limits, and can stop after repeated failures.",
+        "Agenda helps you schedule promotional messages to LINE OpenChats and groups you already belong to - from one dashboard.",
+        "Create a message template, choose groups to send to, set send window, and enable a send schedule. Agenda sends one group at a time with delays and daily limits, and can stop after repeated failures.",
         "This is for communities you manage as a member. It is not a LINE Official Account or chatbot product.",
         "When you are ready, create an account and connect LINE from the dashboard."
       ]
@@ -1009,7 +1002,7 @@
     "account": {
       "title": "Personal LINE account versus Official Account",
       "metaTitle": "Personal LINE vs Official Account · Agenda",
-      "metaDescription": "Agenda uses your personal LINE membership in OpenChats and groups — not an Official Account.",
+      "metaDescription": "Agenda uses your personal LINE membership in OpenChats and groups - not an Official Account.",
       "body": [
         "LINE Official Accounts are a separate product for brands that publish to followers through OA tools.",
         "Agenda connects the personal LINE account you already use to participate in OpenChats and groups, then sends messages on the schedule you set.",
@@ -1023,7 +1016,7 @@
       "body": [
         "Paid Agenda plans are billed monthly via PromptPay.",
         "Scan the QR code shown in billing, transfer the amount, upload your payment slip, and the system verifies it automatically.",
-        "Trials and plan limits (send jobs and groups per job) are described on the pricing page. Contact support if a slip needs manual review."
+        "Trials and plan limits (send schedules and groups per schedule) are described on the pricing page. Contact support if a slip needs manual review."
       ]
     }
   }

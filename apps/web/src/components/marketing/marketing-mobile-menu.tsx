@@ -20,6 +20,7 @@ const LINKS = [
   { key: "pricing", href: "/#pricing" },
   { key: "faq", href: "/#faq" },
   { key: "guides", href: "/guides" },
+  { key: "contact", href: "/#contact" },
 ] as const;
 
 export function MarketingMobileMenu({ isLoggedIn }: { isLoggedIn?: boolean }) {

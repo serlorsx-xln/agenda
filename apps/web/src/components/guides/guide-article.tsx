@@ -6,6 +6,7 @@ import { Logo } from "@/components/brand/logo";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Button } from "@/components/ui/button";
 import { getSiteUrl } from "@/lib/site-url";
+import { SUPPORT_LINE_URL } from "@/lib/support";
 
 export type GuideSlug = "schedule" | "account" | "payment";
 
@@ -22,7 +23,7 @@ export async function guideMetadata(slug: GuideSlug): Promise<Metadata> {
   const url = `${siteUrl}${GUIDE_PATHS[slug]}`;
   const title = t("metaTitle");
   const description = t("metaDescription");
-  const ogImage = `${siteUrl}/og.png`;
+  const ogImage = `${siteUrl}/opengraph-image`;
 
   return {
     title: { absolute: title },
@@ -126,11 +127,21 @@ export async function GuideArticle({ slug }: { slug: GuideSlug }) {
         </article>
       </main>
       <footer className="border-t border-border py-8">
-        <div className="container flex items-center justify-between text-small text-muted-foreground">
+        <div className="container flex items-center justify-between gap-4 text-small text-muted-foreground">
           <Logo />
-          <Link href="/guides" className="hover:text-foreground">
-            {tIndex("title")}
-          </Link>
+          <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1">
+            <a
+              href={SUPPORT_LINE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground"
+            >
+              {tLanding("footer.contact")}
+            </a>
+            <Link href="/guides" className="hover:text-foreground">
+              {tIndex("title")}
+            </Link>
+          </div>
         </div>
       </footer>
     </div>

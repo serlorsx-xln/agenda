@@ -48,12 +48,7 @@ export function LoginForm() {
     });
     if (error) {
       const code = (error.code ?? error.message ?? "").toLowerCase();
-      if (
-        code.includes("email") &&
-        (code.includes("verif") || code.includes("not verified"))
-      ) {
-        setFormError(t("errors.emailNotVerified"));
-      } else if (code.includes("banned") || code.includes("forbidden")) {
+      if (code.includes("banned") || code.includes("forbidden")) {
         setFormError(t("errors.generic"));
       } else {
         setFormError(t("errors.invalidCredentials"));

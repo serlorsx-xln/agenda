@@ -1,5 +1,5 @@
 /**
- * Semantic icon exports — use these instead of importing lucide icons ad hoc.
+ * Semantic icon exports - use these instead of importing lucide icons ad hoc.
  *
  * Rules:
  * - Send actions: IconSend (never Play)

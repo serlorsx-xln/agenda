@@ -11,7 +11,7 @@ import {
   verification,
 } from "@line/db/schema";
 
-import { sendEmail } from "@/lib/email";
+import { sendEmail, renderAuthEmail } from "@/lib/email";
 import { isNextBuildPhase, validateWebEnv } from "@/lib/env";
 import {
   checkSignupRateLimit,
@@ -23,9 +23,6 @@ import { getSiteUrl } from "@/lib/site-url";
 const authSecret =
   process.env.BETTER_AUTH_SECRET ??
   "build_time_placeholder_secret_min_32_chars_xx";
-
-/** Email verification only when Resend is configured; otherwise login is blocked with no way to verify. */
-const emailDeliveryEnabled = Boolean(process.env.RESEND_API_KEY?.trim());
 
 export const auth = betterAuth({
   appName: "Agenda",
@@ -45,7 +42,8 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: emailDeliveryEnabled,
+    // LINE connect is the real gate - no signup email verification.
+    requireEmailVerification: false,
     minPasswordLength: 8,
     autoSignIn: true,
     sendResetPassword: async ({ user, url }) => {
@@ -54,33 +52,34 @@ export const auth = betterAuth({
           ? user.locale
           : "th";
       const isTh = locale === "th";
-      await sendEmail({
-        to: user.email,
-        subject: isTh ? "รีเซ็ตรหัสผ่าน" : "Reset your password",
-        html: isTh
-          ? `<p>สวัสดี ${user.name},</p><p><a href="${url}">คลิกที่นี่</a> เพื่อรีเซ็ตรหัสผ่านของคุณ ลิงก์นี้จะหมดอายุใน 1 ชั่วโมง</p>`
-          : `<p>Hi ${user.name},</p><p><a href="${url}">Click here</a> to reset your password. This link expires in one hour.</p>`,
-        text: isTh
-          ? `รีเซ็ตรหัสผ่าน: ${url}`
-          : `Reset your password: ${url}`,
+      const siteUrl = getSiteUrl();
+      const name = user.name?.trim() || (isTh ? "คุณ" : "there");
+      const { html, text } = renderAuthEmail({
+        siteUrl,
+        actionUrl: url,
+        copy: isTh
+          ? {
+              preview: "ลิงก์รีเซ็ตรหัสผ่าน Agenda - หมดอายุใน 1 ชั่วโมง",
+              greeting: `สวัสดี ${name},`,
+              body: "เราได้รับคำขอรีเซ็ตรหัสผ่านบัญชี Agenda ของคุณ กดปุ่มด้านล่างเพื่อตั้งรหัสผ่านใหม่",
+              cta: "รีเซ็ตรหัสผ่าน",
+              expiry: "ลิงก์นี้จะหมดอายุใน 1 ชั่วโมง หากคุณไม่ได้เป็นคนขอ ให้เพิกเฉยอีเมลนี้",
+              footer: "ส่งจาก ",
+            }
+          : {
+              preview: "Agenda password reset link - expires in 1 hour",
+              greeting: `Hi ${name},`,
+              body: "We received a request to reset your Agenda password. Use the button below to choose a new one.",
+              cta: "Reset password",
+              expiry: "This link expires in 1 hour. If you did not request this, you can ignore this email.",
+              footer: "Sent from ",
+            },
       });
-    },
-  },
-  emailVerification: {
-    sendOnSignUp: emailDeliveryEnabled,
-    sendVerificationEmail: async ({ user, url }) => {
-      const locale =
-        "locale" in user && typeof user.locale === "string"
-          ? user.locale
-          : "th";
-      const isTh = locale === "th";
       await sendEmail({
         to: user.email,
-        subject: isTh ? "ยืนยันอีเมล" : "Verify your email",
-        html: isTh
-          ? `<p>สวัสดี ${user.name},</p><p><a href="${url}">คลิกที่นี่</a> เพื่อยืนยันอีเมลของคุณ</p>`
-          : `<p>Hi ${user.name},</p><p><a href="${url}">Click here</a> to verify your email address.</p>`,
-        text: isTh ? `ยืนยันอีเมล: ${url}` : `Verify your email: ${url}`,
+        subject: isTh ? "รีเซ็ตรหัสผ่าน Agenda" : "Reset your Agenda password",
+        html,
+        text,
       });
     },
   },

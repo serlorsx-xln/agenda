@@ -10,7 +10,7 @@ import {
   subscriptions,
   user,
 } from "@line/db";
-import { isTrialActive, type PlanId } from "@line/shared/plan";
+import { getPlan, isTrialActive, type PlanId } from "@line/shared/plan";
 
 import { sendEmail } from "@/lib/email";
 import { createLogger } from "@/lib/logger";
@@ -18,6 +18,9 @@ import { formatTHB } from "@/lib/utils";
 
 const log = createLogger("notifications");
 
+function planDisplayName(planId: PlanId): string {
+  return getPlan(planId)?.name ?? planId;
+}
 const TRIAL_NOTIFY_DAYS = [3, 1] as const;
 
 async function wasNotificationSent(
@@ -65,7 +68,7 @@ async function sendTrialEndingEmail(input: {
     ? `ทดลอง Growth เหลือ ${input.daysLeft} วัน`
     : `Your Growth trial ends in ${input.daysLeft} day${input.daysLeft === 1 ? "" : "s"}`;
   const html = isTh
-    ? `<p>สวัสดี ${input.name},</p><p>ทดลอง Growth ของคุณจะหมดอายุใน ${input.daysLeft} วัน ชำระเงินเพื่อใช้งานส่งข้อความและตอบอัตโนมัติต่อ</p>`
+    ? `<p>สวัสดี ${input.name},</p><p>ทดลอง Growth ของคุณจะหมดอายุใน ${input.daysLeft} วัน ชำระเงินเพื่อส่งข้อความและตอบอัตโนมัติต่อ</p>`
     : `<p>Hi ${input.name},</p><p>Your Growth trial ends in ${input.daysLeft} day${input.daysLeft === 1 ? "" : "s"}. Pay to keep sending and auto-reply running.</p>`;
 
   await sendEmail({ to: input.email, subject, html });
@@ -80,10 +83,11 @@ export async function sendPaymentReceiptEmail(input: {
 }): Promise<void> {
   const isTh = (input.locale ?? "th") === "th";
   const amount = formatTHB(input.amountSatang / 100);
+  const planName = planDisplayName(input.plan);
   const subject = isTh ? "ใบเสร็จการชำระเงิน" : "Payment receipt";
   const html = isTh
-    ? `<p>สวัสดี ${input.name},</p><p>เราได้รับการชำระเงิน ${amount} สำหรับแพ็กเกจ ${input.plan} แล้ว ขอบคุณที่ใช้บริการ</p>`
-    : `<p>Hi ${input.name},</p><p>We received your payment of ${amount} for the ${input.plan} plan. Thank you.</p>`;
+    ? `<p>สวัสดี ${input.name},</p><p>เราได้รับการชำระเงิน ${amount} สำหรับแพ็กเกจ ${planName} แล้ว ขอบคุณที่ใช้บริการ</p>`
+    : `<p>Hi ${input.name},</p><p>We received your payment of ${amount} for the ${planName} plan. Thank you.</p>`;
 
   await sendEmail({ to: input.email, subject, html });
 }
@@ -96,27 +100,28 @@ export async function sendSubscriptionReminderEmail(input: {
   locale?: string;
 }): Promise<void> {
   const isTh = (input.locale ?? "th") === "th";
+  const planName = planDisplayName(input.plan);
   const subjects = {
     renew_7d: isTh
-      ? `แพ็ก ${input.plan} จะหมดใน 7 วัน`
-      : `Your ${input.plan} plan renews in 7 days`,
+      ? `แพ็ก ${planName} จะหมดใน 7 วัน`
+      : `Your ${planName} plan renews in 7 days`,
     renew_1d: isTh
-      ? `แพ็ก ${input.plan} จะหมดพรุ่งนี้`
-      : `Your ${input.plan} plan ends tomorrow`,
+      ? `แพ็ก ${planName} จะหมดพรุ่งนี้`
+      : `Your ${planName} plan ends tomorrow`,
     past_due: isTh
-      ? `แพ็ก ${input.plan} เกินกำหนดชำระ`
-      : `Your ${input.plan} plan is past due`,
+      ? `แพ็ก ${planName} เกินกำหนดชำระ`
+      : `Your ${planName} plan is past due`,
   } as const;
   const bodies = {
     renew_7d: isTh
-      ? `<p>สวัสดี ${input.name},</p><p>แพ็ก ${input.plan} จะหมดอายุใน 7 วัน กรุณาชำระเงินใหม่ในหน้า Billing เพื่อใช้งานต่อ</p>`
-      : `<p>Hi ${input.name},</p><p>Your ${input.plan} plan ends in 7 days. Renew from the Billing page to keep access.</p>`,
+      ? `<p>สวัสดี ${input.name},</p><p>แพ็ก ${planName} จะหมดอายุใน 7 วัน กรุณาชำระเงินใหม่ในหน้าการชำระเงินเพื่อใช้งานต่อ</p>`
+      : `<p>Hi ${input.name},</p><p>Your ${planName} plan ends in 7 days. Renew from the Billing page to keep access.</p>`,
     renew_1d: isTh
-      ? `<p>สวัสดี ${input.name},</p><p>แพ็ก ${input.plan} จะหมดอายุพรุ่งนี้ กรุณาชำระเงินใหม่ในหน้า Billing</p>`
-      : `<p>Hi ${input.name},</p><p>Your ${input.plan} plan ends tomorrow. Renew from the Billing page.</p>`,
+      ? `<p>สวัสดี ${input.name},</p><p>แพ็ก ${planName} จะหมดอายุพรุ่งนี้ กรุณาชำระเงินใหม่ในหน้าการชำระเงิน</p>`
+      : `<p>Hi ${input.name},</p><p>Your ${planName} plan ends tomorrow. Renew from the Billing page.</p>`,
     past_due: isTh
-      ? `<p>สวัสดี ${input.name},</p><p>แพ็ก ${input.plan} เกินกำหนดแล้ว มีช่วงเวลาผ่อนผันอีกไม่กี่วันก่อนระบบจะตัดลง Free</p>`
-      : `<p>Hi ${input.name},</p><p>Your ${input.plan} plan is past due. You have a short grace period before the account moves to Free.</p>`,
+      ? `<p>สวัสดี ${input.name},</p><p>แพ็ก ${planName} เกินกำหนดแล้ว มีช่วงเวลาผ่อนผันอีกไม่กี่วันก่อนระบบจะหยุดการส่งและตอบอัตโนมัติ</p>`
+      : `<p>Hi ${input.name},</p><p>Your ${planName} plan is past due. You have a short grace period before sending and auto-reply stop.</p>`,
   } as const;
 
   await sendEmail({
@@ -135,11 +140,11 @@ async function sendRunFailedEmail(input: {
   locale?: string;
 }): Promise<void> {
   const isTh = (input.locale ?? "th") === "th";
-  const subject = isTh ? "การส่งล้มเหลว" : "Send job failed";
+  const subject = isTh ? "การส่งล้มเหลว" : "Send schedule failed";
   const detail = input.error ? `<p>${input.error}</p>` : "";
   const html = isTh
-    ? `<p>สวัสดี ${input.name},</p><p>งานส่ง "${input.campaignName}" ล้มเหลว</p>${detail}<p>Run ID: ${input.runId}</p>`
-    : `<p>Hi ${input.name},</p><p>Your send job "${input.campaignName}" failed.</p>${detail}<p>Run ID: ${input.runId}</p>`;
+    ? `<p>สวัสดี ${input.name},</p><p>ตารางส่ง "${input.campaignName}" ล้มเหลว</p>${detail}<p>รหัสรายการ: ${input.runId}</p>`
+    : `<p>Hi ${input.name},</p><p>Your send schedule "${input.campaignName}" failed.</p>${detail}<p>Reference: ${input.runId}</p>`;
 
   await sendEmail({ to: input.email, subject, html });
 }

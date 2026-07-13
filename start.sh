@@ -67,10 +67,13 @@ BETTER_AUTH_URL=http://localhost:3000
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 WORKER_LINE_URL=http://worker-line:4000
-SCB_SLIP_URL=http://scb-slip:8000
+
+# External slynxslip (replace SCB_API_KEY with a real sly_… key).
+SCB_SLIP_URL=https://slynxslip-service.slynxstudio.net
+SCB_API_KEY=sly_change_me
+SCB_PROJECT=agenda
 
 PROMPTPAY_ID=0838433623
-SCB_API_KEY=$(gen_hex)
 BILLING_WEBHOOK_SECRET=$(gen_hex)
 BILLING_OPS_TOKEN=$(gen_hex)
 CRON_SECRET=$(gen_hex)

@@ -41,7 +41,7 @@ export function Providers({
       <QueryClientProvider client={queryClient}>
         <NextThemesProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >

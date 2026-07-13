@@ -181,7 +181,7 @@ function formatChatLabel(
   chatNameByMid: Record<string, string>,
   t: (key: string, values?: { count: number }) => string,
 ): string {
-  if (chatMids.length === 0) return "—";
+  if (chatMids.length === 0) return "-";
   if (chatMids.length <= 2) {
     return chatMids
       .map((mid) => chatNameByMid[mid] ?? mid)

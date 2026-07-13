@@ -48,12 +48,6 @@ export default async function BillingPage() {
     <div className="space-y-6">
       <PageHeader title={t("title")} subtitle={t("subtitle")} />
 
-      {planUsage.isLocked && (
-        <Card className="border-destructive/30 bg-destructive/5">
-          <CardContent className="p-4 text-small">{t("lockedBanner")}</CardContent>
-        </Card>
-      )}
-
       {planUsage.isOnTrial && (
         <Card className="border-primary/30 bg-primary/5">
           <CardContent className="p-4 text-small">
@@ -156,13 +150,13 @@ export default async function BillingPage() {
                         />
                       </TableCell>
                       <TableCell className="hidden sm:table-cell font-mono text-caption text-muted-foreground">
-                        {p.promptpayRef ?? "—"}
+                        {p.promptpayRef ?? "-"}
                       </TableCell>
                       <TableCell>
                         {p.status === "pending" ? (
                           <PendingPaymentActions paymentId={p.id} />
                         ) : (
-                          "—"
+                          "-"
                         )}
                       </TableCell>
                     </TableRow>

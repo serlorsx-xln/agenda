@@ -197,7 +197,7 @@ export function ConnectPanel({
                       {t("connected.displayName")}
                     </dt>
                     <dd className="font-medium">
-                      {data?.displayName ?? initialDisplayName ?? "—"}
+                      {data?.displayName ?? initialDisplayName ?? "-"}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-4">
@@ -205,7 +205,7 @@ export function ConnectPanel({
                       {t("connected.mid")}
                     </dt>
                     <dd className="truncate font-mono text-caption">
-                      {data?.mid ?? initialMid ?? "—"}
+                      {data?.mid ?? initialMid ?? "-"}
                     </dd>
                   </div>
                 </dl>

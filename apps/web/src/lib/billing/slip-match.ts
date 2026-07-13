@@ -77,8 +77,8 @@ export async function matchSlipToPayment(
       ok: false,
       reason: "receiver_mismatch",
       params: {
-        receiver: recvRaw || "—",
-        expected: slipReceiverDisplayLabel() || shopReceiverIdentifiers()[0] || "—",
+        receiver: recvRaw || "-",
+        expected: slipReceiverDisplayLabel() || shopReceiverIdentifiers()[0] || "-",
       },
     };
   }

@@ -149,7 +149,7 @@ export function RunLive({ runId }: { runId: string }) {
                 >
                   <div className="min-w-0">
                     <p className="truncate text-small font-medium">
-                      {ev.chatName ?? "—"}
+                      {ev.chatName ?? "-"}
                     </p>
                     {ev.message && (
                       <p className="truncate text-caption text-muted-foreground">

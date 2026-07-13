@@ -39,7 +39,7 @@ export async function HowItWorksSection() {
                     </div>
                     <div className="min-w-0">
                       <Icon
-                        className="mb-2 h-5 w-5 text-muted-foreground"
+                        className="mb-2 h-5 w-5 text-primary"
                         strokeWidth={1.75}
                       />
                       <h3 className="text-h3 font-bold">

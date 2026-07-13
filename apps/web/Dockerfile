@@ -16,8 +16,9 @@ ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
 ENV DATABASE_URL=postgres://placeholder:placeholder@127.0.0.1:5432/placeholder
 ENV INTERNAL_API_KEY=build_time_placeholder_internal_api_key_xx
 ENV PROMPTPAY_ID=0812345678
-ENV SCB_SLIP_URL=http://scb-slip:8000
-ENV SCB_API_KEY=build_time_placeholder_scb_api_key_xxxxxxxx
+ENV SCB_SLIP_URL=https://slynxslip-service.slynxstudio.net
+ENV SCB_API_KEY=build_time_placeholder_sly_api_key_xxxxxxxx
+ENV SCB_PROJECT=agenda
 ENV BILLING_WEBHOOK_SECRET=build_time_placeholder_billing_webhook_xx
 ENV CRON_SECRET=build_time_placeholder_cron_secret_xxxxxxxx
 COPY pnpm-workspace.yaml package.json pnpm-lock.yaml .npmrc tsconfig.base.json ./

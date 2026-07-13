@@ -245,7 +245,7 @@ export function AdminClient({
                 <CardContent className="space-y-1 p-4">
                   <p className="font-mono text-caption">{a.action}</p>
                   <p className="text-small text-muted-foreground">
-                    {a.userEmail ?? "—"}
+                    {a.userEmail ?? "-"}
                   </p>
                   <p className="text-caption text-muted-foreground">
                     {formatDate(a.createdAt, locale)}
@@ -281,13 +281,13 @@ export function AdminClient({
                         {formatDate(a.createdAt, locale)}
                       </TableCell>
                       <TableCell className="text-muted-foreground">
-                        {a.userEmail ?? "—"}
+                        {a.userEmail ?? "-"}
                       </TableCell>
                       <TableCell className="font-mono text-caption">
                         {a.action}
                       </TableCell>
                       <TableCell className="hidden sm:table-cell text-muted-foreground">
-                        {a.targetType ?? "—"}
+                        {a.targetType ?? "-"}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -559,7 +559,7 @@ function AdminPaymentRow({
             {t("confirm")}
           </Button>
         ) : (
-          <span className="text-caption text-muted-foreground">—</span>
+          <span className="text-caption text-muted-foreground">-</span>
         )}
       </TableCell>
     </TableRow>

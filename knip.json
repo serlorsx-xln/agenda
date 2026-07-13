@@ -3,7 +3,7 @@
   "workspaces": {
     "apps/web": {
       "entry": [
-        "src/app/**/{page,layout,loading,error,not-found,default,route,template,global-error}.{ts,tsx}",
+        "src/app/**/{page,layout,loading,error,not-found,default,route,template,global-error,opengraph-image,twitter-image}.{ts,tsx}",
         "src/i18n/**/*.{ts,tsx}"
       ],
       "project": ["src/**/*.{ts,tsx}"]
@@ -20,7 +20,9 @@
     }
   },
   "ignoreDependencies": [
-    "eslint-config-next"
+    "eslint-config-next",
+    "eslint-plugin-react",
+    "eslint-plugin-react-hooks"
   ],
   "ignoreExportsUsedInFile": true
 }

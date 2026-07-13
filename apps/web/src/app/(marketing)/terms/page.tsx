@@ -3,9 +3,11 @@ import { getTranslations } from "next-intl/server";
 
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Logo } from "@/components/brand/logo";
+import { SUPPORT_LINE_URL } from "@/lib/support";
 
 export default async function TermsPage() {
   const t = await getTranslations("legal.terms");
+  const tLanding = await getTranslations("landing");
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -29,11 +31,21 @@ export default async function TermsPage() {
         </article>
       </main>
       <footer className="border-t border-border py-8">
-        <div className="container flex items-center justify-between text-small text-muted-foreground">
+        <div className="container flex items-center justify-between gap-4 text-small text-muted-foreground">
           <Logo />
-          <Link href="/" className="hover:text-foreground">
-            {t("backHome")}
-          </Link>
+          <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1">
+            <a
+              href={SUPPORT_LINE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground"
+            >
+              {tLanding("footer.contact")}
+            </a>
+            <Link href="/" className="hover:text-foreground">
+              {t("backHome")}
+            </Link>
+          </div>
         </div>
       </footer>
     </div>

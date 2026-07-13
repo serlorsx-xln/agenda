@@ -25,3 +25,6 @@ loadtest-report.json
 *.pem
 
 .local/
+
+# Design source dumps (not shipped)
+logo/

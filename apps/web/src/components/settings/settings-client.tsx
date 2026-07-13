@@ -150,7 +150,7 @@ function AppearanceTab() {
         <div className="flex flex-col gap-2 sm:max-w-xs">
           <Label>{t("theme")}</Label>
           <Select
-            value={mounted ? (theme ?? "system") : "system"}
+            value={mounted ? (theme ?? "light") : "light"}
             onChange={(e) => setTheme(e.target.value)}
           >
             <option value="light">{t("themeLight")}</option>

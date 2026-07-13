@@ -253,7 +253,7 @@ export function OpenChatsClient({
                       </button>
                     </TableCell>
                     <TableCell className="hidden sm:table-cell text-muted-foreground">
-                      {chat.memberCount ?? "—"}
+                      {chat.memberCount ?? "-"}
                     </TableCell>
                     <TableCell>
                       <Badge variant={chat.present ? "success" : "muted"}>

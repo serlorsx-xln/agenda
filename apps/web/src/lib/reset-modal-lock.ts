@@ -41,7 +41,7 @@ export function resetModalLock(options: ResetModalLockOptions = {}): void {
   }
 }
 
-/** Drop every dialog portal — safe after route changes once sheets are closed. */
+/** Drop every dialog portal - safe after route changes once sheets are closed. */
 export function removeDialogPortals(): void {
   if (typeof document === "undefined") return;
 

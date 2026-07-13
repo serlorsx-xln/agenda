@@ -117,7 +117,7 @@ export const PLANS: Plan[] = [
 
 export const LOCKED_PLAN: Plan = {
   id: "locked",
-  name: "Locked",
+  name: "Trial ended",
   monthlyAmount: 0,
   maxCampaigns: 0,
   maxTargetsPerCampaign: 0,

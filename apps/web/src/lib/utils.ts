@@ -26,9 +26,9 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatDate(
   date: Date | string | null | undefined,
-  locale = "en",
+  locale = "th",
 ): string {
-  if (!date) return "—";
+  if (!date) return "-";
   const d = typeof date === "string" ? new Date(date) : date;
   return new Intl.DateTimeFormat(locale === "th" ? "th-TH" : "en-US", {
     dateStyle: "medium",

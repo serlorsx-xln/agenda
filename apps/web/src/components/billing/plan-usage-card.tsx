@@ -70,7 +70,7 @@ export async function PlanUsageCard({
         <CardTitle className="text-h3">{t("title")}</CardTitle>
         <div className="flex items-center gap-2">
           {usage.isLocked && (
-            <Badge variant="destructive">{t("lockedBadge")}</Badge>
+            <Badge variant="warning">{t("lockedBadge")}</Badge>
           )}
           {usage.isOnTrial && (
             <Badge variant="secondary">
@@ -82,7 +82,7 @@ export async function PlanUsageCard({
       </CardHeader>
       <CardContent className="space-y-4">
         {usage.isLocked && (
-          <p className="text-small text-destructive">{t("lockedHint")}</p>
+          <p className="text-small text-muted-foreground">{t("lockedHint")}</p>
         )}
         {!usage.connected && (
           <p className="text-small text-muted-foreground">

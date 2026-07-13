@@ -6,6 +6,7 @@ import { Logo } from "@/components/brand/logo";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { getSiteUrl } from "@/lib/site-url";
+import { SUPPORT_LINE_URL } from "@/lib/support";
 
 const GUIDE_LINKS = [
   { key: "schedule" as const, href: "/guides/schedule-line-openchat" },
@@ -18,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const siteUrl = getSiteUrl();
   const title = t("metaTitle");
   const description = t("metaDescription");
-  const ogImage = `${siteUrl}/og.png`;
+  const ogImage = `${siteUrl}/opengraph-image`;
   const url = `${siteUrl}/guides`;
 
   return {
@@ -46,6 +47,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function GuidesIndexPage() {
   const t = await getTranslations("guides");
   const tApp = await getTranslations("app");
+  const tLanding = await getTranslations("landing");
   const siteUrl = getSiteUrl();
 
   const jsonLd = {
@@ -89,11 +91,21 @@ export default async function GuidesIndexPage() {
         </div>
       </main>
       <footer className="border-t border-border py-8">
-        <div className="container flex items-center justify-between text-small text-muted-foreground">
+        <div className="container flex items-center justify-between gap-4 text-small text-muted-foreground">
           <Logo />
-          <Link href="/" className="hover:text-foreground">
-            {tApp("name")}
-          </Link>
+          <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1">
+            <a
+              href={SUPPORT_LINE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground"
+            >
+              {tLanding("footer.contact")}
+            </a>
+            <Link href="/" className="hover:text-foreground">
+              {tApp("name")}
+            </Link>
+          </div>
         </div>
       </footer>
     </div>
