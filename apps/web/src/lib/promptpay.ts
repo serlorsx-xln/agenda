@@ -31,12 +31,12 @@ export type ProviderVerification = {
 
 /**
  * Build checkout QR for the configured PromptPay target.
- * Phone / e-wallet → credit-transfer; 13–15 digit biller or PROMPTPAY_TYPE=bill
- * → Mae Manee bill payment QR with locked amount.
+ * Phone / e-wallet → credit-transfer; biller + PROMPTPAY_TYPE=bill → Mae Manee
+ * bill QR (keeps registered QN ref1; locks amount).
  */
 export function buildPromptPayPayload(
   amountBaht: number,
-  paymentRef?: string,
+  _paymentRef?: string,
 ): string {
   const id = PLACEHOLDER_PROMPTPAY_ID.trim();
   try {
@@ -45,11 +45,24 @@ export function buildPromptPayPayload(
         process.env.PROMPTPAY_MERCHANT_NAME?.trim() ||
         process.env.PROMPTPAY_REF2?.trim() ||
         "SLYNX";
+      // Must be the Mae Manee / biller registered Reference 1 (QN…), not PP-xxx.
+      const billRef1 =
+        process.env.PROMPTPAY_BILL_REF1?.trim() ||
+        process.env.PROMPTPAY_REF1?.trim();
+      if (!billRef1) {
+        throw new Error("PROMPTPAY_BILL_REF1 is required for bill payment QR");
+      }
+      const additional =
+        process.env.PROMPTPAY_ADDITIONAL_62?.trim() || undefined;
+      const poiRaw = (process.env.PROMPTPAY_POI ?? "11").trim();
+      const pointOfInitiation = poiRaw === "12" ? "12" : "11";
       return buildBillPaymentPayload({
         billerId: toBillerId(id),
         amountBaht,
-        ref1: paymentRef,
+        ref1: billRef1,
         ref2: merchant,
+        additionalData: additional,
+        pointOfInitiation,
       });
     }
     return generatePayload(id, { amount: amountBaht });

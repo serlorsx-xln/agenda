@@ -19,28 +19,34 @@ describe("thai-qr", () => {
     expect(toBillerId("010753700088205")).toBe("010753700088205");
   });
 
-  it("builds dynamic bill payment QR with amount and slynx ref", () => {
+  it("preserves Mae Manee QN ref and original tag 62 with amount", () => {
     const payload = buildBillPaymentPayload({
       billerId: "010753700088205",
       amountBaht: 79,
-      ref1: "PP-TEST-1",
+      ref1: "QN122990MB11420395G",
       ref2: "SLYNX",
+      additionalData: "07200000MgVlF7VzCJoONVp9",
+      pointOfInitiation: "11",
     });
 
-    expect(payload.startsWith("000201010212")).toBe(true);
+    expect(payload.startsWith("000201010211")).toBe(true);
     expect(payload).toContain("A000000677010112");
     expect(payload).toContain("010753700088205");
-    expect(payload).toContain("540579.00");
+    expect(payload).toContain("QN122990MB11420395G");
     expect(payload).toContain("SLYNX");
-    expect(payload.slice(-4)).toMatch(/^[0-9A-F]{4}$/);
-
-    // CRC must validate: recompute over payload without last 4, with 6304
-    const body = payload.slice(0, -4);
-    expect(body.endsWith("6304")).toBe(true);
-    expect(payload.slice(-4)).toBe(emvCrc16(body));
+    expect(payload).toContain("540579.00");
+    expect(payload).toContain("07200000MgVlF7VzCJoONVp9");
+    expect(payload.slice(-4)).toBe(emvCrc16(payload.slice(0, -4)));
   });
 
-  it("sanitizes refs", () => {
+  it("matches CRC of the merchant's original static QR", () => {
+    const original =
+      "00020101021130710016A00000067701011201150107537000882050219QN122990MB11420395G0305SLYNX53037645802TH622407200000MgVlF7VzCJoONVp963047086";
+    expect(emvCrc16(original.slice(0, -4))).toBe(original.slice(-4));
+  });
+
+  it("sanitizes refs but keeps QN ids", () => {
+    expect(sanitizeBillRef("QN122990MB11420395G")).toBe("QN122990MB11420395G");
     expect(sanitizeBillRef("PP-abc_12!")).toBe("PPABC12");
   });
 });
