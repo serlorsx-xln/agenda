@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, eq, inArray, isNotNull, lt, sql } from "drizzle-orm";
+import { and, eq, gte, inArray, isNotNull, lt, sql } from "drizzle-orm";
 
 import { auditLog, db, payments, subscriptions, user } from "@line/db";
 import { PAID_PLAN_IDS } from "@line/shared";
@@ -86,7 +86,7 @@ async function expireDueSubscriptions(): Promise<{
         inArray(subscriptions.plan, [...PAID_PLAN_IDS]),
         isNotNull(subscriptions.currentPeriodEnd),
         lt(subscriptions.currentPeriodEnd, now),
-        sql`${subscriptions.currentPeriodEnd} >= ${graceCutoff}`,
+        gte(subscriptions.currentPeriodEnd, graceCutoff),
       ),
     )
     .returning({ id: subscriptions.id });
