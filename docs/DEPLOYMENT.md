@@ -19,20 +19,22 @@ Deploy Agenda with Docker Compose (VPS + optional Caddy TLS).
 | `INTERNAL_API_KEY` | Web ↔ worker (`openssl rand -hex 32`) |
 | `SESSION_ENCRYPTION_KEY` | AES key for LINE session files (`openssl rand -hex 32`) |
 | `PROMPTPAY_ID` | PromptPay phone (digits) shown on QR + slip receiver check |
-| `SCB_API_KEY` | Internal Bearer secret we invent for `scb-slip` / `scb-captcha` (not a bank/SCB Open API key; `openssl rand -hex 32`) |
-| `SCB_SLIP_URL` | Internal: `http://scb-slip:8000` in Compose |
+| `SCB_SLIP_URL` | slynxslip base URL (`https://slynxslip-service.slynxstudio.net`) |
+| `SCB_API_KEY` | slynxslip Bearer key (`sly_…`) for the Agenda project |
+| `SCB_PROJECT` | slynxslip project slug (`agenda`) — sent as `X-Project` |
 | `BILLING_WEBHOOK_SECRET` | Ops webhook auth |
 | `BILLING_OPS_TOKEN` | Extra token for manual ops webhook body |
 | `CRON_SECRET` | Cron routes (no fallback to `INTERNAL_API_KEY` in production) |
 | `RESEND_API_KEY` / `RESEND_FROM_EMAIL` | Email verification + receipts |
 
-Optional: `SCB_PROXY` (residential proxy if Imperva blocks your IP), `SENTRY_DSN`.
+Optional: `SENTRY_DSN`.
 
 ## Docker Compose only (home network / single VPS)
 
 All runtime services live on the compose network. Use service hostnames in
-`.env` (`postgres`, `worker-line`, `scb-slip`) — not host `localhost` — for
-internal URLs. `BETTER_AUTH_URL` / `NEXT_PUBLIC_APP_URL` stay browser-facing
+`.env` (`postgres`, `worker-line`) — not host `localhost` — for internal URLs.
+Point `SCB_SLIP_URL` / `SCB_API_KEY` / `SCB_PROJECT` at external slynxslip.
+`BETTER_AUTH_URL` / `NEXT_PUBLIC_APP_URL` stay browser-facing
 (`http://localhost:3000` when you open the published host port).
 
 ```bash
@@ -45,7 +47,6 @@ Services:
 
 - `postgres` (internal only, no host port)
 - `migrate` (one-shot drizzle migrations)
-- `scb-captcha`, `scb-slip` (internal only)
 - `worker-line` (LINE sessions encrypted on volume)
 - `web` (published as `http://localhost:3000`)
 
@@ -75,10 +76,10 @@ Adds Caddy (80/443), daily `pg_dump` backups, and hourly billing/notification cr
 
 1. User chooses Starter/Pro → pending payment + PromptPay QR (whole baht)
 2. User pays and uploads slip image
-3. Web calls `scb-slip` → SCB Check Slip → match amount + receiver + unique TRAN
+3. Web calls slynxslip → SCB Check Slip → match amount + receiver + unique TRAN
 4. Subscription upgrades; receipt email sent
 
-Manual ops fallback (if SCB is down): admin confirm in dashboard, or
+Manual ops fallback (if slynxslip is down): admin confirm in dashboard, or
 `POST /api/billing/webhook` with `BILLING_WEBHOOK_SECRET` + `opsToken`.
 
 ## Smoke test (messaging)

@@ -25,8 +25,9 @@ careful, human-paced promotion helper — **not** a mass-distribution or spam to
   (personal account, QR login, device `ANDROIDSECONDARY`). No browser
   automation.
 - **Scheduling**: `node-cron` + an in-process daemon loop.
-- **Payments**: PromptPay QR + **SCB slip verification** (self-hosted
-  `scb-slip-checker` service; auto-fulfill on amount/receiver/TRAN match).
+- **Payments**: PromptPay QR + **SCB slip verification** via external
+  [slynxslip](https://slynxslip-service.slynxstudio.net) (`X-Project` + Bearer;
+  auto-fulfill on amount/receiver/TRAN match).
 
 No Python anywhere. No headless browser.
 
@@ -58,8 +59,8 @@ No Python anywhere. No headless browser.
 
 ## Quick start (Docker only)
 
-Everything runs in Docker Compose — web, worker, postgres, migrations, and SCB
-slip services. There is no supported host-side `pnpm dev` path.
+Everything runs in Docker Compose — web, worker, postgres, and migrations.
+Slip verification calls external slynxslip (set `SCB_*` in `.env`).
 
 1. Copy env and fill in secrets:
 
@@ -67,7 +68,8 @@ slip services. There is no supported host-side `pnpm dev` path.
 cp .env.example .env
 # Generate strong secrets (openssl rand -base64 32 / openssl rand -hex 32).
 # Keep DATABASE_URL on the compose network: …@postgres:5432/…
-# Keep WORKER_LINE_URL / SCB_SLIP_URL on service names, not localhost.
+# Keep WORKER_LINE_URL on the compose service name, not localhost.
+# Point SCB_SLIP_URL / SCB_API_KEY / SCB_PROJECT at external slynxslip.
 ```
 
 2. Bring everything up (migrations run automatically via the `migrate` service):
@@ -116,8 +118,9 @@ Do not delete `coolify.yaml` — MCP / re-import uses it together with
 | `LINE_SESSION_PATH`      | worker         | Path (in the session volume) for the linejs session    |
 | `SCHEDULER_TICK_SECONDS` | worker         | Daemon tick interval                                   |
 | `PROMPTPAY_ID`           | web            | PromptPay phone (digits) for QR + slip receiver match  |
-| `SCB_API_KEY`            | web, scb-*     | Internal Bearer secret (not a bank/SCB Open API key)   |
-| `SCB_SLIP_URL`           | web            | `http://scb-slip:8000` (compose network)               |
+| `SCB_SLIP_URL`           | web            | slynxslip base URL (e.g. `https://slynxslip-service.slynxstudio.net`) |
+| `SCB_API_KEY`            | web            | slynxslip Bearer key (`sly_…`)                         |
+| `SCB_PROJECT`            | web            | slynxslip project slug (`X-Project`, e.g. `agenda`)    |
 | `SESSION_ENCRYPTION_KEY` | worker         | AES key for LINE session files at rest                 |
 | `MAX_HOT_SESSIONS`       | worker         | Max LINE clients in RAM (default 200)                  |
 | `MAX_BOOT_RESTORE_SESSIONS` | worker      | Sessions to auto-resume on boot (default 1)            |
@@ -154,11 +157,11 @@ pnpm db:seed     # seed settings scaffold (no default targets/campaigns)
 - The Connect LINE screen shows a clear risk notice. We never promise you
   "won't get banned".
 
-## PromptPay billing (SCB slip)
+## PromptPay billing (slynxslip)
 
 1. User chooses Starter/Pro → pending payment + PromptPay QR (`PROMPTPAY_ID`).
 2. User pays, then uploads the bank slip in the Billing UI.
-3. Web verifies via internal `scb-slip` (SCB Check Slip) and business matchers
+3. Web verifies via slynxslip (`/v1/verify/image`) and business matchers
    (amount, receiver, one-time TRAN).
 4. Subscription upgrades; receipt email is sent when Resend is configured.
 

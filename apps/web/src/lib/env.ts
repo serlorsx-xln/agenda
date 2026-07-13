@@ -33,6 +33,7 @@ export function validateWebEnv(): void {
       "PROMPTPAY_ID",
       "SCB_SLIP_URL",
       "SCB_API_KEY",
+      "SCB_PROJECT",
       "BILLING_WEBHOOK_SECRET",
       "CRON_SECRET",
     ] as const) {

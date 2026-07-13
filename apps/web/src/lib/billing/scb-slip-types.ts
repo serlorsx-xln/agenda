@@ -1,4 +1,4 @@
-/** Response from scb-slip-checker POST /verify/image */
+/** Response from slynxslip POST /v1/verify/image */
 
 type ScbSlipBilingual = { TH?: string; EN?: string };
 

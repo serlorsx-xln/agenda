@@ -52,8 +52,6 @@ jobs:
           docker build -f packages/db/Dockerfile.migrate -t line-migrate:test .
           docker build -f services/worker-line/Dockerfile -t line-worker:test .
           docker build -f apps/web/Dockerfile -t line-web:test .
-          docker build -f services/scb-slip-checker/Dockerfile.captcha -t line-scb-captcha:test ./services/scb-slip-checker
-          docker build -f services/scb-slip-checker/Dockerfile.slip -t line-scb-slip:test ./services/scb-slip-checker
 
   smoke:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_smoke }}

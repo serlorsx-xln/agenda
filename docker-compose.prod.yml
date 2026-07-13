@@ -1,4 +1,4 @@
-# Production overlay — TLS via Caddy, no public Postgres / scb ports.
+# Production overlay — TLS via Caddy, no public Postgres ports.
 # Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 services:

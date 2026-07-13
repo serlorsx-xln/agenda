@@ -23,3 +23,5 @@ loadtest-report.json
 
 .cursor/
 *.pem
+
+.local/

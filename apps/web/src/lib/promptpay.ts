@@ -47,7 +47,7 @@ export function paymentGraceMinutes(): number {
   return Number(process.env.PAYMENT_GRACE_MINUTES ?? 15);
 }
 
-/** Verify slip image against a pending payment via SCB slip-checker + business match. */
+/** Verify slip image against a pending payment via slynxslip + business match. */
 export async function verifyProviderPayment(input: {
   payment: Payment;
   imageBytes: Buffer;

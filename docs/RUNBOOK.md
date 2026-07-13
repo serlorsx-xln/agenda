@@ -8,7 +8,7 @@ Operational procedures for Agenda.
 |----------|----------|
 | `GET /api/health` (web) | `{ status: "ok", db: true, worker: true }` |
 | `GET /health` (worker-line) | `{ status: "ok" }` (prod omits session counts) |
-| `GET /health` (scb-slip) | `{ status: "ok", ... }` (internal only) |
+| `GET /health` (slynxslip) | External: `https://slynxslip-service.slynxstudio.net/health` |
 
 ## Billing / slip failures
 
@@ -21,11 +21,11 @@ Map `error` from `POST /api/billing/payments/:id/slip`:
 | `receiver_mismatch` | Confirm `PROMPTPAY_ID` matches the receiving account |
 | `already_used` | Slip TRAN already credited — do not reuse |
 | `invalid_qr` | Ask for a clearer slip photo |
-| `timeout` / `upstream_error` (`9998`) | SCB / Imperva issues — retry, consider `SCB_PROXY` |
+| `timeout` / `upstream_error` (`9998`) | slynxslip / SCB issues — retry later |
 | `expired` | Payment TTL (default 30m + 15m grace) elapsed — create new intent |
 | `rate_limited` | Too many uploads; wait |
 
-Admin manual confirm remains available when SCB is unavailable.
+Admin manual confirm remains available when slip verification is unavailable.
 
 ## LINE connection
 

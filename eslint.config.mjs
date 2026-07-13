@@ -7,7 +7,11 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const compat = new FlatCompat({ baseDirectory: __dirname });
+/** Resolve `eslint-config-next` from the web workspace (pnpm does not hoist it to root). */
+const webCompat = new FlatCompat({
+  baseDirectory: path.join(__dirname, "apps/web"),
+});
+
 
 const sharedRules = {
   "no-unused-vars": "off",
@@ -38,7 +42,6 @@ export default tseslint.config(
       "**/build/**",
       "**/coverage/**",
       "**/ltsm/**",
-      "services/scb-slip-checker/**",
       "loadtest-report.json",
       "apps/web/next-env.d.ts",
       "**/next-env.d.ts",
@@ -62,7 +65,7 @@ export default tseslint.config(
       globals: { ...globals.browser, ...globals.node },
     },
   },
-  ...compat.extends("next/core-web-vitals").map((cfg) => ({
+  ...webCompat.extends("next/core-web-vitals").map((cfg) => ({
     ...cfg,
     files: cfg.files ?? ["apps/web/**/*.{ts,tsx,js,mjs}"],
   })),

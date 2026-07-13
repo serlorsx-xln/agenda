@@ -9,12 +9,14 @@ function baseUrl(): string | null {
   return url ? url.replace(/\/$/, "") : null;
 }
 
-
 function authHeaders(): Record<string, string> {
   const key = process.env.SCB_API_KEY?.trim();
-  return key ? { Authorization: `Bearer ${key}` } : {};
+  const project = process.env.SCB_PROJECT?.trim();
+  const headers: Record<string, string> = {};
+  if (key) headers.Authorization = `Bearer ${key}`;
+  if (project) headers["X-Project"] = project;
+  return headers;
 }
-
 
 export async function verifySlipImage(
   imageBytes: Buffer,
@@ -22,7 +24,9 @@ export async function verifySlipImage(
   filename = "slip.jpg",
 ): Promise<ScbSlipResult> {
   const url = baseUrl();
-  if (!url) throw new Error("SCB_SLIP_NOT_CONFIGURED");
+  const key = process.env.SCB_API_KEY?.trim();
+  const project = process.env.SCB_PROJECT?.trim();
+  if (!url || !key || !project) throw new Error("SCB_SLIP_NOT_CONFIGURED");
 
   const form = new FormData();
   form.append(
@@ -36,7 +40,7 @@ export async function verifySlipImage(
   const timer = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS);
 
   try {
-    const res = await fetch(`${url}/verify/image`, {
+    const res = await fetch(`${url}/v1/verify/image`, {
       method: "POST",
       body: form,
       signal: controller.signal,

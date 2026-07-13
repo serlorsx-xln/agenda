@@ -26,50 +26,6 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL}
 
-  scb-captcha:
-    build:
-      context: ./services/scb-slip-checker
-      dockerfile: Dockerfile.captcha
-    restart: unless-stopped
-    environment:
-      PORT: "8001"
-      API_KEY: ${SCB_API_KEY}
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "wget -q -O - http://127.0.0.1:8001/health || exit 1",
-        ]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-
-  scb-slip:
-    build:
-      context: ./services/scb-slip-checker
-      dockerfile: Dockerfile.slip
-    restart: unless-stopped
-    depends_on:
-      scb-captcha:
-        condition: service_started
-    environment:
-      PORT: "8000"
-      API_KEY: ${SCB_API_KEY}
-      CAPTCHA_URL: http://scb-captcha:8001
-      CAPTCHA_API_KEY: ${SCB_API_KEY}
-      PROXY: ${SCB_PROXY:-}
-      PREFETCH: ${SCB_PREFETCH:-1}
-      PREFETCH_SIZE: ${SCB_PREFETCH_SIZE:-3}
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "wget -q -O - http://127.0.0.1:8000/health || exit 1",
-        ]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-
   worker-line:
     build:
       context: .
@@ -126,8 +82,6 @@ services:
         condition: service_healthy
       worker-line:
         condition: service_started
-      scb-slip:
-        condition: service_started
     environment:
       DATABASE_URL: ${DATABASE_URL}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
@@ -137,8 +91,9 @@ services:
       INTERNAL_API_KEY: ${INTERNAL_API_KEY}
       PROMPTPAY_ID: ${PROMPTPAY_ID}
       SLIP_RECEIVER_ACCOUNT: ${SLIP_RECEIVER_ACCOUNT:-}
-      SCB_SLIP_URL: ${SCB_SLIP_URL:-http://scb-slip:8000}
+      SCB_SLIP_URL: ${SCB_SLIP_URL}
       SCB_API_KEY: ${SCB_API_KEY}
+      SCB_PROJECT: ${SCB_PROJECT}
       BILLING_WEBHOOK_SECRET: ${BILLING_WEBHOOK_SECRET}
       BILLING_OPS_TOKEN: ${BILLING_OPS_TOKEN}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
