@@ -242,6 +242,7 @@
       "invalidCredentials": "Invalid email or password",
       "emailTaken": "This email is already registered",
       "generic": "Something went wrong. Please try again.",
+      "banned": "This account has been suspended. Contact support if you think this is a mistake.",
       "nameRequired": "Please enter your name",
       "emailInvalid": "Please enter a valid email",
       "passwordShort": "Password must be at least 8 characters",

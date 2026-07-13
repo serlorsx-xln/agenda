@@ -23,10 +23,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export function LoginForm() {
+export function LoginForm({ banned = false }: { banned?: boolean }) {
   const t = useTranslations("auth");
   const router = useRouter();
-  const [formError, setFormError] = React.useState<string | null>(null);
+  const [formError, setFormError] = React.useState<string | null>(
+    banned ? t("errors.banned") : null,
+  );
 
   const schema = z.object({
     email: z.string().email(t("errors.emailInvalid")),
@@ -49,7 +51,7 @@ export function LoginForm() {
     if (error) {
       const code = (error.code ?? error.message ?? "").toLowerCase();
       if (code.includes("banned") || code.includes("forbidden")) {
-        setFormError(t("errors.generic"));
+        setFormError(t("errors.banned"));
       } else {
         setFormError(t("errors.invalidCredentials"));
       }
