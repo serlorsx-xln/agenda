@@ -106,7 +106,7 @@
     },
     "pricing": {
       "title": "Straightforward pricing",
-      "subtitle": "Limits apply to send schedules and groups per schedule - not message volume.",
+      "subtitle": "Limits cover send schedules, groups, and daily send count — inter-group delay is the same on every plan",
       "perMonth": "/ month",
       "cta": "Choose a plan",
       "showAllFeatures": "See all features",
@@ -117,14 +117,14 @@
         "autoReplyRules": "{count} auto-replies",
         "mediaAssets": "{count} stored images",
         "pacing": "Inter-group delay on every plan",
-        "templates": "{count} message templates",
-        "templatesUnlimited": "Unlimited message templates",
+        "templates": "{count} saved promo message sets (reuse anytime)",
+        "templatesUnlimited": "Unlimited saved promo message sets",
         "schedulingCron": "Scheduled sends (daily / weekdays)",
         "autoReplyImages": "Auto-reply with images",
         "autoReplyFilters": "Exclude keywords + emoji filter",
         "autoReplyExactMatch": "Exact phrase matching",
         "autoReplyPriority": "Reply order when multiple match + advanced cooldown",
-        "maxSendsPerDay": "Up to {count} groups/day per send schedule",
+        "maxSendsPerDay": "Up to {count} sends/day per schedule (across all groups in it)",
         "runHistory": "{days}-day send history",
         "runHistoryUnlimited": "Unlimited send history",
         "unavailable": "-"
@@ -358,7 +358,7 @@
   },
   "templates": {
     "title": "Message templates",
-    "subtitle": "Write once, reuse for sends and replies",
+    "subtitle": "Save promo messages to reuse in send schedules and auto-replies",
     "new": "New message template",
     "edit": "Edit message template",
     "fields": {
@@ -527,7 +527,7 @@
       "schedule": "Start time",
       "scheduleHour": "Send at (hour)",
       "scheduleMinute": "Send at (minute)",
-      "maxSends": "Max groups per day",
+      "maxSends": "Max sends per day (total across groups)",
       "delay": "Delay between targets (sec)",
       "jitter": "Random extra delay (sec)",
       "autoStop": "Stop after consecutive failures",
@@ -547,7 +547,7 @@
       "window": "Messages are only sent between these hours (24h).",
       "pacing": "Sending pace",
       "delayMin": "Minimum 5 minutes (300 seconds) to reduce LINE throttling risk",
-      "maxSendsCap": "Your plan allows up to {max} groups/day in this send schedule",
+      "maxSendsCap": "Your plan allows up to {max} sends/day in this schedule (across all groups)",
       "roundRobin": "Sends one group at a time in rotation",
       "autoSpread": "Sends are spread automatically across the window (no fixed start time needed).",
       "targetsUnequalWarning": "Daily send limit is lower than the number of groups - some groups may not receive a send today.",
@@ -679,11 +679,11 @@
       "autoReplyRules": "{count} auto-replies",
       "mediaAssets": "{count} stored images",
       "pacing": "Delay between groups on every plan",
-      "templates": "{count} message templates",
-      "templatesUnlimited": "Unlimited message templates",
+      "templates": "{count} saved promo message sets (reuse anytime)",
+      "templatesUnlimited": "Unlimited saved promo message sets",
       "schedulingCron": "Scheduled sends (daily / weekdays)",
       "autoReplyImages": "Auto-reply with images",
-      "maxSendsPerDay": "Up to {count} groups/day per send schedule"
+      "maxSendsPerDay": "Up to {count} sends/day per schedule (across all groups in it)"
     },
     "promptpay": {
       "title": "PromptPay payment",
@@ -732,7 +732,7 @@
       "expired": "Expired"
     },
     "hints": {
-      "maxSendsPerDay": "Multiple send schedules can exceed this total - not an account-wide daily cap"
+      "maxSendsPerDay": "Each send schedule has its own quota — not one account-wide daily cap"
     }
   },
   "settings": {
@@ -844,8 +844,8 @@
     "statsSection": "Stats",
     "perJobSection": "Per send schedule",
     "sentToday": "Sent today: {count} groups",
-    "maxSendsPerJob": "Up to {count} groups/day per schedule",
-    "maxSendsPerJobHint": "Multiple jobs can send more in total - not an account-wide daily cap"
+    "maxSendsPerJob": "Up to {count} sends/day per schedule (across all groups)",
+    "maxSendsPerJobHint": "Each send schedule has its own quota — not one account-wide daily cap"
   },
   "paywall": {
     "title": "Your Growth trial has ended",
@@ -888,7 +888,7 @@
     "descriptionTargets": "Your current plan limit is reached. Growth includes up to {count} groups per send schedule.",
     "descriptionAutoReplyRules": "Your current plan limit is reached. Growth includes up to {count} auto-replies.",
     "descriptionMediaAssets": "Your current plan limit is reached. Growth includes up to {count} stored images.",
-    "descriptionTemplates": "Basic is limited to {count} templates - upgrade to Growth for unlimited.",
+    "descriptionTemplates": "Basic can save {count} promo message sets for reuse - upgrade to Growth for unlimited.",
     "descriptionLocked": "Your trial has ended. Pay to resume sending and auto-reply.",
     "descriptionTrialPending": "Connect your LINE account to start the free 14-day Growth trial before sending or auto-reply.",
     "featureCampaigns": "{count} send schedules",
