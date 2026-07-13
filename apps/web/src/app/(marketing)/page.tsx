@@ -33,7 +33,18 @@ const FEATURE_KEYS = [
   "control",
 ] as const;
 
-const FAQ_KEYS = ["bot", "autoReply", "risk", "payment", "account", "trial", "plans"] as const;
+const FAQ_KEYS = [
+  "bot",
+  "account",
+  "trial",
+  "join",
+  "autoReply",
+  "pacing",
+  "risk",
+  "payment",
+  "plans",
+  "disconnect",
+] as const;
 
 const GUIDE_LINKS = [
   { key: "schedule" as const, href: "/guides/schedule-line-openchat" },

@@ -74,7 +74,7 @@
         },
         "campaign": {
           "title": "Create a send schedule",
-          "desc": "Set send hours and your daily group limit"
+          "desc": "Set send hours, daily quota, and pacing between groups"
         },
         "send": {
           "title": "Send next group or turn on auto-send",
@@ -132,35 +132,47 @@
     },
     "faq": {
       "title": "Frequently asked questions",
-      "subtitle": "Straight answers about how Agenda works",
+      "subtitle": "Short, straight answers",
       "items": {
         "bot": {
           "q": "Is this a chatbot or LINE Official Account?",
-          "a": "No. Agenda uses your personal LINE account for both sending and replying. No Official Account signup needed."
-        },
-        "autoReply": {
-          "q": "How does auto-reply work?",
-          "a": "Set keywords and reply messages - when someone types a matching word in your group, the system replies instantly 24/7. Supports images and quote replies."
-        },
-        "risk": {
-          "q": "Is there account risk?",
-          "a": "Any automated sending carries some risk. Agenda uses send window, per-schedule daily caps, delays between groups, and auto-stop on repeated failures. You remain responsible for your LINE account."
-        },
-        "payment": {
-          "q": "How do I pay?",
-          "a": "Paid plans are billed monthly. See the billing page in your dashboard for payment details after signing up."
+          "a": "No — Agenda uses your personal LINE account to send and reply. No Official Account and no Messaging API."
         },
         "account": {
           "q": "How do I get started?",
-          "a": "Sign up with email and password, then connect LINE from the dashboard with a QR code when you are ready."
+          "a": "Sign up with email, then open Connect LINE and scan the QR code (enter a PIN if LINE asks — same idea as LINE on desktop). Your trial starts after LINE is connected."
         },
         "trial": {
           "q": "Is there a free trial?",
-          "a": "Connecting LINE unlocks a full 14-day Growth trial. After it ends, you must pay to keep sending and auto-reply - there is no usable free tier."
+          "a": "Yes — connecting LINE unlocks a full 14-day Growth trial. After it ends, payment is required to keep sending and auto-reply. There is no permanent free tier for real sending."
+        },
+        "join": {
+          "q": "Do I need to join groups / OpenChats first?",
+          "a": "Yes — Agenda can only send to groups or OpenChats your LINE account already belongs to. It syncs your memberships; it does not join chats for you."
+        },
+        "autoReply": {
+          "q": "How does auto-reply work?",
+          "a": "Set keywords and a reply. When someone types a matching word in a selected group, Agenda replies automatically (images and quote replies depend on your plan)."
+        },
+        "pacing": {
+          "q": "Why so slow? Can I change the delays?",
+          "a": "Agenda sends one group at a time — never a blast to every group at once. Minimum wait is 5 minutes before the next group and 30 minutes before the same group again. You can set longer waits, but not shorter. Each send schedule has its own daily send quota."
+        },
+        "risk": {
+          "q": "Is there risk to my LINE account?",
+          "a": "Any automated sending carries some risk. Agenda reduces it with send windows, daily quotas, two-tier delays, and auto-stop on repeated failures — but it cannot guarantee your account will never be limited. You remain responsible for how you use your LINE account."
+        },
+        "payment": {
+          "q": "How do I pay?",
+          "a": "Monthly billing via PromptPay — scan the QR on the billing page, then upload your transfer slip for automatic verification."
         },
         "plans": {
-          "q": "What do paid plans add?",
-          "a": "Basic covers essentials. Growth unlocks image replies, scheduled sends, and more auto-replies. Pro adds exact matching, reply order controls, and the highest quotas."
+          "q": "What’s the difference between Basic, Growth, and Pro?",
+          "a": "They differ in send schedules, groups, auto-reply rules, and daily send quotas (about 100 / 150 / 250 sends per schedule). Growth and above include timed schedules and image replies. Pro adds advanced reply tools such as exact phrase matching."
+        },
+        "disconnect": {
+          "q": "What if LINE disconnects?",
+          "a": "Sometimes LINE drops a secondary device or you need to scan again — open Connect LINE and reconnect. If sends fail, check connection status first."
         }
       }
     },
