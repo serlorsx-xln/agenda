@@ -500,6 +500,13 @@ export function CampaignFormDialog({
               </p>
             </div>
 
+            {simpleMode ? (
+              <div className="space-y-1 rounded-md border border-border bg-muted/30 p-3 text-caption text-muted-foreground">
+                <p>{t("help.simplePacing")}</p>
+                <p>{t("help.simplePacingHint")}</p>
+              </div>
+            ) : null}
+
             {!simpleMode ? (
               <>
                 <div className="space-y-1.5">

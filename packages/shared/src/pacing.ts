@@ -10,4 +10,5 @@ export const DEFAULT_SEND_JITTER_SEC = 60;
 
 /** Hard floor before sending to the same chat again (seconds). */
 export const MIN_PER_CHAT_COOLDOWN_SEC = 1800;
-export const DEFAULT_PER_CHAT_COOLDOWN_SEC = 1800;
+/** Default wait before the same chat again (3 hours). */
+export const DEFAULT_PER_CHAT_COOLDOWN_SEC = 3 * 60 * 60;

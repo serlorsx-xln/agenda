@@ -15,6 +15,7 @@ import {
   type Campaign,
 } from "@line/db";
 import { resolveImageAssetIds } from "@line/shared/image-assets";
+import { DEFAULT_PER_CHAT_COOLDOWN_SEC } from "@line/shared/pacing";
 import { capMaxSends, hasPlanFeature } from "@line/shared/plan-features";
 import {
   isPlanLocked,
@@ -398,7 +399,7 @@ export async function sendNextInRotation(
     targets.length,
   );
   const perChatCooldown =
-    campaign.perChatCooldownSec ?? 1800;
+    campaign.perChatCooldownSec ?? DEFAULT_PER_CHAT_COOLDOWN_SEC;
   const pick = pickEligibleTargetIndex(
     targets,
     rotationIndex,

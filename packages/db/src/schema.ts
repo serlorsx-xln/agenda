@@ -344,7 +344,7 @@ export const campaigns = pgTable(
       .default(300)
       .notNull(),
     perChatCooldownSec: integer("per_chat_cooldown_sec")
-      .default(1800)
+      .default(10800)
       .notNull(),
     randomJitterSec: integer("random_jitter_sec").default(60).notNull(),
     autoStopOnErrors: integer("auto_stop_on_errors").default(3).notNull(),
