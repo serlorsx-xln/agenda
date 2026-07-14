@@ -91,5 +91,6 @@ export function messageMatchesRule(
     return hay.trim() === includeKeywords[0]!.toLowerCase();
   }
 
-  return includeKeywords.every((w) => hay.includes(w.toLowerCase()));
+  // Any listed keyword is enough (OR). Use one phrase as a single keyword for AND.
+  return includeKeywords.some((w) => hay.includes(w.toLowerCase()));
 }

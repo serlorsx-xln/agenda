@@ -453,7 +453,7 @@
     "fields": {
       "chats": "Chats",
       "chatsSelected": "{count} selected",
-      "includeKeywords": "Must include (all)",
+      "includeKeywords": "Must include (any)",
       "includeKeywordsHint": "Type a word and add",
       "includeKeywordSimple": "Required keyword",
       "includeKeywordSimpleHint": "e.g. promo, price, interested",

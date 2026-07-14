@@ -7,9 +7,9 @@ import {
 } from "./auto-reply-match";
 
 describe("auto-reply-match", () => {
-  it("requires all include keywords in contains mode", () => {
+  it("matches if any include keyword is present in contains mode", () => {
     expect(
-      messageMatchesRule("ราคา สนใจครับ", {
+      messageMatchesRule("สนใจครับ", {
         includeKeywords: ["ราคา", "สนใจ"],
         excludeKeywords: [],
         emojiFilter: "any",
@@ -17,7 +17,15 @@ describe("auto-reply-match", () => {
       }),
     ).toBe(true);
     expect(
-      messageMatchesRule("ราคาเท่าไหร่", {
+      messageMatchesRule("ทดสอบ", {
+        includeKeywords: ["Test", "ทดสอบ"],
+        excludeKeywords: [],
+        emojiFilter: "any",
+        matchMode: "contains",
+      }),
+    ).toBe(true);
+    expect(
+      messageMatchesRule("hello", {
         includeKeywords: ["ราคา", "สนใจ"],
         excludeKeywords: [],
         emojiFilter: "any",

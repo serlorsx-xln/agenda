@@ -453,7 +453,7 @@
     "fields": {
       "chats": "แชท",
       "chatsSelected": "เลือกแล้ว {count}",
-      "includeKeywords": "เมื่อข้อความมีคำว่า... (ทุกคำ)",
+      "includeKeywords": "เมื่อข้อความมีคำว่า... (คำใดคำหนึ่ง)",
       "includeKeywordsHint": "พิมพ์คำแล้วกดเพิ่ม",
       "includeKeywordSimple": "เมื่อมีคำว่า",
       "includeKeywordSimpleHint": "เช่น โปร, สนใจ, ราคา",
