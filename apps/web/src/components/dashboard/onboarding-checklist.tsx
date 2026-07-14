@@ -26,7 +26,7 @@ const STEPS = [
     field: "hasAutoReply",
     optional: true,
   },
-  { key: "campaign", href: "/dashboard/campaigns/new", field: "hasCampaign" },
+  { key: "campaign", href: "/dashboard/campaigns", field: "hasCampaign" },
   { key: "run", href: "/dashboard/campaigns", field: "hasRun" },
 ] as const;
 

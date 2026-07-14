@@ -12,6 +12,9 @@
     "none": "None",
     "hint": "Help",
     "moreInfo": "More information",
+    "searchChats": "Search by name or chat ID…",
+    "noSearchResults": "No chats match your search",
+    "noChats": "No groups or OpenChats yet",
     "glossary": {
       "sendJob": "Send schedule",
       "targetGroups": "Groups to send to",
@@ -358,6 +361,8 @@
     "empty": "No chats found. Connect LINE and sync to discover OpenChats and groups.",
     "emptyCta": "Connect LINE",
     "notConnected": "Connect your LINE account first to sync your chats.",
+    "searchPlaceholder": "Search by name or chat ID…",
+    "noSearchResults": "No chats match your search",
     "addTargetDialog": {
       "title": "Add to send schedule",
       "description": "Choose a send schedule to add this chat as a group to send to.",
@@ -522,12 +527,14 @@
     "title": "Send schedules",
     "subtitle": "Choose what to send, which groups, and when",
     "new": "New send schedule",
-    "newHint": "1) Pick message + groups 2) Set time and daily limit 3) Enable - or tap Send next group to test first",
     "edit": "Edit send schedule",
-    "sections": {
-      "basics": "Message and schedule name",
-      "schedule": "When to send",
-      "pacing": "How many and enable"
+    "mode": {
+      "simple": "Easy setup",
+      "advanced": "Advanced"
+    },
+    "chatKinds": {
+      "group": "Groups",
+      "openchat": "OpenChat"
     },
     "empty": "No send schedules yet. Create your first send schedule.",
     "emptyCta": "Create first send schedule",
@@ -626,6 +633,7 @@
     },
     "hints": {
       "template": "Message sent to every group in this send schedule",
+      "mode": "Easy = essentials to start · Advanced = start time, pacing, and custom hours",
       "schedule": "Continuous = queue in send window · Daily/Mon-Fri = start queue at set time",
       "window": "Sends only during these hours",
       "allDay": "On = any hour · Off = choose a send window",

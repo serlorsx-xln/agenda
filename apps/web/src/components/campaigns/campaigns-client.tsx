@@ -12,6 +12,10 @@ import {
   setCampaignEnabled,
 } from "@/app/(dashboard)/dashboard/campaigns/actions";
 import { UpgradeDialog } from "@/components/billing/upgrade-dialog";
+import {
+  CampaignFormDialog,
+  type CampaignFormInitial,
+} from "@/components/campaigns/campaign-form-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -40,14 +44,18 @@ type CampaignRow = {
   dailyLimitReached: boolean;
 };
 
-const STATUS_VARIANT: Record<
-  string,
-  "success" | "warning" | "muted" | "secondary"
-> = {
-  active: "success",
-  paused: "warning",
-  draft: "muted",
-  archived: "secondary",
+type TemplateOption = {
+  id: string;
+  name: string;
+  body: string | null;
+  imageAssetIds?: string[];
+};
+
+type ChatOption = {
+  chatMid: string;
+  name: string;
+  kind?: string;
+  present: boolean;
 };
 
 type PendingAction = { type: "run" | "delete"; id: string };
@@ -57,14 +65,33 @@ function progressPercent(sent: number, max: number): number {
   return Math.min(100, Math.round((sent / max) * 100));
 }
 
+function displayStatus(
+  enabled: boolean,
+  status: string,
+): "active" | "paused" | "draft" {
+  if (enabled) return "active";
+  if (status === "draft") return "draft";
+  return "paused";
+}
+
 export function CampaignsClient({
   campaigns,
   planUsage,
-  hasTemplates,
+  templates,
+  chats,
+  editorById,
+  targetsByCampaignId,
+  openNewOnMount = false,
+  editIdOnMount = null,
 }: {
   campaigns: CampaignRow[];
   planUsage: PlanUsageSnapshot;
-  hasTemplates: boolean;
+  templates: TemplateOption[];
+  chats: ChatOption[];
+  editorById: Record<string, CampaignFormInitial>;
+  targetsByCampaignId: Record<string, string[]>;
+  openNewOnMount?: boolean;
+  editIdOnMount?: string | null;
 }) {
   const t = useTranslations("campaigns");
   const te = useTranslations("campaigns.errors");
@@ -72,19 +99,85 @@ export function CampaignsClient({
   const tc = useTranslations("common");
   const tt = useTranslations("toast");
   const router = useRouter();
+
   const [busy, setBusy] = React.useState<string | null>(null);
   const [upgradeOpen, setUpgradeOpen] = React.useState(false);
   const [upgradeLimit, setUpgradeLimit] =
     React.useState<"campaigns" | "plan_locked">("campaigns");
   const [pending, setPending] = React.useState<PendingAction | null>(null);
+  const [formOpen, setFormOpen] = React.useState(false);
+  const [editing, setEditing] = React.useState<CampaignFormInitial | null>(
+    null,
+  );
+  const [editTargets, setEditTargets] = React.useState<string[]>([]);
+  const booted = React.useRef(false);
 
   const locked = planUsage.isLocked;
   const atCampaignLimit = planUsage.campaignsUsed >= planUsage.campaignsMax;
-  const newHref = hasTemplates
-    ? "/dashboard/campaigns/new"
-    : "/dashboard/templates?need=campaign";
-  const newLabel = hasTemplates ? t("new") : t("createTemplateFirst");
-  const emptyCtaLabel = hasTemplates ? t("emptyCta") : t("createTemplateFirst");
+  const hasTemplates = templates.length > 0;
+
+  React.useEffect(() => {
+    if (booted.current) return;
+    booted.current = true;
+    if (editIdOnMount) {
+      const detail = editorById[editIdOnMount];
+      if (detail) {
+        setEditing(detail);
+        setEditTargets(targetsByCampaignId[editIdOnMount] ?? []);
+        setFormOpen(true);
+      } else {
+        router.replace("/dashboard/campaigns");
+      }
+      return;
+    }
+    if (openNewOnMount) {
+      if (!hasTemplates) {
+        router.push("/dashboard/templates?need=campaign");
+        return;
+      }
+      if (locked || atCampaignLimit) {
+        setUpgradeLimit(locked ? "plan_locked" : "campaigns");
+        setUpgradeOpen(true);
+        router.replace("/dashboard/campaigns");
+        return;
+      }
+      setEditing(null);
+      setEditTargets([]);
+      setFormOpen(true);
+    }
+  }, [
+    editIdOnMount,
+    openNewOnMount,
+    editorById,
+    targetsByCampaignId,
+    hasTemplates,
+    locked,
+    atCampaignLimit,
+    router,
+  ]);
+
+  function openNew() {
+    if (!hasTemplates) {
+      router.push("/dashboard/templates?need=campaign");
+      return;
+    }
+    if (locked || atCampaignLimit) {
+      setUpgradeLimit(locked ? "plan_locked" : "campaigns");
+      setUpgradeOpen(true);
+      return;
+    }
+    setEditing(null);
+    setEditTargets([]);
+    setFormOpen(true);
+  }
+
+  function openEdit(id: string) {
+    const detail = editorById[id];
+    if (!detail) return;
+    setEditing(detail);
+    setEditTargets(targetsByCampaignId[id] ?? []);
+    setFormOpen(true);
+  }
 
   function handlePlanLimit(code: string) {
     if (code === "plan_locked") {
@@ -183,25 +276,21 @@ export function CampaignsClient({
             max: planUsage.campaignsMax,
           })}
         </p>
-        {locked || atCampaignLimit ? (
-          <Button
-            onClick={() => {
-              setUpgradeLimit(locked ? "plan_locked" : "campaigns");
-              setUpgradeOpen(true);
-            }}
-            title={locked ? undefined : t("limitReached")}
-          >
-            <IconPlus className="h-4 w-4" />
-            {t("new")}
-          </Button>
-        ) : (
-          <Button asChild>
-            <Link href={newHref}>
-              <IconPlus className="h-4 w-4" />
-              {newLabel}
-            </Link>
-          </Button>
-        )}
+        <Button
+          onClick={openNew}
+          title={
+            !hasTemplates
+              ? t("templateRequired")
+              : locked
+                ? undefined
+                : atCampaignLimit
+                  ? t("limitReached")
+                  : undefined
+          }
+        >
+          <IconPlus className="h-4 w-4" />
+          {hasTemplates ? t("new") : t("createTemplateFirst")}
+        </Button>
       </div>
 
       {campaigns.length === 0 ? (
@@ -210,21 +299,9 @@ export function CampaignsClient({
             <p className="text-small text-muted-foreground">
               {hasTemplates ? t("empty") : t("templateRequired")}
             </p>
-            {locked || atCampaignLimit ? (
-              <Button
-                size="touch"
-                onClick={() => {
-                  setUpgradeLimit(locked ? "plan_locked" : "campaigns");
-                  setUpgradeOpen(true);
-                }}
-              >
-                {t("emptyCta")}
-              </Button>
-            ) : (
-              <Button asChild size="touch">
-                <Link href={newHref}>{emptyCtaLabel}</Link>
-              </Button>
-            )}
+            <Button size="touch" onClick={openNew}>
+              {hasTemplates ? t("emptyCta") : t("createTemplateFirst")}
+            </Button>
           </CardContent>
         </Card>
       ) : (
@@ -232,6 +309,7 @@ export function CampaignsClient({
           {campaigns.map((c) => {
             const runReason = runDisabledReason(c);
             const pct = progressPercent(c.sentToday, c.maxSends);
+            const status = displayStatus(c.enabled, c.status);
             return (
               <Card key={c.id}>
                 <CardContent className="space-y-4 p-5">
@@ -239,8 +317,16 @@ export function CampaignsClient({
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <h3 className="truncate text-h3 font-bold">{c.name}</h3>
-                        <Badge variant={STATUS_VARIANT[c.status] ?? "muted"}>
-                          {ts(c.status)}
+                        <Badge
+                          variant={
+                            status === "active"
+                              ? "success"
+                              : status === "draft"
+                                ? "muted"
+                                : "warning"
+                          }
+                        >
+                          {ts(status)}
                         </Badge>
                       </div>
                       <p className="mt-1 text-caption text-muted-foreground">
@@ -251,13 +337,13 @@ export function CampaignsClient({
                       </p>
                     </div>
                     <div className="flex shrink-0 items-center gap-1">
-                      <Button variant="ghost" size="icon" asChild>
-                        <Link
-                          href={`/dashboard/campaigns/${c.id}`}
-                          aria-label={tc("edit")}
-                        >
-                          <IconEdit className="h-4 w-4" />
-                        </Link>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => openEdit(c.id)}
+                        aria-label={tc("edit")}
+                      >
+                        <IconEdit className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -356,6 +442,25 @@ export function CampaignsClient({
           })}
         </div>
       )}
+
+      <CampaignFormDialog
+        open={formOpen}
+        onOpenChange={(open) => {
+          setFormOpen(open);
+          if (!open) {
+            setEditing(null);
+            setEditTargets([]);
+            if (openNewOnMount || editIdOnMount) {
+              router.replace("/dashboard/campaigns");
+            }
+          }
+        }}
+        templates={templates}
+        chats={chats}
+        planUsage={planUsage}
+        initial={editing}
+        initialTargets={editTargets}
+      />
 
       <ConfirmDialog
         open={pending !== null}

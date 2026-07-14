@@ -180,6 +180,26 @@ export async function getCampaignTargets(campaignId: string) {
     .where(eq(campaignTargets.campaignId, campaignId));
 }
 
+/** All targets for a user's campaigns, grouped by campaign id. */
+export async function getCampaignTargetsByUser(
+  userId: string,
+): Promise<Record<string, string[]>> {
+  const rows = await db
+    .select({
+      campaignId: campaignTargets.campaignId,
+      chatMid: campaignTargets.chatMid,
+    })
+    .from(campaignTargets)
+    .innerJoin(campaigns, eq(campaignTargets.campaignId, campaigns.id))
+    .where(eq(campaigns.userId, userId));
+
+  const map: Record<string, string[]> = {};
+  for (const row of rows) {
+    (map[row.campaignId] ??= []).push(row.chatMid);
+  }
+  return map;
+}
+
 export async function getRuns(userId: string, limit = 50) {
   const plan = await getEffectivePlan(userId);
   const historyDays = plan.features.runHistoryDays;

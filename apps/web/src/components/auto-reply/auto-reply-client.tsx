@@ -14,6 +14,7 @@ import {
   toggleAutoReplyRule,
   updateAutoReplyRule,
 } from "@/app/(dashboard)/dashboard/auto-reply/actions";
+import { ChatCheckboxList } from "@/components/line/chat-checkbox-list";
 import { ImageUploadPreview } from "@/components/media/image-upload-preview";
 import { UpgradeDialog } from "@/components/billing/upgrade-dialog";
 import { FieldHint, FieldLabel } from "@/components/ui/field-hint";
@@ -271,6 +272,7 @@ export function AutoReplyClient({
 
   const [open, setOpen] = React.useState(false);
   const [editing, setEditing] = React.useState<Rule | null>(null);
+  const [pickerKey, setPickerKey] = React.useState(0);
   const [saving, setSaving] = React.useState(false);
 
   const [selectedChats, setSelectedChats] = React.useState<Set<string>>(
@@ -292,8 +294,6 @@ export function AutoReplyClient({
   const [enabled, setEnabled] = React.useState(true);
   const [simpleMode, setSimpleMode] = React.useState(true);
 
-  const groupChats = chats.filter((c) => c.kind === "group");
-  const squareChats = chats.filter((c) => c.kind === "square");
   const hasTemplate = templateId.length > 0;
   const selectedTemplate = templates.find((tpl) => tpl.id === templateId);
 
@@ -336,11 +336,13 @@ export function AutoReplyClient({
 
   function openNew() {
     resetForm(null);
+    setPickerKey((k) => k + 1);
     setOpen(true);
   }
 
   function openEdit(rule: Rule) {
     resetForm(rule);
+    setPickerKey((k) => k + 1);
     setOpen(true);
   }
 
@@ -414,42 +416,6 @@ export function AutoReplyClient({
       return;
     }
     router.refresh();
-  }
-
-  function renderChatCheckboxes(chatList: Chat[], groupLabel: string) {
-    if (chatList.length === 0) return null;
-    return (
-      <>
-        <p className="text-caption font-medium text-muted-foreground">
-          {groupLabel}
-        </p>
-        <ul className="space-y-1">
-          {chatList.map((chat) => (
-            <li key={chat.chatMid}>
-              <label
-                className={`flex min-h-10 items-center gap-3 rounded-md p-2 ${
-                  chat.present
-                    ? "cursor-pointer hover:bg-muted"
-                    : "cursor-not-allowed opacity-50"
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  className="h-5 w-5 accent-[hsl(var(--primary))]"
-                  checked={selectedChats.has(chat.chatMid)}
-                  onChange={() => toggleChat(chat.chatMid)}
-                  disabled={!chat.present}
-                />
-                <span className="min-w-0 flex-1 truncate text-small">
-                  {chat.name}
-                  {!chat.present ? ` (${t("chatUnavailable")})` : ""}
-                </span>
-              </label>
-            </li>
-          ))}
-        </ul>
-      </>
-    );
   }
 
   return (
@@ -723,18 +689,21 @@ export function AutoReplyClient({
                 label={`${t("fields.chats")} · ${t("fields.chatsSelected", { count: selectedChats.size })}`}
                 hint={t("hints.chats")}
               />
-              <div className="max-h-48 space-y-2 overflow-y-auto rounded-md border border-border p-2">
-                {chats.length === 0 ? (
-                  <p className="text-small text-muted-foreground">
-                    {t("emptyNoChats")}
-                  </p>
-                ) : (
-                  <>
-                    {renderChatCheckboxes(groupChats, t("chatKinds.group"))}
-                    {renderChatCheckboxes(squareChats, t("chatKinds.openchat"))}
-                  </>
-                )}
-              </div>
+              {chats.length === 0 ? (
+                <p className="rounded-md border border-border p-3 text-small text-muted-foreground">
+                  {t("emptyNoChats")}
+                </p>
+              ) : (
+                <ChatCheckboxList
+                  key={pickerKey}
+                  chats={chats}
+                  selected={selectedChats}
+                  onToggle={toggleChat}
+                  groupLabel={t("chatKinds.group")}
+                  openChatLabel={t("chatKinds.openchat")}
+                  groupUnavailableSuffix={`(${t("chatUnavailable")})`}
+                />
+              )}
             </div>
 
             {simpleMode ? (

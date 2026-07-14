@@ -32,6 +32,8 @@ import {
 import type { PlanUsageSnapshot } from "@/lib/plan-usage-types";
 import { Badge } from "@/components/ui/badge";
 import { FieldHint } from "@/components/ui/field-hint";
+import { Input } from "@/components/ui/input";
+import { filterChatsByQuery } from "@/components/line/chat-search";
 
 type Chat = {
   id: string;
@@ -67,6 +69,12 @@ export function OpenChatsClient({
   );
   const [adding, setAdding] = React.useState(false);
   const [upgradeOpen, setUpgradeOpen] = React.useState(false);
+  const [query, setQuery] = React.useState("");
+
+  const filteredChats = React.useMemo(
+    () => filterChatsByQuery(chats, query),
+    [chats, query],
+  );
 
   async function handleSync() {
     setSyncing(true);
@@ -153,9 +161,25 @@ export function OpenChatsClient({
         </Card>
       ) : (
         <>
+          <Input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t("searchPlaceholder")}
+            aria-label={t("searchPlaceholder")}
+            className="max-w-md"
+          />
+          {filteredChats.length === 0 ? (
+            <Card>
+              <CardContent className="py-8 text-center text-small text-muted-foreground">
+                {t("noSearchResults")}
+              </CardContent>
+            </Card>
+          ) : (
+            <>
           {/* Mobile card list */}
           <div className="grid gap-3 md:hidden">
-            {chats.map((chat) => (
+            {filteredChats.map((chat) => (
               <Card key={chat.id}>
                 <CardContent className="space-y-3 p-4">
                   <div className="flex items-start justify-between gap-2">
@@ -232,7 +256,7 @@ export function OpenChatsClient({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {chats.map((chat) => (
+                {filteredChats.map((chat) => (
                   <TableRow key={chat.id}>
                     <TableCell className="font-medium">{chat.name}</TableCell>
                     <TableCell className="hidden sm:table-cell">
@@ -286,6 +310,8 @@ export function OpenChatsClient({
             </Table>
           </CardContent>
         </Card>
+            </>
+          )}
         </>
       )}
 

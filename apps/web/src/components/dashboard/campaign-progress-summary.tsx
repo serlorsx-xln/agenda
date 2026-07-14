@@ -49,7 +49,7 @@ export async function CampaignProgressSummary({
               className="rounded-lg border border-border p-4 space-y-2"
             >
               <Link
-                href={`/dashboard/campaigns/${c.id}`}
+                href={`/dashboard/campaigns?edit=${encodeURIComponent(c.id)}`}
                 className="block truncate font-medium hover:underline"
               >
                 {c.name}

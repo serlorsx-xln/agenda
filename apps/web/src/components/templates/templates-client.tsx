@@ -96,7 +96,7 @@ export function TemplatesClient({
       toast.success(editing ? tt("saved") : tt("created"));
       setOpen(false);
       if (!editing && promptForCampaign) {
-        router.push("/dashboard/campaigns/new");
+        router.push("/dashboard/campaigns?new=1");
         router.refresh();
         return;
       }
