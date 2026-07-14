@@ -443,6 +443,13 @@
       "contains": "Contains keyword",
       "exact": "Exact match"
     },
+    "includeMatch": {
+      "all": "Must include all",
+      "any": "Any of these words"
+    },
+    "toasts": {
+      "simpleModeKeywordTrim": "Easy mode keeps one keyword — kept the first word and set match to all"
+    },
     "columns": {
       "chat": "Chat",
       "keyword": "Keyword",
@@ -453,10 +460,11 @@
     "fields": {
       "chats": "Chats",
       "chatsSelected": "{count} selected",
-      "includeKeywords": "Must include (any)",
-      "includeKeywordsHint": "Type a word and add",
+      "includeKeywords": "Must include (multiple)",
+      "includeKeywordsHint": "Type a word and add · choose all vs any below",
       "includeKeywordSimple": "Required keyword",
-      "includeKeywordSimpleHint": "e.g. promo, price, interested",
+      "includeKeywordSimpleHint": "e.g. promo · for multiple / OR/AND use Advanced",
+      "includeMatch": "How multiple keywords match",
       "excludeKeywords": "Must not include",
       "excludeKeywordsHint": "Optional",
       "addKeyword": "Add",
@@ -509,9 +517,10 @@
     },
     "templatePreview": "Will use text and images from this template",
     "hints": {
-      "mode": "Easy: chat + keyword + template or text · Advanced: extra conditions",
+      "mode": "Easy: chat + one keyword + reply · Advanced: multiple keywords (all or any) and extra conditions",
       "chats": "Only listen in selected groups/OpenChats",
-      "keyword": "Reply when the message contains this word",
+      "keyword": "Reply when the message contains this word · use Advanced for multiple keywords",
+      "includeMatch": "All = every listed word must appear · Any = any listed word is enough",
       "template": "Uses template text and images - no need to type again",
       "replyText": "Use when no template is selected",
       "replyImage": "Use when no template is selected (advanced mode)",

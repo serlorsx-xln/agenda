@@ -82,6 +82,11 @@ export const autoReplyMatchMode = pgEnum("auto_reply_match_mode", [
   "exact",
 ]);
 
+export const autoReplyIncludeMatch = pgEnum("auto_reply_include_match", [
+  "all",
+  "any",
+]);
+
 export const autoReplyEmojiFilter = pgEnum("auto_reply_emoji_filter", [
   "any",
   "with_emoji",
@@ -482,6 +487,9 @@ export const autoReplyRules = pgTable(
       .default([])
       .notNull(),
     matchMode: autoReplyMatchMode("match_mode").default("contains").notNull(),
+    includeMatch: autoReplyIncludeMatch("include_match")
+      .default("all")
+      .notNull(),
     enabled: boolean("enabled").default(true).notNull(),
     cooldownSec: integer("cooldown_sec").default(30).notNull(),
     priority: integer("priority").default(0).notNull(),

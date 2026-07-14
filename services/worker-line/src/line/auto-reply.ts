@@ -424,6 +424,7 @@ async function pollUserOnce(userId: string, runtime: AutoReplyRuntime): Promise<
             excludeKeywords: rule.excludeKeywords,
             emojiFilter: rule.emojiFilter,
             matchMode: rule.matchMode,
+            includeMatch: rule.includeMatch,
           })
         ) {
           continue;
@@ -536,6 +537,7 @@ export function registerAutoReplyBenchmarkUser(userId: string): void {
         templateId: null,
         replyImageAssetIds: [],
         matchMode: "contains",
+        includeMatch: "all",
         enabled: true,
         cooldownSec: 30,
         priority: 0,
@@ -660,6 +662,7 @@ export async function createAutoReplyRule(
     templateId?: string | null;
     replyImageAssetIds?: string[];
     matchMode?: AutoReplyRule["matchMode"];
+    includeMatch?: AutoReplyRule["includeMatch"];
     enabled?: boolean;
     cooldownSec?: number;
     priority?: number;
@@ -691,6 +694,7 @@ export async function createAutoReplyRule(
     excludeKeywords: input.excludeKeywords ?? [],
     emojiFilter: input.emojiFilter ?? "any",
     matchMode: input.matchMode ?? "contains",
+    includeMatch: input.includeMatch ?? "all",
   });
   if (!matchValidation.ok) throw new Error(matchValidation.error);
 
@@ -718,6 +722,7 @@ export async function createAutoReplyRule(
       templateId: input.templateId ?? null,
       replyImageAssetIds: imageIds,
       matchMode: normalized.matchMode,
+      includeMatch: normalized.includeMatch,
       enabled: input.enabled ?? true,
       cooldownSec: input.cooldownSec ?? 30,
       priority: input.priority ?? 0,
@@ -742,6 +747,7 @@ export async function updateAutoReplyRule(
     templateId?: string | null;
     replyImageAssetIds?: string[];
     matchMode?: AutoReplyRule["matchMode"];
+    includeMatch?: AutoReplyRule["includeMatch"];
     enabled?: boolean;
     cooldownSec?: number;
     priority?: number;
@@ -787,6 +793,7 @@ export async function updateAutoReplyRule(
     excludeKeywords: patch.excludeKeywords ?? existing.excludeKeywords,
     emojiFilter: patch.emojiFilter ?? existing.emojiFilter,
     matchMode: patch.matchMode ?? existing.matchMode,
+    includeMatch: patch.includeMatch ?? existing.includeMatch,
   });
   if (!matchValidation.ok) throw new Error(matchValidation.error);
 
@@ -816,6 +823,7 @@ export async function updateAutoReplyRule(
       excludeKeywords: normalized.excludeKeywords,
       emojiFilter: normalized.emojiFilter,
       matchMode: normalized.matchMode,
+      includeMatch: normalized.includeMatch,
       replyImageAssetIds: imageIds,
       updatedAt: new Date(),
     })

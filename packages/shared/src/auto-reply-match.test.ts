@@ -7,29 +7,44 @@ import {
 } from "./auto-reply-match";
 
 describe("auto-reply-match", () => {
-  it("matches if any include keyword is present in contains mode", () => {
+  it("requires all include keywords when includeMatch is all", () => {
     expect(
-      messageMatchesRule("สนใจครับ", {
+      messageMatchesRule("ราคา สนใจครับ", {
         includeKeywords: ["ราคา", "สนใจ"],
         excludeKeywords: [],
         emojiFilter: "any",
         matchMode: "contains",
+        includeMatch: "all",
       }),
     ).toBe(true);
+    expect(
+      messageMatchesRule("ราคาเท่าไหร่", {
+        includeKeywords: ["ราคา", "สนใจ"],
+        excludeKeywords: [],
+        emojiFilter: "any",
+        matchMode: "contains",
+        includeMatch: "all",
+      }),
+    ).toBe(false);
+  });
+
+  it("matches any include keyword when includeMatch is any", () => {
     expect(
       messageMatchesRule("ทดสอบ", {
         includeKeywords: ["Test", "ทดสอบ"],
         excludeKeywords: [],
         emojiFilter: "any",
         matchMode: "contains",
+        includeMatch: "any",
       }),
     ).toBe(true);
     expect(
       messageMatchesRule("hello", {
-        includeKeywords: ["ราคา", "สนใจ"],
+        includeKeywords: ["Test", "ทดสอบ"],
         excludeKeywords: [],
         emojiFilter: "any",
         matchMode: "contains",
+        includeMatch: "any",
       }),
     ).toBe(false);
   });
@@ -41,6 +56,7 @@ describe("auto-reply-match", () => {
         excludeKeywords: ["spam"],
         emojiFilter: "any",
         matchMode: "contains",
+        includeMatch: "all",
       }),
     ).toBe(false);
   });
@@ -52,6 +68,7 @@ describe("auto-reply-match", () => {
         excludeKeywords: [],
         emojiFilter: "with_emoji",
         matchMode: "contains",
+        includeMatch: "all",
       }),
     ).toBe(true);
     expect(
@@ -60,6 +77,7 @@ describe("auto-reply-match", () => {
         excludeKeywords: [],
         emojiFilter: "with_emoji",
         matchMode: "contains",
+        includeMatch: "all",
       }),
     ).toBe(false);
   });
@@ -71,8 +89,23 @@ describe("auto-reply-match", () => {
         excludeKeywords: [],
         emojiFilter: "any",
         matchMode: "exact",
+        includeMatch: "all",
       }).ok,
     ).toBe(false);
     expect(normalizeKeywords([" A ", "a", "B"])).toEqual(["A", "B"]);
+  });
+
+  it("normalizes single-keyword rules to includeMatch all", () => {
+    const result = validateMatchInput({
+      includeKeywords: ["hello"],
+      excludeKeywords: [],
+      emojiFilter: "any",
+      matchMode: "contains",
+      includeMatch: "any",
+    });
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.normalized.includeMatch).toBe("all");
+    }
   });
 });

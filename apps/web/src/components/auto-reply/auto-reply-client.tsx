@@ -58,6 +58,7 @@ type Rule = {
   templateId: string | null;
   replyImageAssetIds?: string[];
   matchMode: "contains" | "exact";
+  includeMatch?: "all" | "any";
   enabled: boolean;
   cooldownSec: number;
   priority: number;
@@ -95,6 +96,7 @@ function isAdvancedRule(rule: Rule | null): boolean {
     rule.excludeKeywords.length > 0 ||
     rule.emojiFilter !== "any" ||
     rule.matchMode === "exact" ||
+    rule.includeMatch === "any" ||
     rule.priority > 0 ||
     rule.cooldownSec !== 30 ||
     resolveImageAssetIds(rule.replyImageAssetIds ?? []).length > 0 ||
@@ -284,6 +286,7 @@ export function AutoReplyClient({
   const [matchMode, setMatchMode] = React.useState<"contains" | "exact">(
     "contains",
   );
+  const [includeMatch, setIncludeMatch] = React.useState<"all" | "any">("all");
   const [templateId, setTemplateId] = React.useState<string>("");
   const [replyText, setReplyText] = React.useState("");
   const [replyImageAssetIds, setReplyImageAssetIds] = React.useState<string[]>(
@@ -323,6 +326,7 @@ export function AutoReplyClient({
     setExcludeKeywords(rule?.excludeKeywords ?? []);
     setEmojiFilter(rule?.emojiFilter ?? "any");
     setMatchMode(rule?.matchMode ?? "contains");
+    setIncludeMatch(rule?.includeMatch ?? "all");
     setTemplateId(rule?.templateId ?? "");
     setReplyText(rule?.replyText ?? "");
     setReplyImageAssetIds(
@@ -360,16 +364,24 @@ export function AutoReplyClient({
     }
     setSaving(true);
     try {
+      const keywordsForSave = simpleMode
+        ? includeKeywords.slice(0, 1)
+        : includeKeywords;
       const payload = {
         chatMids: Array.from(selectedChats),
-        includeKeywords,
+        includeKeywords: keywordsForSave,
         excludeKeywords: simpleMode ? [] : excludeKeywords,
         emojiFilter: simpleMode ? ("any" as const) : emojiFilter,
         matchMode: simpleMode
           ? ("contains" as const)
-          : includeKeywords.length > 1 && matchMode === "exact"
+          : keywordsForSave.length > 1 && matchMode === "exact"
             ? ("contains" as const)
             : matchMode,
+        includeMatch: simpleMode
+          ? ("all" as const)
+          : keywordsForSave.length <= 1
+            ? ("all" as const)
+            : includeMatch,
         templateId: templateId || null,
         replyText: hasTemplate ? null : replyText.trim() || null,
         replyImageAssetIds:
@@ -585,6 +597,11 @@ export function AutoReplyClient({
                         </div>
                         <div className="mt-1 flex flex-wrap gap-1 text-caption text-muted-foreground">
                           <span>{t(`matchMode.${rule.matchMode}`)}</span>
+                          {rule.includeKeywords.length > 1 && (
+                            <span>
+                              · {t(`includeMatch.${rule.includeMatch ?? "all"}`)}
+                            </span>
+                          )}
                           {rule.excludeKeywords.length > 0 && (
                             <Badge variant="outline">
                               {t("excludeCount", {
@@ -668,7 +685,16 @@ export function AutoReplyClient({
               variant={simpleMode ? "default" : "ghost"}
               size="sm"
               className="flex-1"
-              onClick={() => setSimpleMode(true)}
+              onClick={() => {
+                if (includeKeywords.length > 1 || includeMatch === "any") {
+                  toast.message(t("toasts.simpleModeKeywordTrim"));
+                  if (includeKeywords.length > 1) {
+                    setIncludeKeywords(includeKeywords.slice(0, 1));
+                  }
+                  setIncludeMatch("all");
+                }
+                setSimpleMode(true);
+              }}
             >
               {t("mode.simple")}
             </Button>
@@ -719,23 +745,44 @@ export function AutoReplyClient({
                   onChange={(e) => {
                     const word = e.target.value.trim();
                     setIncludeKeywords(word ? [word] : []);
+                    setIncludeMatch("all");
                   }}
                   placeholder={t("fields.includeKeywordSimpleHint")}
                 />
               </div>
             ) : (
-              <KeywordListEditor
-                label={t("fields.includeKeywords")}
-                hint={t("fields.includeKeywordsHint")}
-                addLabel={t("fields.addKeyword")}
-                keywords={includeKeywords}
-                onChange={(next) => {
-                  setIncludeKeywords(next);
-                  if (next.length > 1 && matchMode === "exact") {
-                    setMatchMode("contains");
-                  }
-                }}
-              />
+              <>
+                <KeywordListEditor
+                  label={t("fields.includeKeywords")}
+                  hint={t("fields.includeKeywordsHint")}
+                  addLabel={t("fields.addKeyword")}
+                  keywords={includeKeywords}
+                  onChange={(next) => {
+                    setIncludeKeywords(next);
+                    if (next.length <= 1) setIncludeMatch("all");
+                    if (next.length > 1 && matchMode === "exact") {
+                      setMatchMode("contains");
+                    }
+                  }}
+                />
+                {includeKeywords.length > 1 ? (
+                  <div className="space-y-1.5">
+                    <FieldLabel
+                      label={t("fields.includeMatch")}
+                      hint={t("hints.includeMatch")}
+                    />
+                    <Select
+                      value={includeMatch}
+                      onChange={(e) =>
+                        setIncludeMatch(e.target.value as "all" | "any")
+                      }
+                    >
+                      <option value="all">{t("includeMatch.all")}</option>
+                      <option value="any">{t("includeMatch.any")}</option>
+                    </Select>
+                  </div>
+                ) : null}
+              </>
             )}
 
             {!simpleMode && planFeatures.autoReplyExcludeKeywords && (

@@ -289,6 +289,7 @@ export function createServer(): Express {
         templateId?: string | null;
         replyImageAssetIds?: string[];
         matchMode?: "contains" | "exact";
+        includeMatch?: "all" | "any";
         enabled?: boolean;
         cooldownSec?: number;
         priority?: number;
@@ -308,6 +309,7 @@ export function createServer(): Express {
         templateId: body.templateId,
         replyImageAssetIds: body.replyImageAssetIds,
         matchMode: body.matchMode,
+        includeMatch: body.includeMatch,
         enabled: body.enabled,
         cooldownSec: body.cooldownSec,
         priority: body.priority,
@@ -334,6 +336,7 @@ export function createServer(): Express {
           templateId?: string | null;
           replyImageAssetIds?: string[];
           matchMode?: "contains" | "exact";
+          includeMatch?: "all" | "any";
           enabled?: boolean;
           cooldownSec?: number;
           priority?: number;

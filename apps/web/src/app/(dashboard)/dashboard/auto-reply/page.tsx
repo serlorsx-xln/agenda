@@ -18,6 +18,7 @@ type AutoReplyRule = {
   templateId: string | null;
   replyImageAssetIds?: string[];
   matchMode: "contains" | "exact";
+  includeMatch?: "all" | "any";
   enabled: boolean;
   cooldownSec: number;
   priority: number;

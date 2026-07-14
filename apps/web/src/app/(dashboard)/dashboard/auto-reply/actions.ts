@@ -30,6 +30,7 @@ const ruleSchema = z
     templateId: z.string().uuid().optional().nullable(),
     replyImageAssetIds: z.array(z.string().uuid()).max(10).optional(),
     matchMode: z.enum(["contains", "exact"]).optional(),
+    includeMatch: z.enum(["all", "any"]).optional(),
     enabled: z.boolean().optional(),
     cooldownSec: z.number().int().min(0).max(3600).optional(),
     priority: z.number().int().min(0).max(100).optional(),
@@ -40,6 +41,7 @@ const ruleSchema = z
       excludeKeywords: data.excludeKeywords ?? [],
       emojiFilter: data.emojiFilter ?? "any",
       matchMode: data.matchMode ?? "contains",
+      includeMatch: data.includeMatch ?? "all",
     });
     if (!match.ok) {
       ctx.addIssue({ code: "custom", message: match.error });
@@ -135,6 +137,7 @@ export async function updateAutoReplyRule(
       excludeKeywords: input.excludeKeywords ?? [],
       emojiFilter: input.emojiFilter ?? "any",
       matchMode: input.matchMode ?? "contains",
+      includeMatch: input.includeMatch ?? "all",
     });
     if (!match.ok) return { ok: false, error: match.error };
   }

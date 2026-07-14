@@ -1,11 +1,13 @@
 export type AutoReplyEmojiFilter = "any" | "with_emoji" | "without_emoji";
 export type AutoReplyMatchMode = "contains" | "exact";
+export type AutoReplyIncludeMatch = "all" | "any";
 
 export type AutoReplyMatchInput = {
   includeKeywords: string[];
   excludeKeywords: string[];
   emojiFilter: AutoReplyEmojiFilter;
   matchMode: AutoReplyMatchMode;
+  includeMatch: AutoReplyIncludeMatch;
 };
 
 const EMOJI_RE = /\p{Extended_Pictographic}/u;
@@ -47,6 +49,7 @@ export function validateMatchInput(
   const excludeKeywords = normalizeKeywords(input.excludeKeywords);
   const emojiFilter = input.emojiFilter ?? "any";
   const matchMode = input.matchMode ?? "contains";
+  const includeMatch = input.includeMatch ?? "all";
 
   if (includeKeywords.length === 0) {
     return { ok: false, error: "include_required" };
@@ -62,6 +65,7 @@ export function validateMatchInput(
       excludeKeywords,
       emojiFilter,
       matchMode,
+      includeMatch: includeKeywords.length <= 1 ? "all" : includeMatch,
     },
   };
 }
@@ -74,6 +78,7 @@ export function messageMatchesRule(
   const excludeKeywords = normalizeKeywords(input.excludeKeywords);
   const emojiFilter = input.emojiFilter ?? "any";
   const matchMode = input.matchMode ?? "contains";
+  const includeMatch = input.includeMatch ?? "all";
 
   if (includeKeywords.length === 0) return false;
 
@@ -91,6 +96,8 @@ export function messageMatchesRule(
     return hay.trim() === includeKeywords[0]!.toLowerCase();
   }
 
-  // Any listed keyword is enough (OR). Use one phrase as a single keyword for AND.
-  return includeKeywords.some((w) => hay.includes(w.toLowerCase()));
+  if (includeMatch === "any") {
+    return includeKeywords.some((w) => hay.includes(w.toLowerCase()));
+  }
+  return includeKeywords.every((w) => hay.includes(w.toLowerCase()));
 }
