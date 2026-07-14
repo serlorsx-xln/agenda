@@ -69,10 +69,7 @@ export function buildDiscordNotifyPayload(input: DiscordNotifyInput): {
 }
 
 export function getDiscordWebhookUrl(): string | undefined {
-  const raw =
-    process.env.DISCORD_WEBHOOK_URL?.trim() ||
-    process.env.NOTIFY_DISCORD_WEBHOOK?.trim() ||
-    process.env.NOTIFY_FALLBACK_DISCORD_WEBHOOK?.trim();
+  const raw = process.env.DISCORD_WEBHOOK_URL?.trim();
   return raw || undefined;
 }
 

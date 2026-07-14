@@ -169,11 +169,6 @@ export async function getCampaignsWithProgress(
   });
 }
 
-export async function getCampaignProgress(userId: string, campaignId: string) {
-  const rows = await getCampaignsWithProgress(userId);
-  return rows.find((r) => r.id === campaignId) ?? null;
-}
-
 export async function getCampaign(userId: string, campaignId: string) {
   const [row] = await db
     .select()
@@ -181,13 +176,6 @@ export async function getCampaign(userId: string, campaignId: string) {
     .where(and(eq(campaigns.id, campaignId), eq(campaigns.userId, userId)))
     .limit(1);
   return row ?? null;
-}
-
-export async function getCampaignTargets(campaignId: string) {
-  return db
-    .select({ chatMid: campaignTargets.chatMid, enabled: campaignTargets.enabled })
-    .from(campaignTargets)
-    .where(eq(campaignTargets.campaignId, campaignId));
 }
 
 /** All targets for a user's campaigns, grouped by campaign id. */

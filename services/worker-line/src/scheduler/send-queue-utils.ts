@@ -2,13 +2,11 @@ import type { Campaign } from "@line/db";
 import {
   MIN_ACCOUNT_SEND_DELAY_SEC,
   MIN_PER_CHAT_COOLDOWN_SEC,
-  MIN_SEND_DELAY_SEC,
 } from "@line/shared";
 
 export {
   MIN_ACCOUNT_SEND_DELAY_SEC,
   MIN_PER_CHAT_COOLDOWN_SEC,
-  MIN_SEND_DELAY_SEC,
 };
 export const BACKOFF_LADDER_SEC = [120, 300, 900] as const;
 
