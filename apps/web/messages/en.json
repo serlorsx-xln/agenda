@@ -447,9 +447,6 @@
       "all": "Must include all",
       "any": "Any of these words"
     },
-    "toasts": {
-      "simpleModeKeywordTrim": "Easy mode keeps one keyword — kept the first word and set match to all"
-    },
     "columns": {
       "chat": "Chat",
       "keyword": "Keyword",
@@ -520,6 +517,7 @@
       "mode": "Easy: chat + one keyword + reply · Advanced: multiple keywords (all or any) and extra conditions",
       "chats": "Only listen in selected groups/OpenChats",
       "keyword": "Reply when the message contains this word · use Advanced for multiple keywords",
+      "simpleKeepsExtraKeywords": "{count} more keyword(s) kept for Advanced — switch back anytime / Easy save keeps only the first",
       "includeMatch": "All = every listed word must appear · Any = any listed word is enough",
       "template": "Uses template text and images - no need to type again",
       "replyText": "Use when no template is selected",

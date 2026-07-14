@@ -534,6 +534,28 @@ export function AutoReplyClient({
                         </Badge>
                       ))}
                     </div>
+                    <div className="flex flex-wrap gap-1 text-caption text-muted-foreground">
+                      <span>{t(`matchMode.${rule.matchMode}`)}</span>
+                      {rule.includeKeywords.length > 1 && (
+                        <span>
+                          · {t(`includeMatch.${rule.includeMatch ?? "all"}`)}
+                        </span>
+                      )}
+                      {rule.excludeKeywords.length > 0 && (
+                        <Badge variant="outline">
+                          {t("excludeCount", {
+                            count: rule.excludeKeywords.length,
+                          })}
+                        </Badge>
+                      )}
+                      {rule.emojiFilter !== "any" && (
+                        <Badge variant="outline">
+                          {t(
+                            `fields.emojiFilter.${rule.emojiFilter}` as never,
+                          )}
+                        </Badge>
+                      )}
+                    </div>
                     <div className="flex items-center gap-2">
                       {thumbId ? (
                         <img
@@ -685,16 +707,7 @@ export function AutoReplyClient({
               variant={simpleMode ? "default" : "ghost"}
               size="sm"
               className="flex-1"
-              onClick={() => {
-                if (includeKeywords.length > 1 || includeMatch === "any") {
-                  toast.message(t("toasts.simpleModeKeywordTrim"));
-                  if (includeKeywords.length > 1) {
-                    setIncludeKeywords(includeKeywords.slice(0, 1));
-                  }
-                  setIncludeMatch("all");
-                }
-                setSimpleMode(true);
-              }}
+              onClick={() => setSimpleMode(true)}
             >
               {t("mode.simple")}
             </Button>
@@ -744,11 +757,22 @@ export function AutoReplyClient({
                   value={includeKeywords[0] ?? ""}
                   onChange={(e) => {
                     const word = e.target.value.trim();
-                    setIncludeKeywords(word ? [word] : []);
-                    setIncludeMatch("all");
+                    // Keep remaining keywords in state so switching back to
+                    // advanced does not lose chips; save() still trims in easy mode.
+                    setIncludeKeywords((prev) => {
+                      const rest = prev.slice(1);
+                      return word ? [word, ...rest] : rest;
+                    });
                   }}
                   placeholder={t("fields.includeKeywordSimpleHint")}
                 />
+                {includeKeywords.length > 1 ? (
+                  <p className="text-caption text-muted-foreground">
+                    {t("hints.simpleKeepsExtraKeywords", {
+                      count: includeKeywords.length - 1,
+                    })}
+                  </p>
+                ) : null}
               </div>
             ) : (
               <>
