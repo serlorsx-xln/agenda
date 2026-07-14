@@ -29,6 +29,11 @@
       "perJobLimit": "Per send schedule limit",
       "stats": "Stats",
       "planLimits": "Plan limits"
+    },
+    "quota": {
+      "resetsIn": "Resets in {time}",
+      "endsIn": "Ends in {time}",
+      "noDailyReset": "Does not reset daily — delete items or upgrade to raise the limit"
     }
   },
   "nav": {
@@ -621,7 +626,7 @@
     "deleteConfirm": "Delete this send schedule and its send history?",
     "deleteConfirmTitle": "Delete this send schedule?",
     "progress": {
-      "sentToday": "Sent today {sent} / {max} groups",
+      "sentToday": "Sent today {sent} / {max}",
       "nextGroup": "Next: {name}",
       "noTargets": "No groups selected - pick groups before sending",
       "dailyLimitReached": "Daily send limit reached for today",
@@ -666,6 +671,7 @@
       "sent": "Sent",
       "failed": "Failed",
       "skipped": "Skipped",
+      "groupsInSchedule": "Groups in schedule",
       "started": "Started"
     },
     "status": {
@@ -685,7 +691,9 @@
     "cancelConfirmDescription": "Cancellation stops the remaining queue for today - groups already sent will not be reversed.",
     "cancelConfirmAction": "Cancel send",
     "dailyAggregateHint": "One row = one day per send schedule (includes every send that day)",
-    "sentToday": "Sent to {count} groups today",
+    "sentToday": "Sent {count} times today",
+    "dailyQuota": "Daily quota {sent}/{max}",
+    "statsHint": "Sent = successful sends today · Groups in schedule = how many groups rotate (can repeat until the daily quota is used)",
     "liveTitle": "Today's send details",
     "eventStatus": {
       "success": "Sent",
@@ -884,9 +892,10 @@
     "unlockCta": "Choose a plan and pay",
     "startTrialCta": "Connect LINE to start trial",
     "limitsSection": "Plan limits",
+    "trialSection": "Trial",
     "statsSection": "Stats",
     "perJobSection": "Per send schedule",
-    "sentToday": "Sent today: {count} groups",
+    "sentToday": "Sent today: {count}",
     "maxSendsPerJob": "Up to {count} sends/day · about {monthly}/month per schedule",
     "maxSendsPerJobHint": "Each send schedule has its own quota — not one account-wide daily cap"
   },

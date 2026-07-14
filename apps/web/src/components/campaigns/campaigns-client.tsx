@@ -20,6 +20,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import {
+  DailyQuotaResetCountdown,
+  PlanLimitNoDailyReset,
+} from "@/components/ui/daily-quota-reset-countdown";
 import { Switch } from "@/components/ui/switch";
 import { resolveActionError } from "@/lib/action-errors";
 import {
@@ -38,6 +42,7 @@ type CampaignRow = {
   targetCount: number;
   maxSends: number;
   sentToday: number;
+  timezone: string;
   nextTargetName: string | null;
   dailyRunId: string | null;
   withinWindow: boolean;
@@ -270,12 +275,15 @@ export function CampaignsClient({
   return (
     <>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-small text-muted-foreground">
-          {t("usageSummary", {
-            used: planUsage.campaignsUsed,
-            max: planUsage.campaignsMax,
-          })}
-        </p>
+        <div className="space-y-0.5">
+          <p className="text-small text-muted-foreground">
+            {t("usageSummary", {
+              used: planUsage.campaignsUsed,
+              max: planUsage.campaignsMax,
+            })}
+          </p>
+          <PlanLimitNoDailyReset />
+        </div>
         <Button
           onClick={openNew}
           title={
@@ -395,6 +403,7 @@ export function CampaignsClient({
                           style={{ width: `${pct}%` }}
                         />
                       </div>
+                      <DailyQuotaResetCountdown timezone={c.timezone} />
                       {runReason ? (
                         <p className="text-caption text-amber-700 dark:text-amber-400">
                           {runReason}

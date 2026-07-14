@@ -13,6 +13,7 @@ import {
   templates,
 } from "@line/db";
 import type { OnboardingProgress } from "@/lib/plan-usage-types";
+import { getDailySendTotalForUser } from "@/lib/campaign-daily-quota";
 
 /**
  * Ensure the per-user singleton rows exist (LINE connection + subscription).
@@ -61,15 +62,12 @@ export async function getOverviewStats(
   userId: string,
 ): Promise<OverviewStats> {
   const conn = await getConnection(userId);
-
-  const startOfDay = new Date();
-  startOfDay.setHours(0, 0, 0, 0);
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
   const [
     [activeCampaignsRow],
     [runsRow],
-    [sentRow],
+    sentToday,
     [autoReplyRow],
     [matchRow],
   ] = await Promise.all([
@@ -86,17 +84,7 @@ export async function getOverviewStats(
           gte(campaignRuns.createdAt, sevenDaysAgo),
         ),
       ),
-    db
-      .select({
-        total: sql<number>`coalesce(sum(${campaignRuns.sentCount}), 0)::int`,
-      })
-      .from(campaignRuns)
-      .where(
-        and(
-          eq(campaignRuns.userId, userId),
-          gte(campaignRuns.createdAt, startOfDay),
-        ),
-      ),
+    getDailySendTotalForUser(userId),
     db
       .select({ count: sql<number>`count(*)::int` })
       .from(autoReplyRules)
@@ -113,7 +101,7 @@ export async function getOverviewStats(
     connectionStatus: conn?.status ?? "disconnected",
     activeCampaigns: activeCampaignsRow?.count ?? 0,
     runsLast7Days: runsRow?.count ?? 0,
-    sentToday: sentRow?.total ?? 0,
+    sentToday,
     autoReplyRuleCount: autoReplyRow?.count ?? 0,
     autoReplyMatchesTotal: matchRow?.total ?? 0,
   };

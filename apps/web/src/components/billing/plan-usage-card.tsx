@@ -2,6 +2,11 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
 import type { PlanUsageSnapshot } from "@/lib/plan-usage-types";
+import {
+  AbsoluteDeadlineCountdown,
+  DailyQuotaResetCountdown,
+  PlanLimitNoDailyReset,
+} from "@/components/ui/daily-quota-reset-countdown";
 import { FieldHint } from "@/components/ui/field-hint";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { DEFAULT_CAMPAIGN_TIMEZONE } from "@line/shared/timezone";
 
 function UsageBar({
   used,
@@ -99,6 +105,15 @@ export async function PlanUsageCard({
           </p>
         )}
 
+        {usage.isOnTrial && usage.trialEndsAt ? (
+          <div className="space-y-1 rounded-md border border-border bg-muted/30 p-3">
+            <p className="text-caption font-medium text-muted-foreground">
+              {t("trialSection")}
+            </p>
+            <AbsoluteDeadlineCountdown endsAtIso={usage.trialEndsAt} />
+          </div>
+        ) : null}
+
         <div className="space-y-3">
           <p className="text-caption font-medium text-muted-foreground">
             {t("limitsSection")}
@@ -118,6 +133,7 @@ export async function PlanUsageCard({
             max={usage.mediaAssetsMax}
             label={t("mediaAssets")}
           />
+          <PlanLimitNoDailyReset />
         </div>
 
         {showStats ? (
@@ -126,9 +142,12 @@ export async function PlanUsageCard({
               {t("statsSection")}
             </p>
             {usage.sentToday > 0 ? (
-              <p className="text-caption text-muted-foreground">
-                {t("sentToday", { count: usage.sentToday })}
-              </p>
+              <div className="space-y-1">
+                <p className="text-caption text-muted-foreground">
+                  {t("sentToday", { count: usage.sentToday })}
+                </p>
+                <DailyQuotaResetCountdown timezone={DEFAULT_CAMPAIGN_TIMEZONE} />
+              </div>
             ) : null}
             {usage.autoReplyMatchesTotal > 0 ? (
               <p className="text-caption text-muted-foreground">
@@ -154,6 +173,7 @@ export async function PlanUsageCard({
               monthly: usage.features.maxSendsPerDayCap * 30,
             })}
           </p>
+          <DailyQuotaResetCountdown timezone={DEFAULT_CAMPAIGN_TIMEZONE} />
         </div>
 
         {showUpgrade && (

@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
+import { DailyQuotaResetCountdown } from "@/components/ui/daily-quota-reset-countdown";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DEFAULT_CAMPAIGN_TIMEZONE } from "@line/shared/timezone";
 import { cn } from "@/lib/utils";
 
 type CampaignRow = {
@@ -9,6 +11,7 @@ type CampaignRow = {
   name: string;
   sentToday: number;
   maxSends: number;
+  timezone?: string;
   dailyRunId: string | null;
 };
 
@@ -72,6 +75,9 @@ export async function CampaignProgressSummary({
                   style={{ width: `${pct}%` }}
                 />
               </div>
+              <DailyQuotaResetCountdown
+                timezone={c.timezone ?? DEFAULT_CAMPAIGN_TIMEZONE}
+              />
               {c.dailyRunId ? (
                 <Link
                   href={`/dashboard/runs/${c.dailyRunId}`}

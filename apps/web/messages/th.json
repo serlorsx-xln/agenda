@@ -29,6 +29,11 @@
       "perJobLimit": "ขีดจำกัดต่อตารางส่ง",
       "stats": "สถิติ",
       "planLimits": "ขีดจำกัดแพ็ก"
+    },
+    "quota": {
+      "resetsIn": "รีเซ็ตอีกใน {time}",
+      "endsIn": "หมดอายุในอีก {time}",
+      "noDailyReset": "ไม่รีเซ็ตรายวัน — ลบรายการหรืออัปเกรดเพื่อเพิ่มโควต้า"
     }
   },
   "nav": {
@@ -621,7 +626,7 @@
     "deleteConfirm": "ลบตารางส่งนี้และประวัติการส่ง?",
     "deleteConfirmTitle": "ลบตารางส่งนี้?",
     "progress": {
-      "sentToday": "วันนี้ส่งแล้ว {sent} / {max} กลุ่ม",
+      "sentToday": "วันนี้ส่งแล้ว {sent} / {max} ครั้ง",
       "nextGroup": "ถัดไป: {name}",
       "noTargets": "ยังไม่มีกลุ่ม - เลือกกลุ่มก่อนส่ง",
       "dailyLimitReached": "ครบจำนวนส่งวันนี้แล้ว",
@@ -666,6 +671,7 @@
       "sent": "ส่งแล้ว",
       "failed": "ล้มเหลว",
       "skipped": "ข้าม",
+      "groupsInSchedule": "กลุ่มในตาราง",
       "started": "เริ่ม"
     },
     "status": {
@@ -685,7 +691,9 @@
     "cancelConfirmDescription": "การยกเลิกจะหยุดคิวที่เหลือในวันนี้ - กลุ่มที่ส่งไปแล้วจะไม่ถูกย้อนกลับ",
     "cancelConfirmAction": "ยกเลิกการส่ง",
     "dailyAggregateHint": "1 แถว = 1 วันต่อตารางส่ง (รวมทุกครั้งที่ส่งในวัน)",
-    "sentToday": "ส่งแล้ว {count} กลุ่มวันนี้",
+    "sentToday": "ส่งแล้ว {count} ครั้งวันนี้",
+    "dailyQuota": "โควต้าวันนี้ {sent}/{max} ครั้ง",
+    "statsHint": "ส่งแล้ว = ครั้งที่สำเร็จในวันนี้ · กลุ่มในตาราง = จำนวนกลุ่มที่หมุนส่ง (ส่งซ้ำได้จนกว่าจะเต็มโควต้า)",
     "liveTitle": "รายละเอียดการส่งวันนี้",
     "eventStatus": {
       "success": "ส่งแล้ว",
@@ -884,9 +892,10 @@
     "unlockCta": "เลือกแพ็กและชำระเงิน",
     "startTrialCta": "เชื่อมต่อ LINE เพื่อเริ่มทดลอง",
     "limitsSection": "ขีดจำกัดแพ็ก",
+    "trialSection": "ช่วงทดลองใช้",
     "statsSection": "สถิติ",
     "perJobSection": "ต่อตารางส่ง",
-    "sentToday": "ส่งแล้ววันนี้: {count} กลุ่ม",
+    "sentToday": "ส่งแล้ววันนี้: {count} ครั้ง",
     "maxSendsPerJob": "สูงสุด {count} ครั้ง/วัน · ประมาณ {monthly} ครั้ง/เดือน ต่อตาราง",
     "maxSendsPerJobHint": "ถ้ามีหลายตารางส่ง แต่ละตารางมีโควต้าแยก — ไม่ใช่เพดานรวมทั้งบัญชี"
   },

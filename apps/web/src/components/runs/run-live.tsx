@@ -20,6 +20,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { DailyQuotaResetCountdown } from "@/components/ui/daily-quota-reset-countdown";
 import { FieldHint } from "@/components/ui/field-hint";
 import { formatDate } from "@/lib/utils";
 
@@ -40,6 +41,10 @@ type Run = {
   totalTargets: number;
   startedAt: string | null;
   finishedAt: string | null;
+  campaignName?: string;
+  campaignMaxSends: number;
+  campaignTimezone: string;
+  campaignSentToday: number;
 };
 
 const ACTIVE = new Set(["queued", "running"]);
@@ -117,18 +122,27 @@ export function RunLive({ runId }: { runId: string }) {
         <CardContent>
           {run && (
             <div className="space-y-4">
-              <p className="text-small text-muted-foreground">
-                {t("sentToday", { count: run.sentCount })}
-              </p>
+              <div className="space-y-1">
+                <p className="text-small font-medium">
+                  {t("dailyQuota", {
+                    sent: run.campaignSentToday,
+                    max: run.campaignMaxSends,
+                  })}
+                </p>
+                <DailyQuotaResetCountdown timezone={run.campaignTimezone} />
+              </div>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                 <Stat label={t("columns.sent")} value={run.sentCount} />
                 <Stat label={t("columns.failed")} value={run.failedCount} />
                 <Stat label={t("columns.skipped")} value={run.skippedCount} />
                 <Stat
-                  label={t("columns.campaign")}
-                  value={`${run.sentCount + run.failedCount}/${run.totalTargets}`}
+                  label={t("columns.groupsInSchedule")}
+                  value={run.totalTargets}
                 />
               </div>
+              <p className="text-caption text-muted-foreground">
+                {t("statsHint")}
+              </p>
             </div>
           )}
         </CardContent>

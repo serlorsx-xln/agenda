@@ -1,13 +1,12 @@
 import "server-only";
 
-import { and, eq, gte, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 import {
   db,
   campaigns,
   autoReplyRules,
   mediaAssets,
-  campaignRuns,
   enforceLockedPlanLimits,
   getEffectivePlanForUser,
   subscriptions,
@@ -21,6 +20,7 @@ import {
 } from "@line/shared/plan";
 
 import { getConnection, getSubscription } from "@/lib/db-helpers";
+import { getDailySendTotalForUser } from "@/lib/campaign-daily-quota";
 import { workerFetch } from "@/lib/worker";
 
 const TRIAL_DAYS = 14;
@@ -79,15 +79,12 @@ export async function getPlanUsage(userId: string): Promise<PlanUsage> {
       : null,
   );
 
-  const startOfDay = new Date();
-  startOfDay.setHours(0, 0, 0, 0);
-
   const [
     [campaignRow],
     [autoReplyRow],
     [mediaRow],
     [matchRow],
-    [sentRow],
+    sentToday,
   ] = await Promise.all([
     db
       .select({ count: sql<number>`count(*)::int` })
@@ -107,17 +104,7 @@ export async function getPlanUsage(userId: string): Promise<PlanUsage> {
       })
       .from(autoReplyRules)
       .where(eq(autoReplyRules.userId, userId)),
-    db
-      .select({
-        total: sql<number>`coalesce(sum(${campaignRuns.sentCount}), 0)::int`,
-      })
-      .from(campaignRuns)
-      .where(
-        and(
-          eq(campaignRuns.userId, userId),
-          gte(campaignRuns.createdAt, startOfDay),
-        ),
-      ),
+    getDailySendTotalForUser(userId),
   ]);
 
   let trialDaysLeft: number | null = null;
@@ -142,7 +129,7 @@ export async function getPlanUsage(userId: string): Promise<PlanUsage> {
     mediaAssetsUsed: mediaRow?.count ?? 0,
     mediaAssetsMax: plan.maxMediaAssets,
     autoReplyMatchesTotal: matchRow?.total ?? 0,
-    sentToday: sentRow?.total ?? 0,
+    sentToday,
     isOnTrial: onTrial,
     isLocked: isPlanLocked(plan),
     trialStarted: Boolean(sub?.trialStartedAt || sub?.trialEndsAt),

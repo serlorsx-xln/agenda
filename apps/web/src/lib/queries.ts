@@ -1,6 +1,14 @@
 import "server-only";
 
-import { and, count, desc, eq, gte, inArray, sql } from "drizzle-orm";
+import {
+  and,
+  count,
+  desc,
+  eq,
+  gte,
+  inArray,
+  sql,
+} from "drizzle-orm";
 
 import {
   db,
@@ -17,7 +25,7 @@ import {
   templates,
   user,
 } from "@line/db";
-
+import { DEFAULT_CAMPAIGN_TIMEZONE } from "@line/shared/timezone";
 import {
   isWithinWindow,
   rotationIndexAt,
@@ -33,6 +41,7 @@ export type CampaignListRow = {
   targetCount: number;
   maxSends: number;
   sentToday: number;
+  timezone: string;
   nextTargetName: string | null;
   dailyRunId: string | null;
   withinWindow: boolean;
@@ -151,6 +160,7 @@ export async function getCampaignsWithProgress(
       targetCount: Number(c.targetCount),
       maxSends: c.maxSends,
       sentToday,
+      timezone: c.timezone || DEFAULT_CAMPAIGN_TIMEZONE,
       nextTargetName,
       dailyRunId: c.dailyRunId,
       withinWindow: isWithinWindow(c),
@@ -233,11 +243,60 @@ export async function getRuns(userId: string, limit = 50) {
 
 export async function getRun(userId: string, runId: string) {
   const [row] = await db
-    .select()
+    .select({
+      id: campaignRuns.id,
+      userId: campaignRuns.userId,
+      campaignId: campaignRuns.campaignId,
+      status: campaignRuns.status,
+      trigger: campaignRuns.trigger,
+      sentCount: campaignRuns.sentCount,
+      failedCount: campaignRuns.failedCount,
+      skippedCount: campaignRuns.skippedCount,
+      totalTargets: campaignRuns.totalTargets,
+      startedAt: campaignRuns.startedAt,
+      finishedAt: campaignRuns.finishedAt,
+      createdAt: campaignRuns.createdAt,
+      campaignName: campaigns.name,
+      campaignMaxSends: campaigns.maxSends,
+      campaignTimezone: campaigns.timezone,
+    })
     .from(campaignRuns)
+    .innerJoin(campaigns, eq(campaignRuns.campaignId, campaigns.id))
     .where(and(eq(campaignRuns.id, runId), eq(campaignRuns.userId, userId)))
     .limit(1);
-  return row ?? null;
+  if (!row) return null;
+
+  const tz = row.campaignTimezone || DEFAULT_CAMPAIGN_TIMEZONE;
+  const statDate = statDateInTz(tz);
+  const [daily] = await db
+    .select({
+      total: sql<number>`coalesce(sum(${campaignDailySends.sendCount}), 0)::int`,
+    })
+    .from(campaignDailySends)
+    .where(
+      and(
+        eq(campaignDailySends.campaignId, row.campaignId),
+        eq(campaignDailySends.statDate, statDate),
+      ),
+    );
+
+  return {
+    id: row.id,
+    campaignId: row.campaignId,
+    status: row.status,
+    trigger: row.trigger,
+    sentCount: row.sentCount,
+    failedCount: row.failedCount,
+    skippedCount: row.skippedCount,
+    totalTargets: row.totalTargets,
+    startedAt: row.startedAt,
+    finishedAt: row.finishedAt,
+    createdAt: row.createdAt,
+    campaignName: row.campaignName,
+    campaignMaxSends: row.campaignMaxSends,
+    campaignTimezone: tz,
+    campaignSentToday: daily?.total ?? 0,
+  };
 }
 
 export async function getRunEvents(runId: string) {

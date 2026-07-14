@@ -96,6 +96,7 @@ export default async function CampaignsPage({
           targetCount: c.targetCount,
           maxSends: c.maxSends,
           sentToday: c.sentToday,
+          timezone: c.timezone,
           nextTargetName: c.nextTargetName,
           dailyRunId: c.dailyRunId,
           withinWindow: c.withinWindow,

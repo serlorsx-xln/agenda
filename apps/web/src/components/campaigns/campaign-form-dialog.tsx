@@ -23,6 +23,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { FieldHint, FieldLabel } from "@/components/ui/field-hint";
+import { DailyQuotaResetCountdown } from "@/components/ui/daily-quota-reset-countdown";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
@@ -498,6 +499,7 @@ export function CampaignFormDialog({
               <p className="text-caption text-muted-foreground">
                 {t("help.maxSendsCap", { max: maxSendsCap })}
               </p>
+              <DailyQuotaResetCountdown timezone={timezone} />
             </div>
 
             {simpleMode ? (

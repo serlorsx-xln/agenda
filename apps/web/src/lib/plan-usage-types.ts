@@ -27,6 +27,8 @@ export type PlanUsageSnapshot = {
   /** True once a Growth trial was started (even if already ended). */
   trialStarted: boolean;
   trialDaysLeft: number | null;
+  /** ISO timestamp when Growth trial ends (if on trial). */
+  trialEndsAt: string | null;
   connected: boolean;
   features: PlanFeatures;
 };

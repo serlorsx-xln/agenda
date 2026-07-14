@@ -13,6 +13,7 @@ import {
   RunStatusBadge,
 } from "@/components/dashboard/status-badge";
 import { Button } from "@/components/ui/button";
+import { DailyQuotaResetCountdown } from "@/components/ui/daily-quota-reset-countdown";
 import {
   Card,
   CardContent,
@@ -29,6 +30,7 @@ import {
 import { getPlanUsage } from "@/lib/plan-limits";
 import { requireUser } from "@/lib/session";
 import { formatDate } from "@/lib/utils";
+import { DEFAULT_CAMPAIGN_TIMEZONE } from "@line/shared/timezone";
 
 export default async function OverviewPage() {
   const user = await requireUser();
@@ -80,6 +82,7 @@ export default async function OverviewPage() {
             name: c.name,
             sentToday: c.sentToday,
             maxSends: c.maxSends,
+            timezone: c.timezone,
             dailyRunId: c.dailyRunId,
           }))}
         />
@@ -112,6 +115,7 @@ export default async function OverviewPage() {
           label={t("quota")}
           icon={MessageSquare}
           value={stats.sentToday}
+          hint={<DailyQuotaResetCountdown timezone={DEFAULT_CAMPAIGN_TIMEZONE} />}
         />
         {onboardingComplete ? (
           <>
