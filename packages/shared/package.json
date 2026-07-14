@@ -12,7 +12,8 @@
     "./auto-reply-match": "./src/auto-reply-match.ts",
     "./worker-token": "./src/worker-token.ts",
     "./pacing": "./src/pacing.ts",
-    "./timezone": "./src/timezone.ts"
+    "./timezone": "./src/timezone.ts",
+    "./discord-notify": "./src/discord-notify.ts"
   },
   "main": "./src/index.ts",
   "types": "./src/index.ts",

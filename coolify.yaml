@@ -10,6 +10,7 @@
 #   PROMPTPAY_ID, BILLING_WEBHOOK_SECRET, BILLING_OPS_TOKEN, CRON_SECRET
 #   WORKER_LINE_URL (compose: http://worker-line:4000)
 #   SCB_SLIP_URL, SCB_API_KEY, SCB_PROJECT (slynxslip tenant)
+# Optional: SENTRY_DSN, DISCORD_WEBHOOK_URL (slynxslip-style embeds)
 
 name: agenda
 runtime: docker

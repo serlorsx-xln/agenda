@@ -27,7 +27,7 @@ Deploy Agenda with Docker Compose (VPS + optional Caddy TLS).
 | `CRON_SECRET` | Cron routes (no fallback to `INTERNAL_API_KEY` in production) |
 | `RESEND_API_KEY` / `RESEND_FROM_EMAIL` | Email verification + receipts |
 
-Optional: `SENTRY_DSN`.
+Optional: `SENTRY_DSN`, `DISCORD_WEBHOOK_URL` (slynxslip-style Discord embeds on errors/startup).
 
 ## Coolify / Traefik note
 

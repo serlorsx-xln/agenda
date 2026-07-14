@@ -65,6 +65,9 @@ async function main() {
   await restoreSessionsOnBoot();
   await restoreAutoReplyOnBoot();
 
+  const { notifyStartup } = await import("@line/shared/sentry");
+  void notifyStartup("worker-line");
+
   const app = createServer();
   const { log } = await import("./logger.js");
   const server = app.listen(env.WORKER_PORT, () => {
@@ -88,7 +91,13 @@ async function main() {
   process.on("SIGINT", () => shutdown("SIGINT"));
 }
 
-main().catch((err) => {
+main().catch(async (err) => {
   console.error("[worker-line] fatal:", err);
+  try {
+    const { captureException } = await import("@line/shared/sentry");
+    await captureException(err, { service: "worker-line", phase: "boot" });
+  } catch {
+    // ignore
+  }
   process.exit(1);
 });

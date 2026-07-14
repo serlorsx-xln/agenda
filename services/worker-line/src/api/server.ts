@@ -107,7 +107,11 @@ export function createServer(): Express {
           path: req.path,
           error: err instanceof Error ? err.message : String(err),
         });
-        void captureException(err, { path: req.path, method: req.method });
+        void captureException(err, {
+          service: "worker-line",
+          path: req.path,
+          method: req.method,
+        });
         if (!res.headersSent) res.status(400).json({ error: message });
       });
     };
