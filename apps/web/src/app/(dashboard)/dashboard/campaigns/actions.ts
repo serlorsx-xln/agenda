@@ -9,6 +9,7 @@ import {
   MIN_ACCOUNT_SEND_DELAY_SEC,
   MIN_PER_CHAT_COOLDOWN_SEC,
 } from "@line/shared";
+import { DEFAULT_CAMPAIGN_TIMEZONE } from "@line/shared/timezone";
 
 import { recordAudit } from "@/lib/audit";
 import {
@@ -36,7 +37,11 @@ export type ActionResult = {
 const campaignSchema = z.object({
   name: z.string().min(1).max(120),
   templateId: z.string().uuid(),
-  timezone: z.string().min(1).default("Asia/Bangkok"),
+  timezone: z
+    .string()
+    .min(1)
+    .default(DEFAULT_CAMPAIGN_TIMEZONE)
+    .transform(() => DEFAULT_CAMPAIGN_TIMEZONE),
   windowStartHour: z.number().int().min(0).max(23),
   windowEndHour: z.number().int().min(0).max(23),
   cronExpr: z

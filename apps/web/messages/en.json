@@ -31,7 +31,7 @@
       "planLimits": "Plan limits"
     },
     "quota": {
-      "resetsIn": "Resets in {time}",
+      "resetsIn": "Resets at Thailand midnight in {time}",
       "endsIn": "Ends in {time}",
       "noDailyReset": "Does not reset daily — delete items or upgrade to raise the limit"
     }
@@ -691,7 +691,6 @@
     "cancelConfirmDescription": "Cancellation stops the remaining queue for today - groups already sent will not be reversed.",
     "cancelConfirmAction": "Cancel send",
     "dailyAggregateHint": "One row = one day per send schedule (includes every send that day)",
-    "sentToday": "Sent {count} times today",
     "dailyQuota": "Daily quota {sent}/{max}",
     "statsHint": "Sent = successful sends today · Groups in schedule = how many groups rotate (can repeat until the daily quota is used)",
     "liveTitle": "Today's send details",
@@ -958,7 +957,8 @@
       "nearLimit": "You are using {used} of {max} send schedules. Upgrade for more scale.",
       "atLimit": "Send schedule limit reached. Upgrade to add more send schedules.",
       "cta": "View plans",
-      "dismiss": "Dismiss"
+      "dismiss": "Dismiss",
+      "planLimitHint": "Does not reset daily — upgrade your plan to raise the limit"
     }
   },
   "legal": {

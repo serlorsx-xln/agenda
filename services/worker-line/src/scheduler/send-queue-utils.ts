@@ -13,15 +13,25 @@ export {
 export const BACKOFF_LADDER_SEC = [120, 300, 900] as const;
 
 export function currentHourInTz(timezone: string): number {
+  const tz = timezone || "Asia/Bangkok";
   try {
     const fmt = new Intl.DateTimeFormat("en-US", {
-      timeZone: timezone,
+      timeZone: tz,
       hour: "numeric",
       hour12: false,
     });
-    return Number(fmt.format(new Date()));
+    let hour = Number(fmt.format(new Date()));
+    if (hour === 24) hour = 0;
+    return hour;
   } catch {
-    return new Date().getHours();
+    const fmt = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Bangkok",
+      hour: "numeric",
+      hour12: false,
+    });
+    let hour = Number(fmt.format(new Date()));
+    if (hour === 24) hour = 0;
+    return hour;
   }
 }
 
@@ -59,15 +69,21 @@ export function sameDayInTz(a: Date, b: Date, timezone: string): boolean {
 }
 
 export function statDateInTz(timezone: string, when = new Date()): string {
+  const tz = timezone || "Asia/Bangkok";
   try {
     return new Intl.DateTimeFormat("en-CA", {
-      timeZone: timezone,
+      timeZone: tz,
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
     }).format(when);
   } catch {
-    return when.toISOString().slice(0, 10);
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Bangkok",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(when);
   }
 }
 

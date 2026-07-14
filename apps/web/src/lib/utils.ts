@@ -1,6 +1,8 @@
 import { clsx, type ClassValue } from "clsx";
 import { extendTailwindMerge } from "tailwind-merge";
 
+import { DEFAULT_CAMPAIGN_TIMEZONE } from "@line/shared/timezone";
+
 /** Custom type scale uses `text-*` for font size; teach tailwind-merge not to drop colors. */
 const twMerge = extendTailwindMerge({
   extend: {
@@ -24,13 +26,16 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/** Display timestamps always in Asia/Bangkok (Agenda product clock). */
 export function formatDate(
   date: Date | string | null | undefined,
   locale = "th",
 ): string {
   if (!date) return "-";
   const d = typeof date === "string" ? new Date(date) : date;
+  if (Number.isNaN(d.getTime())) return "-";
   return new Intl.DateTimeFormat(locale === "th" ? "th-TH" : "en-US", {
+    timeZone: DEFAULT_CAMPAIGN_TIMEZONE,
     dateStyle: "medium",
     timeStyle: "short",
   }).format(d);

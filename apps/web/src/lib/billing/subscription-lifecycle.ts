@@ -148,7 +148,12 @@ async function processSubscriptionReminders(): Promise<number> {
     else if (row.status === "past_due" && daysPast === 1) kind = "past_due";
     if (!kind) continue;
 
-    const periodKey = row.currentPeriodEnd.toISOString().slice(0, 10);
+    const periodKey = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Bangkok",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(row.currentPeriodEnd);
     const dedupeKey = `${kind}:${periodKey}`;
     if (await wasSent(row.userId, "notification.subscription", dedupeKey)) {
       continue;

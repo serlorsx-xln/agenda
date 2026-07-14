@@ -1,28 +1,46 @@
 /** Campaign send window + rotation helpers (mirrors worker send-queue-utils). */
 
+import { DEFAULT_CAMPAIGN_TIMEZONE } from "@line/shared/timezone";
+
 export function statDateInTz(timezone: string, when = new Date()): string {
+  const tz = timezone || DEFAULT_CAMPAIGN_TIMEZONE;
   try {
     return new Intl.DateTimeFormat("en-CA", {
-      timeZone: timezone,
+      timeZone: tz,
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
     }).format(when);
   } catch {
-    return when.toISOString().slice(0, 10);
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: DEFAULT_CAMPAIGN_TIMEZONE,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(when);
   }
 }
 
-export function currentHourInTz(timezone: string): number {
+export function currentHourInTz(timezone: string, when = new Date()): number {
+  const tz = timezone || DEFAULT_CAMPAIGN_TIMEZONE;
   try {
     const fmt = new Intl.DateTimeFormat("en-US", {
-      timeZone: timezone,
+      timeZone: tz,
       hour: "numeric",
       hour12: false,
     });
-    return Number(fmt.format(new Date()));
+    let hour = Number(fmt.format(when));
+    if (hour === 24) hour = 0;
+    return hour;
   } catch {
-    return new Date().getHours();
+    const fmt = new Intl.DateTimeFormat("en-US", {
+      timeZone: DEFAULT_CAMPAIGN_TIMEZONE,
+      hour: "numeric",
+      hour12: false,
+    });
+    let hour = Number(fmt.format(when));
+    if (hour === 24) hour = 0;
+    return hour;
   }
 }
 

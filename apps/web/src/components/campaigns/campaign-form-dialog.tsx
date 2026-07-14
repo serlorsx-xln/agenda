@@ -36,6 +36,7 @@ import {
   MIN_ACCOUNT_SEND_DELAY_SEC,
   MIN_PER_CHAT_COOLDOWN_SEC,
 } from "@line/shared/pacing";
+import { DEFAULT_CAMPAIGN_TIMEZONE } from "@line/shared/timezone";
 import {
   cronFromSchedule,
   scheduleFromCron,
@@ -160,7 +161,7 @@ export function CampaignFormDialog({
     React.useState<UpgradeLimitType>("targets");
   const [pickerKey, setPickerKey] = React.useState(0);
 
-  const timezone = initial?.timezone ?? "Asia/Bangkok";
+  const timezone = initial?.timezone ?? DEFAULT_CAMPAIGN_TIMEZONE;
 
   const minuteOptions = React.useMemo(() => {
     const opts = new Set(BASE_MINUTES);
@@ -272,7 +273,7 @@ export function CampaignFormDialog({
       const payload = {
         name,
         templateId,
-        timezone,
+        timezone: DEFAULT_CAMPAIGN_TIMEZONE,
         windowStartHour: start,
         windowEndHour: end,
         cronExpr: simpleMode

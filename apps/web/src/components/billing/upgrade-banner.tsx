@@ -6,6 +6,7 @@ import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import type { PlanUsageSnapshot } from "@/lib/plan-usage-types";
+import { AbsoluteDeadlineCountdown } from "@/components/ui/daily-quota-reset-countdown";
 import { Button } from "@/components/ui/button";
 
 function dismissKey(kind: string) {
@@ -52,7 +53,17 @@ export function UpgradeBanner({ usage }: { usage: PlanUsageSnapshot }) {
 
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-primary/30 bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between">
-      <p className="text-small">{message}</p>
+      <div className="min-w-0 space-y-1">
+        <p className="text-small">{message}</p>
+        {kind === "trial" && usage.trialEndsAt ? (
+          <AbsoluteDeadlineCountdown endsAtIso={usage.trialEndsAt} />
+        ) : null}
+        {kind !== "trial" ? (
+          <p className="text-caption text-muted-foreground">
+            {t("planLimitHint")}
+          </p>
+        ) : null}
+      </div>
       <div className="flex shrink-0 items-center gap-2">
         <Button asChild size="sm">
           <Link href="/dashboard/billing">{t("cta")}</Link>
