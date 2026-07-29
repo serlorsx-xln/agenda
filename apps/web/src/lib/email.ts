@@ -1,5 +1,6 @@
 import "server-only";
 
+import { brand } from "@/lib/brand";
 import { createLogger } from "@/lib/logger";
 
 const log = createLogger("email");
@@ -35,7 +36,7 @@ type AuthEmailCopy = {
 
 /**
  * Branded transactional email layout aligned with the Agenda web UI
- * (light surface, charcoal CTA, outline logo mark, LINE Seed Sans).
+ * (light surface, teal CTA, filled logo mark, LINE Seed Sans).
  * Table-based for clients. Web fonts load from the live site when supported.
  */
 export function renderAuthEmail(input: {
@@ -89,30 +90,32 @@ export function renderAuthEmail(input: {
   </style>
   <![endif]-->
 </head>
-<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:${fontStack};color:#141416;-webkit-font-smoothing:antialiased;">
+<body style="margin:0;padding:0;background-color:${brand.neutral.surface};font-family:${fontStack};color:${brand.neutral.foreground};-webkit-font-smoothing:antialiased;">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${escapeHtml(copy.preview)}</div>
-  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#f4f4f5;padding:32px 16px;font-family:${fontStack};">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:${brand.neutral.surface};padding:32px 16px;font-family:${fontStack};">
     <tr>
       <td align="center" style="font-family:${fontStack};">
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:520px;background-color:#ffffff;border:1px solid #e4e4e7;border-radius:10px;overflow:hidden;font-family:${fontStack};">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:520px;background-color:${brand.neutral.background};border:1px solid ${brand.neutral.border};border-radius:10px;overflow:hidden;font-family:${fontStack};">
           <tr>
             <td style="padding:28px 32px 8px 32px;font-family:${fontStack};">
               <table role="presentation" cellspacing="0" cellpadding="0" border="0">
                 <tr>
-                  <td style="width:16px;height:16px;border:2px solid #1c1c21;border-radius:4px;line-height:0;font-size:0;">&nbsp;</td>
-                  <td style="padding-left:10px;font-size:18px;font-weight:700;letter-spacing:-0.02em;color:#141416;line-height:1;font-family:${fontStack};">Agenda</td>
+                  <td style="width:16px;height:16px;border-radius:4px;background-color:${brand.primary.hex};line-height:0;font-size:0;text-align:center;vertical-align:middle;">
+                    <span style="display:inline-block;width:6px;height:6px;border-radius:1px;background-color:${brand.neutral.onPrimary};">&nbsp;</span>
+                  </td>
+                  <td style="padding-left:10px;font-size:18px;font-weight:700;letter-spacing:-0.02em;color:${brand.neutral.foreground};line-height:1;font-family:${fontStack};">Agenda</td>
                 </tr>
               </table>
             </td>
           </tr>
           <tr>
             <td style="padding:20px 32px 8px 32px;font-family:${fontStack};">
-              <p style="margin:0 0 12px 0;font-size:15px;line-height:1.5;color:#141416;font-family:${fontStack};">${escapeHtml(copy.greeting)}</p>
-              <p style="margin:0 0 24px 0;font-size:15px;line-height:1.6;color:#52525b;font-family:${fontStack};">${escapeHtml(copy.body)}</p>
+              <p style="margin:0 0 12px 0;font-size:15px;line-height:1.5;color:${brand.neutral.foreground};font-family:${fontStack};">${escapeHtml(copy.greeting)}</p>
+              <p style="margin:0 0 24px 0;font-size:15px;line-height:1.6;color:${brand.neutral.body};font-family:${fontStack};">${escapeHtml(copy.body)}</p>
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px 0;">
                 <tr>
-                  <td style="border-radius:8px;background-color:#1c1c21;">
-                    <a href="${action}" style="display:inline-block;padding:12px 20px;font-size:15px;font-weight:700;color:#fafafa;text-decoration:none;border-radius:8px;font-family:${fontStack};">
+                  <td style="border-radius:8px;background-color:${brand.primary.hex};">
+                    <a href="${action}" style="display:inline-block;padding:12px 20px;font-size:15px;font-weight:700;color:${brand.neutral.onPrimary};text-decoration:none;border-radius:8px;font-family:${fontStack};">
                       ${escapeHtml(copy.cta)}
                     </a>
                   </td>

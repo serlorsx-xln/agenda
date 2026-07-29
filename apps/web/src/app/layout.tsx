@@ -19,6 +19,10 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s · ${title}`,
     },
     description,
+    themeColor: [
+      { media: "(prefers-color-scheme: light)", color: "#358F7A" },
+      { media: "(prefers-color-scheme: dark)", color: "#52A894" },
+    ],
     metadataBase: new URL(siteUrl),
     alternates: { canonical: siteUrl },
     openGraph: {

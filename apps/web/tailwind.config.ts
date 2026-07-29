@@ -49,6 +49,9 @@ const config: Config = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          hover: "hsl(var(--primary-hover))",
+          soft: "hsl(var(--primary-soft))",
+          "soft-foreground": "hsl(var(--primary-soft-foreground))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",

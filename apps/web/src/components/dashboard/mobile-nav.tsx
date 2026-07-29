@@ -53,7 +53,7 @@ export function MobileNav({ isAdmin = false }: { isAdmin?: boolean }) {
               href={item.href}
               className={cn(
                 "flex min-h-[3.25rem] flex-col items-center justify-center gap-0.5 px-1 text-caption",
-                active ? "text-foreground" : "text-muted-foreground",
+                active ? "font-medium text-primary" : "text-muted-foreground",
               )}
             >
               <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} />
@@ -67,7 +67,7 @@ export function MobileNav({ isAdmin = false }: { isAdmin?: boolean }) {
           className={cn(
             "flex min-h-[3.25rem] flex-col items-center justify-center gap-0.5 px-1 text-caption",
             moreActive || moreOpen
-              ? "text-foreground"
+              ? "font-medium text-primary"
               : "text-muted-foreground",
           )}
         >

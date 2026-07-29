@@ -3,6 +3,8 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
+import { brand } from "@/lib/brand";
+
 export const runtime = "nodejs";
 export const alt =
   "Agenda - ส่งข้อความอัตโนมัติ + ตอบกลับใน OpenChat และกลุ่ม LINE";
@@ -44,9 +46,8 @@ export default async function OpenGraphImage() {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          backgroundColor: "#ffffff",
-          backgroundImage:
-            "linear-gradient(180deg, #ffffff 0%, #f4f4f5 100%)",
+          backgroundColor: brand.neutral.background,
+          backgroundImage: `linear-gradient(180deg, ${brand.neutral.background} 0%, ${brand.neutral.surface} 100%)`,
           padding: "64px 72px",
           fontFamily: "LINE Seed Sans",
         }}
@@ -63,15 +64,26 @@ export default async function OpenGraphImage() {
               width: 32,
               height: 32,
               borderRadius: 8,
-              border: "3px solid #1c1c21",
-              backgroundColor: "transparent",
+              backgroundColor: brand.primary.hex,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
-          />
+          >
+            <div
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: 2,
+                backgroundColor: brand.neutral.onPrimary,
+              }}
+            />
+          </div>
           <div
             style={{
               fontSize: 36,
               fontWeight: 800,
-              color: "#141416",
+              color: brand.neutral.foreground,
               letterSpacing: "-0.02em",
               lineHeight: 1,
             }}
@@ -93,7 +105,7 @@ export default async function OpenGraphImage() {
             style={{
               fontSize: 52,
               fontWeight: 800,
-              color: "#141416",
+              color: brand.neutral.foreground,
               lineHeight: 1.28,
               letterSpacing: "-0.025em",
             }}
@@ -104,7 +116,7 @@ export default async function OpenGraphImage() {
             style={{
               fontSize: 28,
               fontWeight: 400,
-              color: "#71717a",
+              color: brand.neutral.foregroundMuted,
               lineHeight: 1.45,
               maxWidth: 920,
             }}
@@ -120,7 +132,7 @@ export default async function OpenGraphImage() {
             marginTop: "auto",
             alignItems: "center",
             justifyContent: "space-between",
-            borderTop: "1px solid #e4e4e7",
+            borderTop: `1px solid ${brand.neutral.border}`,
             paddingTop: 28,
           }}
         >
@@ -131,7 +143,7 @@ export default async function OpenGraphImage() {
               gap: 12,
               fontSize: 22,
               fontWeight: 400,
-              color: "#71717a",
+              color: brand.neutral.foregroundMuted,
             }}
           >
             <div
@@ -139,7 +151,7 @@ export default async function OpenGraphImage() {
                 width: 10,
                 height: 10,
                 borderRadius: 999,
-                backgroundColor: "#22a06b",
+                backgroundColor: brand.success.hex,
               }}
             />
             Auto-send + auto-reply on your personal LINE account
@@ -150,7 +162,7 @@ export default async function OpenGraphImage() {
               alignItems: "center",
               fontSize: 20,
               fontWeight: 700,
-              color: "#1c1c21",
+              color: brand.primary.hex,
               letterSpacing: "-0.01em",
             }}
           >

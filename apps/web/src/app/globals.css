@@ -30,7 +30,7 @@
 
 @layer base {
   /* ------------------------------------------------------------------ */
-  /*  Neutral base (light)                                               */
+  /*  Brand: Deep Teal primary on neutral base (light)                   */
   /* ------------------------------------------------------------------ */
   :root {
     --font-line-seed: "LINE Seed Sans";
@@ -44,8 +44,12 @@
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 8%;
 
-    --primary: 240 6% 12%;
+    /* Brand accent — Deep Teal (~#358F7A) */
+    --primary: 172 42% 36%;
     --primary-foreground: 0 0% 98%;
+    --primary-hover: 172 42% 30%;
+    --primary-soft: 172 35% 95%;
+    --primary-soft-foreground: 172 42% 28%;
 
     --secondary: 240 5% 96%;
     --secondary-foreground: 240 6% 12%;
@@ -53,8 +57,9 @@
     --muted: 240 5% 96%;
     --muted-foreground: 240 4% 44%;
 
-    --accent: 240 5% 96%;
-    --accent-foreground: 240 6% 12%;
+    /* Teal-tinted hover surface */
+    --accent: 172 30% 95%;
+    --accent-foreground: 172 42% 28%;
 
     --destructive: 0 72% 46%;
     --destructive-foreground: 0 0% 98%;
@@ -67,13 +72,13 @@
 
     --border: 240 6% 90%;
     --input: 240 6% 90%;
-    --ring: 240 6% 12%;
+    --ring: 172 42% 36%;
 
     --radius: 0.625rem;
   }
 
   /* ------------------------------------------------------------------ */
-  /*  Neutral base (dark)                                                */
+  /*  Brand: Deep Teal primary on neutral base (dark)                    */
   /* ------------------------------------------------------------------ */
   .dark {
     --background: 240 10% 6%;
@@ -85,8 +90,11 @@
     --popover: 240 8% 9%;
     --popover-foreground: 0 0% 96%;
 
-    --primary: 0 0% 96%;
-    --primary-foreground: 240 8% 10%;
+    --primary: 172 38% 52%;
+    --primary-foreground: 172 30% 10%;
+    --primary-hover: 172 38% 58%;
+    --primary-soft: 172 25% 14%;
+    --primary-soft-foreground: 172 35% 78%;
 
     --secondary: 240 5% 15%;
     --secondary-foreground: 0 0% 96%;
@@ -94,8 +102,8 @@
     --muted: 240 5% 15%;
     --muted-foreground: 240 5% 62%;
 
-    --accent: 240 5% 16%;
-    --accent-foreground: 0 0% 96%;
+    --accent: 172 22% 16%;
+    --accent-foreground: 172 35% 78%;
 
     --destructive: 0 62% 52%;
     --destructive-foreground: 0 0% 98%;
@@ -108,7 +116,7 @@
 
     --border: 240 5% 18%;
     --input: 240 5% 20%;
-    --ring: 0 0% 80%;
+    --ring: 172 38% 52%;
   }
 }
 
@@ -144,6 +152,10 @@
     font-feature-settings:
       "rlig" 1,
       "calt" 1;
+  }
+  ::selection {
+    background-color: hsl(var(--primary) / 0.18);
+    color: hsl(var(--foreground));
   }
   h1 {
     @apply text-h1 font-bold;
