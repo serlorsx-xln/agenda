@@ -5,7 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./schema": "./src/schema.ts"
+    "./schema": "./src/schema.ts",
+    "./reset-non-admin": "./src/reset-non-admin.ts"
   },
   "main": "./src/index.ts",
   "types": "./src/index.ts",
@@ -14,6 +15,7 @@
     "migrate": "tsx src/migrate.ts",
     "push": "drizzle-kit push",
     "seed": "tsx src/seed.ts",
+    "reset-non-admin": "tsx src/reset-non-admin.ts",
     "studio": "drizzle-kit studio",
     "typecheck": "tsc --noEmit",
     "lint": "eslint --config ../../eslint.config.mjs src drizzle.config.ts"
