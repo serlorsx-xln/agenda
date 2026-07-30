@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import {
   banUser,
   confirmPaymentAdmin,
+  resetNonAdminUsersAdmin,
   setUserPlan,
   unbanUser,
 } from "@/app/(dashboard)/dashboard/admin/actions";
@@ -21,7 +22,8 @@ import {
 } from "@/components/dashboard/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Select } from "@/components/ui/select";
 import {
   Table,
@@ -94,7 +96,9 @@ export function AdminClient({
   const tp = useTranslations("billing.paymentStatus");
 
   return (
-    <Tabs defaultValue="users">
+    <div className="space-y-6">
+      <AdminResetPanel />
+      <Tabs defaultValue="users">
       <TabsList>
         <TabsTrigger value="users">{t("tabs.users")}</TabsTrigger>
         <TabsTrigger value="payments">{t("tabs.payments")}</TabsTrigger>
@@ -298,6 +302,55 @@ export function AdminClient({
         </Card>
       </TabsContent>
     </Tabs>
+    </div>
+  );
+}
+
+function AdminResetPanel() {
+  const t = useTranslations("admin.ops");
+  const tt = useTranslations("toast");
+  const router = useRouter();
+  const [open, setOpen] = React.useState(false);
+  const [pending, setPending] = React.useState(false);
+
+  async function handleReset() {
+    setPending(true);
+    const result = await resetNonAdminUsersAdmin();
+    setPending(false);
+    setOpen(false);
+    if (!result.ok) {
+      toast.error(tt("error"));
+      return;
+    }
+    toast.success(t("resetSuccess", { count: result.deletedCount ?? 0 }));
+    router.refresh();
+  }
+
+  return (
+    <>
+      <Card className="border-destructive/40">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">{t("resetTitle")}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">{t("resetDescription")}</p>
+          <Button variant="destructive" onClick={() => setOpen(true)}>
+            {t("resetAction")}
+          </Button>
+        </CardContent>
+      </Card>
+      <ConfirmDialog
+        open={open}
+        onOpenChange={setOpen}
+        title={t("resetConfirmTitle")}
+        description={t("resetConfirmDescription")}
+        confirmLabel={t("resetAction")}
+        cancelLabel={t("resetCancel")}
+        variant="destructive"
+        loading={pending}
+        onConfirm={handleReset}
+      />
+    </>
   );
 }
 

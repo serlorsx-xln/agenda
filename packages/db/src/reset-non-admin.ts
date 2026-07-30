@@ -54,3 +54,15 @@ export async function resetNonAdminUsers(): Promise<ResetNonAdminUsersResult> {
 
   return { deletedCount: deleted.length, deleted, remaining };
 }
+
+async function main() {
+  const result = await resetNonAdminUsers();
+  console.log(JSON.stringify(result, null, 2));
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

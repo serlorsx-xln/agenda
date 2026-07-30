@@ -36,6 +36,27 @@ export async function confirmPaymentAdmin(
   return { ok: true };
 }
 
+/** Ops: delete every non-admin user and cascaded data. Admin accounts are kept. */
+export async function resetNonAdminUsersAdmin(): Promise<
+  ActionResult & { deletedCount?: number }
+> {
+  const admin = await requireAdmin();
+  const { resetNonAdminUsers } = await import("@line/db/reset-non-admin");
+  const result = await resetNonAdminUsers();
+
+  await recordAudit(admin.id, "admin.reset_non_admin_users", {
+    metadata: {
+      deletedCount: result.deletedCount,
+      deletedEmails: result.deleted.map((row) => row.email),
+      remainingEmails: result.remaining.map((row) => row.email),
+    },
+  });
+
+  revalidatePath("/dashboard/admin");
+  revalidatePath("/dashboard");
+  return { ok: true, deletedCount: result.deletedCount };
+}
+
 export async function banUser(
   userId: string,
   reason?: string,

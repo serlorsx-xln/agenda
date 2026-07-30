@@ -854,6 +854,15 @@
         "target": "Group"
       },
       "empty": "No audit entries."
+    },
+    "ops": {
+      "resetTitle": "Reset non-admin users",
+      "resetDescription": "Delete all users except admins and their data (LINE links, campaigns, templates, etc.). This cannot be undone.",
+      "resetAction": "Reset all except admin",
+      "resetCancel": "Cancel",
+      "resetConfirmTitle": "Reset all non-admin users?",
+      "resetConfirmDescription": "Every non-admin account and their app data will be permanently deleted. Admin accounts are kept.",
+      "resetSuccess": "Deleted {count} user(s). Only admin accounts remain."
     }
   },
   "toast": {

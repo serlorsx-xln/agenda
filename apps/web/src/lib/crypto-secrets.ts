@@ -37,3 +37,13 @@ export function requireBillingWebhookSecret(request: Request): boolean {
   if (!header) return false;
   return secretsEqual(header, expected);
 }
+
+export function requireBillingOpsToken(request: Request): boolean {
+  const expected = process.env.BILLING_OPS_TOKEN?.trim();
+  if (!expected) return false;
+  const header =
+    request.headers.get("x-billing-ops-token") ??
+    request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+  if (!header) return false;
+  return secretsEqual(header, expected);
+}
