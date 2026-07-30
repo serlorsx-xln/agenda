@@ -1,12 +1,12 @@
 import { ne, inArray } from "drizzle-orm";
 
-import { db, queryClient } from "./client.js";
+import { db } from "./client";
 import {
   auditLog,
   signupRateLimits,
   user,
   verification,
-} from "./schema.js";
+} from "./schema";
 
 export type ResetNonAdminUsersResult = {
   deletedCount: number;
